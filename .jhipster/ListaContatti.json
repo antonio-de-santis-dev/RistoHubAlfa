@@ -1,0 +1,26 @@
+{
+  "annotations": {
+    "changelogDate": "20260511093530"
+  },
+  "applications": "*",
+  "documentation": "Lista dei recapiti del ristorante, collegata al menu.\\nVisualizzata come card nella pagina pubblica QR.",
+  "dto": "mapstruct",
+  "fields": [
+    {
+      "fieldName": "note",
+      "fieldType": "String"
+    }
+  ],
+  "name": "ListaContatti",
+  "relationships": [
+    {
+      "otherEntityName": "contattoItem",
+      "otherEntityRelationshipName": "lista",
+      "relationshipName": "contatti",
+      "relationshipSide": "left",
+      "relationshipType": "one-to-many"
+    }
+  ],
+  "searchEngine": "no",
+  "service": "serviceClass"
+}

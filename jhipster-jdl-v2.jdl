@@ -1,0 +1,368 @@
+// ============================================================
+//  RistoHub v2  —  JHipster Domain Language (JDL)
+//  JHipster 8.11.0  |  Spring Boot 3 + Angular 19
+// ============================================================
+
+
+// ===============================================================
+//  SEZIONE 1 — ENUM
+// ===============================================================
+
+/**
+ * Livello dell'utente ristoratore.
+ * NON sostituisce i ruoli JHipster (ROLE_USER / ROLE_ADMIN),
+ * e' un campo aggiuntivo sul ProfiloRistoratore.
+ *
+ * Funzionalita' COMUNI a tutti i livelli:
+ *   - Import prodotti da PDF
+ *   - Traduzione automatica del menu via API esterna
+ *
+ * Regole di business (implementate nel Service layer):
+ *   Il controllo si basa sul conteggio dei Menu ESISTENTI dell'utente,
+ *   non su quanti ne ha mai creati. Se un utente cancella un menu,
+ *   quel posto torna disponibile e puo' crearne uno nuovo.
+ *
+ *   LIVELLO_1 -> max 1 menu attivo simultaneo
+ *               piatti del giorno: NON disponibili
+ *   LIVELLO_2 -> max 2 menu attivi simultanei
+ *               piatti del giorno: max 5 (conteggio totale tra tutti i suoi menu)
+ *   LIVELLO_3 -> menu illimitati
+ *               piatti del giorno illimitati
+ */
+enum LivelloUtente {
+  LIVELLO_1,
+  LIVELLO_2,
+  LIVELLO_3
+}
+
+/** Tipo portata: predefinita dal sistema o aggiunta dall'utente */
+enum TipoPortata {
+  DEFAULT,
+  PERSONALIZZATA
+}
+
+/**
+ * Portate predefinite con ordine fisso nel menu.
+ * Le PERSONALIZZATE si inseriscono sempre dopo CONTORNO e prima di DOLCE.
+ *
+ * Ordine di visualizzazione (gestito dal campo "ordine" nel Service):
+ *  1. ANTIPASTO   -> ordine = 10
+ *  2. PRIMO       -> ordine = 20
+ *  3. SECONDO     -> ordine = 30
+ *  4. CONTORNO    -> ordine = 40
+ *  [portate PERSONALIZZATE] -> ordine = 45, 46, 47 ... (auto-incrementale)
+ *  5. DOLCE       -> ordine = 50
+ *  6. BEVANDA     -> ordine = 60
+ *  7. VINO_ROSSO  -> ordine = 70
+ *  8. VINO_BIANCO -> ordine = 80
+ *  9. VINO_ROSATO -> ordine = 90
+ * 10. BIRRA       -> ordine = 100
+ * 11. DIGESTIVO   -> ordine = 110
+ */
+enum NomePortataDefault {
+  ANTIPASTO,
+  PRIMO,
+  SECONDO,
+  CONTORNO,
+  DOLCE,
+  BEVANDA,
+  VINO_ROSSO,
+  VINO_BIANCO,
+  VINO_ROSATO,
+  BIRRA,
+  DIGESTIVO
+}
+
+/**
+ * Tipo allergene.
+ * DEFAULT       -> uno dei 14 EU, icona PNG dedicata per ognuno
+ * PERSONALIZZATO -> aggiunto dal ristoratore, icona generica universale
+ */
+enum TipoAllergene {
+  DEFAULT,
+  PERSONALIZZATO
+}
+
+/**
+ * I 14 allergeni obbligatori per legge (Reg. UE 1169/2011).
+ * Ogni valore corrisponde a un file PNG: /assets/images/allergeni/{valore_minuscolo}.png
+ * Es: GLUTINE -> /assets/images/allergeni/glutine.png
+ * Gli allergeni personalizzati usano sempre: /assets/images/allergeni/custom.png
+ * Inseriti come data seeder Liquibase al primo avvio dell'applicazione.
+ */
+enum NomeAllergeneDefault {
+  GLUTINE,
+  UOVO,
+  LATTE,
+  ARACHIDI,
+  FRUTTA_A_GUSCIO,
+  PESCE,
+  MOLLUSCHI,
+  CROSTACEI,
+  SOIA,
+  SESAMO,
+  SEDANO,
+  SENAPE,
+  SOLFITI,
+  LUPINI
+}
+
+/**
+ * Tipo di recapito nella card contatti.
+ *
+ * Strategia icone:
+ *   TELEFONO  -> icona Tabler: <i class="ti ti-phone">
+ *   EMAIL     -> icona Tabler: <i class="ti ti-mail">
+ *   SITO_WEB  -> icona Tabler: <i class="ti ti-world">
+ *   Social    -> SVG inline iniettata dalla funzione getSocialIconSvg(tipo)
+ *               definita in shared/model/social-icons.ts (gia' presente nel progetto)
+ *
+ * Nessun file PNG o asset esterno per i social: la stringa SVG
+ * e' embedded nel TypeScript, zero dipendenze da file statici.
+ */
+enum TipoContatto {
+  TELEFONO,
+  EMAIL,
+  SITO_WEB,
+  FACEBOOK,
+  INSTAGRAM,
+  X,
+  YOUTUBE,
+  TIKTOK,
+  TELEGRAM,
+  MESSENGER,
+  THREADS,
+  SNAPCHAT,
+  WHATSAPP,
+  GOOGLE,
+  TRIPADVISOR
+}
+
+
+// ===============================================================
+//  SEZIONE 2 — ENTITA'
+//  Ogni entity genera automaticamente:
+//    - Classe di dominio JPA  (domain/NomeEntita.java)
+//    - Repository             (repository/NomeEntitaRepository.java)
+//    - Service + Impl         (service/NomeEntitaService.java + Impl)
+//    - DTO                    (service/dto/NomeEntitaDTO.java)
+//    - Mapper MapStruct       (service/mapper/NomeEntitaMapper.java)
+//    - REST Controller        (web/rest/NomeEntitaResource.java)
+//    - Migrazione Liquibase   (db/changelog/...)
+// ===============================================================
+
+/**
+ * Profilo aggiuntivo del ristoratore, collegato 1-a-1 all'utente JHipster.
+ * L'attivazione account e' gia' gestita dall'entita' User built-in di JHipster
+ * (campo "activated" nella tabella jhi_user) — non serve duplicarla qui.
+ * L'admin attiva l'utente dal pannello di amministrazione JHipster standard.
+ *
+ * Il campo "livello" determina i limiti dell'account (vedi enum LivelloUtente).
+ * Il controllo viene eseguito nel MenuServiceImpl contando i Menu
+ * associati all'utente corrente con findAllByRistoratoreIsCurrentUser().
+ */
+entity ProfiloRistoratore {
+  livello LivelloUtente required
+}
+
+/**
+ * Menu digitale del ristorante.
+ * Unico stile visivo: classico a tendina (accordion Bootstrap).
+ * Nessuna scelta di template, colori o font.
+ */
+entity Menu {
+  nome        String    required
+  descrizione String
+  attivo      Boolean   required
+  logo        ImageBlob
+  logoNome    String
+}
+
+/**
+ * Portata (sezione) del menu.
+ *
+ * Il campo "ordine" e' gestito dal backend con valori fissi:
+ *   ANTIPASTO=10, PRIMO=20, SECONDO=30, CONTORNO=40,
+ *   PERSONALIZZATA=45+ (auto-incrementale per permettere piu' portate custom),
+ *   DOLCE=50, BEVANDA=60, VINO_ROSSO=70, VINO_BIANCO=80,
+ *   VINO_ROSATO=90, BIRRA=100, DIGESTIVO=110
+ *
+ * Cosi' le portate personalizzate si posizionano sempre
+ * dopo CONTORNO e prima di DOLCE, come richiesto.
+ */
+entity Portata {
+  tipo               TipoPortata        required
+  nomeDefault        NomePortataDefault
+  nomePersonalizzato String
+  ordine             Integer            required min(0)
+}
+
+/**
+ * Prodotto (piatto o bevanda) appartenente a una portata.
+ * Inserito manualmente o importato da PDF: nessuna distinzione salvata.
+ * visibile=false -> nascosto nella visualizzazione pubblica (QR),
+ *                   ma resta nel menu e puo' essere riattivato in qualsiasi momento.
+ */
+entity Prodotto {
+  nome        String     required
+  descrizione String
+  prezzo      BigDecimal required
+  visibile    Boolean    required
+}
+
+/**
+ * Allergene associabile ai prodotti.
+ *
+ * tipo = DEFAULT:
+ *   - nomeDefault valorizzato con uno dei 14 EU
+ *   - nome pre-compilato col nome italiano (es. "Glutine")
+ *   - icona: /assets/images/allergeni/{nomeDefault_minuscolo}.png
+ *
+ * tipo = PERSONALIZZATO:
+ *   - nomeDefault e' null
+ *   - nome libero inserito dal ristoratore (es. "Ananas", "Cannella")
+ *   - icona: /assets/images/allergeni/custom.png (universale)
+ */
+entity Allergene {
+  nome        String               required
+  tipo        TipoAllergene        required
+  nomeDefault NomeAllergeneDefault
+}
+
+/**
+ * Piatto del giorno associato a un menu.
+ * Non ha una data: e' l'utente a decidere quando attivarlo/disattivarlo.
+ *
+ * Due modalita':
+ *   A) prodotto != null -> usa un prodotto gia' nel menu;
+ *                          nome/desc/prezzo fanno override opzionale
+ *   B) prodotto == null -> piatto ad-hoc, mai salvato come Prodotto permanente
+ *
+ * Disponibilita' per livello (controllo in PiattoDelGiornoServiceImpl):
+ *   LIVELLO_1 -> non disponibile (il service rifiuta la creazione)
+ *   LIVELLO_2 -> max 5 piatti del giorno totali tra tutti i menu dell'utente
+ *   LIVELLO_3 -> nessun limite
+ */
+entity PiattoDelGiorno {
+  attivo      Boolean    required
+  nome        String
+  descrizione String
+  prezzo      BigDecimal
+}
+
+/**
+ * Lista dei recapiti del ristorante, collegata al menu.
+ * Visualizzata come card nella pagina pubblica QR.
+ */
+entity ListaContatti {
+  note String
+}
+
+/**
+ * Singolo recapito (telefono, email, social, sito web).
+ *
+ * Il campo "tipo" (enum TipoContatto) determina quale icona mostrare:
+ *   - TELEFONO / EMAIL / SITO_WEB -> icone Tabler (ti-phone, ti-mail, ti-world)
+ *   - Social (FACEBOOK..TRIPADVISOR) -> SVG inline da social-icons.ts
+ *
+ * Il frontend usa getSocialIconSvg(tipo) per iniettare la SVG,
+ * senza dover gestire file PNG o asset aggiuntivi.
+ */
+entity ContattoItem {
+  tipo      TipoContatto required
+  valore    String       required
+  etichetta String
+  ordine    Integer      required min(0)
+}
+
+/**
+ * Traduzione automatica del menu in una lingua specifica.
+ * Generata via API esterna al salvataggio del menu.
+ * modificata=true -> l'utente ha editato la traduzione automatica.
+ * Il campo lingua usa codici ISO 639-1: "en", "fr", "de", "es"
+ */
+entity TraduzioneMenu {
+  lingua        String   required maxlength(5)
+  contenutoJson TextBlob required
+  modificata    Boolean  required
+}
+
+
+// ===============================================================
+//  SEZIONE 3 — DTO con MapStruct
+// ===============================================================
+
+dto ProfiloRistoratore, Menu, Portata, Prodotto, Allergene,
+    PiattoDelGiorno, ListaContatti, ContattoItem, TraduzioneMenu
+    with mapstruct
+
+
+// ===============================================================
+//  SEZIONE 4 — SERVICE Layer
+// ===============================================================
+
+service ProfiloRistoratore, Menu, Portata, Prodotto, Allergene,
+        PiattoDelGiorno, ListaContatti, ContattoItem, TraduzioneMenu
+        with serviceClass
+
+
+// ===============================================================
+//  SEZIONE 5 — RELAZIONI
+// ===============================================================
+
+/** Un utente ha esattamente un ProfiloRistoratore */
+relationship OneToOne {
+  ProfiloRistoratore{user(login) required} to User with builtInEntity
+}
+
+/** Ogni menu ha una sola lista contatti */
+relationship OneToOne {
+  Menu{contatti} to ListaContatti
+}
+
+/** Un menu appartiene a un ristoratore (utente JHipster) */
+relationship ManyToOne {
+  Menu{ristoratore(login) required} to User with builtInEntity
+}
+
+/** Un menu ha piu' portate; ogni portata appartiene a un menu */
+relationship OneToMany {
+  Menu{portate} to Portata{menu required}
+}
+
+/** Una portata ha piu' prodotti; ogni prodotto appartiene a una portata */
+relationship OneToMany {
+  Portata{prodotti} to Prodotto{portata required}
+}
+
+/** Un menu ha piu' traduzioni (una per lingua) */
+relationship OneToMany {
+  Menu{traduzioni} to TraduzioneMenu{menu required}
+}
+
+/** Una lista contatti ha piu' item */
+relationship OneToMany {
+  ListaContatti{contatti} to ContattoItem{lista required}
+}
+
+/** Il piatto del giorno appartiene a un menu */
+relationship ManyToOne {
+  PiattoDelGiorno{menu required} to Menu
+}
+
+/**
+ * Il piatto del giorno puo' puntare a un prodotto esistente (opzionale).
+ * Se null -> piatto ad-hoc, non viene creato nessun Prodotto permanente.
+ */
+relationship ManyToOne {
+  PiattoDelGiorno{prodotto} to Prodotto
+}
+
+/**
+ * Prodotto <-> Allergene: relazione molti-a-molti.
+ * JHipster genera automaticamente la tabella ponte:
+ *   prodotto_allergeni (prodotto_id, allergene_id)
+ */
+relationship ManyToMany {
+  Prodotto{allergeni} to Allergene{prodotti}
+}

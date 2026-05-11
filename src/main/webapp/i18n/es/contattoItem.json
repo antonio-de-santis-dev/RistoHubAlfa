@@ -1,0 +1,28 @@
+{
+  "ristoHubAlfaApp": {
+    "contattoItem": {
+      "home": {
+        "title": "Contatto Items",
+        "refreshListLabel": "Refrescar lista",
+        "createLabel": "Crear nuevo Contatto Item",
+        "createOrEditLabel": "Crear o editar Contatto Item",
+        "notFound": "Ningún Contatto Items encontrado"
+      },
+      "created": "Un nuevo Contatto Item ha sido creado con el identificador {{ param }}",
+      "updated": "Un Contatto Item ha sido actualizado con el identificador {{ param }}",
+      "deleted": "Un Contatto Item ha sido eliminado con el identificador {{ param }}",
+      "delete": {
+        "question": "¿Seguro que quiere eliminar Contatto Item {{ id }}?"
+      },
+      "detail": {
+        "title": "Contatto Item"
+      },
+      "id": "ID",
+      "tipo": "Tipo",
+      "valore": "Valore",
+      "etichetta": "Etichetta",
+      "ordine": "Ordine",
+      "lista": "Lista"
+    }
+  }
+}

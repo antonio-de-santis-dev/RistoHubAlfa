@@ -1,0 +1,29 @@
+{
+  "ristoHubAlfaApp": {
+    "prodotto": {
+      "home": {
+        "title": "Prodottos",
+        "refreshListLabel": "Refresh list",
+        "createLabel": "Create a new Prodotto",
+        "createOrEditLabel": "Create or edit a Prodotto",
+        "notFound": "No Prodottos found"
+      },
+      "created": "A new Prodotto is created with identifier {{ param }}",
+      "updated": "A Prodotto is updated with identifier {{ param }}",
+      "deleted": "A Prodotto is deleted with identifier {{ param }}",
+      "delete": {
+        "question": "Are you sure you want to delete Prodotto {{ id }}?"
+      },
+      "detail": {
+        "title": "Prodotto"
+      },
+      "id": "ID",
+      "nome": "Nome",
+      "descrizione": "Descrizione",
+      "prezzo": "Prezzo",
+      "visibile": "Visibile",
+      "allergeni": "Allergeni",
+      "portata": "Portata"
+    }
+  }
+}

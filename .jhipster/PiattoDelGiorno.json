@@ -1,0 +1,45 @@
+{
+  "annotations": {
+    "changelogDate": "20260511093529"
+  },
+  "applications": "*",
+  "documentation": "Piatto del giorno associato a un menu.\\nNon ha una data: e' l'utente a decidere quando attivarlo/disattivarlo.\\n\\nDue modalita':\\nA) prodotto != null -> usa un prodotto gia' nel menu;\\nnome/desc/prezzo fanno override opzionale\\nB) prodotto == null -> piatto ad-hoc, mai salvato come Prodotto permanente\\n\\nDisponibilita' per livello (controllo in PiattoDelGiornoServiceImpl):\\nLIVELLO_1 -> non disponibile (il service rifiuta la creazione)\\nLIVELLO_2 -> max 5 piatti del giorno totali tra tutti i menu dell'utente\\nLIVELLO_3 -> nessun limite",
+  "dto": "mapstruct",
+  "fields": [
+    {
+      "fieldName": "attivo",
+      "fieldType": "Boolean",
+      "fieldValidateRules": ["required"]
+    },
+    {
+      "fieldName": "nome",
+      "fieldType": "String"
+    },
+    {
+      "fieldName": "descrizione",
+      "fieldType": "String"
+    },
+    {
+      "fieldName": "prezzo",
+      "fieldType": "BigDecimal"
+    }
+  ],
+  "name": "PiattoDelGiorno",
+  "relationships": [
+    {
+      "otherEntityName": "menu",
+      "relationshipName": "menu",
+      "relationshipSide": "left",
+      "relationshipType": "many-to-one",
+      "relationshipValidateRules": "required"
+    },
+    {
+      "otherEntityName": "prodotto",
+      "relationshipName": "prodotto",
+      "relationshipSide": "left",
+      "relationshipType": "many-to-one"
+    }
+  ],
+  "searchEngine": "no",
+  "service": "serviceClass"
+}

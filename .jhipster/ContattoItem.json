@@ -1,0 +1,45 @@
+{
+  "annotations": {
+    "changelogDate": "20260511093531"
+  },
+  "applications": "*",
+  "documentation": "Singolo recapito (telefono, email, social, sito web).\\n\\nIl campo \"tipo\" (enum TipoContatto) determina quale icona mostrare:\\n- TELEFONO / EMAIL / SITO_WEB -> icone Tabler (ti-phone, ti-mail, ti-world)\\n- Social (FACEBOOK..TRIPADVISOR) -> SVG inline da social-icons.ts\\n\\nIl frontend usa getSocialIconSvg(tipo) per iniettare la SVG,\\nsenza dover gestire file PNG o asset aggiuntivi.",
+  "dto": "mapstruct",
+  "fields": [
+    {
+      "fieldName": "tipo",
+      "fieldType": "TipoContatto",
+      "fieldTypeDocumentation": "Tipo di recapito nella card contatti.\\n\\nStrategia icone:\\nTELEFONO  -> icona Tabler: <i class=\"ti ti-phone\">\\nEMAIL     -> icona Tabler: <i class=\"ti ti-mail\">\\nSITO_WEB  -> icona Tabler: <i class=\"ti ti-world\">\\nSocial    -> SVG inline iniettata dalla funzione getSocialIconSvg(tipo)\\ndefinita in shared/model/social-icons.ts (gia' presente nel progetto)\\n\\nNessun file PNG o asset esterno per i social: la stringa SVG\\ne' embedded nel TypeScript, zero dipendenze da file statici.",
+      "fieldValidateRules": ["required"],
+      "fieldValues": "TELEFONO,EMAIL,SITO_WEB,FACEBOOK,INSTAGRAM,X,YOUTUBE,TIKTOK,TELEGRAM,MESSENGER,THREADS,SNAPCHAT,WHATSAPP,GOOGLE,TRIPADVISOR"
+    },
+    {
+      "fieldName": "valore",
+      "fieldType": "String",
+      "fieldValidateRules": ["required"]
+    },
+    {
+      "fieldName": "etichetta",
+      "fieldType": "String"
+    },
+    {
+      "fieldName": "ordine",
+      "fieldType": "Integer",
+      "fieldValidateRules": ["required", "min"],
+      "fieldValidateRulesMin": "0"
+    }
+  ],
+  "name": "ContattoItem",
+  "relationships": [
+    {
+      "otherEntityName": "listaContatti",
+      "otherEntityRelationshipName": "contatti",
+      "relationshipName": "lista",
+      "relationshipSide": "right",
+      "relationshipType": "many-to-one",
+      "relationshipValidateRules": "required"
+    }
+  ],
+  "searchEngine": "no",
+  "service": "serviceClass"
+}

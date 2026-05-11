@@ -1,0 +1,121 @@
+<div>
+  <h2 id="page-heading" data-cy="TraduzioneMenuHeading">
+    <span jhiTranslate="ristoHubAlfaApp.traduzioneMenu.home.title">TraduzioneMenus</span>
+
+    <div class="d-flex justify-content-end">
+      <button class="btn btn-info me-2" (click)="load()" [disabled]="isLoading">
+        <fa-icon icon="sync" [animation]="isLoading ? 'spin' : undefined"></fa-icon>
+        <span jhiTranslate="ristoHubAlfaApp.traduzioneMenu.home.refreshListLabel">Refresh list</span>
+      </button>
+
+      <button
+        id="jh-create-entity"
+        data-cy="entityCreateButton"
+        class="btn btn-primary jh-create-entity create-traduzione-menu"
+        [routerLink]="['/traduzione-menu/new']"
+      >
+        <fa-icon icon="plus"></fa-icon>
+        <span jhiTranslate="ristoHubAlfaApp.traduzioneMenu.home.createLabel">Genera un nuovo Traduzione Menu</span>
+      </button>
+    </div>
+  </h2>
+
+  <jhi-alert-error />
+
+  <jhi-alert />
+
+  @if (traduzioneMenus().length === 0) {
+    <div class="alert alert-warning" id="no-result">
+      <span jhiTranslate="ristoHubAlfaApp.traduzioneMenu.home.notFound">No Traduzione Menus found</span>
+    </div>
+  } @else {
+    <div class="table-responsive table-entities" id="entities">
+      <table class="table table-striped" aria-describedby="page-heading">
+        <thead>
+          <tr jhiSort [(sortState)]="sortState" (sortChange)="navigateToWithComponentValues($event)">
+            <th scope="col" jhiSortBy="id">
+              <div class="d-flex">
+                <span jhiTranslate="global.field.id">ID</span>
+
+                <fa-icon class="p-1" icon="sort"></fa-icon>
+              </div>
+            </th>
+            <th scope="col" jhiSortBy="lingua">
+              <div class="d-flex">
+                <span jhiTranslate="ristoHubAlfaApp.traduzioneMenu.lingua">Lingua</span>
+
+                <fa-icon class="p-1" icon="sort"></fa-icon>
+              </div>
+            </th>
+            <th scope="col" jhiSortBy="contenutoJson">
+              <div class="d-flex">
+                <span jhiTranslate="ristoHubAlfaApp.traduzioneMenu.contenutoJson">Contenuto Json</span>
+
+                <fa-icon class="p-1" icon="sort"></fa-icon>
+              </div>
+            </th>
+            <th scope="col" jhiSortBy="modificata">
+              <div class="d-flex">
+                <span jhiTranslate="ristoHubAlfaApp.traduzioneMenu.modificata">Modificata</span>
+
+                <fa-icon class="p-1" icon="sort"></fa-icon>
+              </div>
+            </th>
+            <th scope="col" jhiSortBy="menu.id">
+              <div class="d-flex">
+                <span jhiTranslate="ristoHubAlfaApp.traduzioneMenu.menu">Menu</span>
+                <fa-icon class="p-1" icon="sort"></fa-icon>
+              </div>
+            </th>
+            <th scope="col"></th>
+          </tr>
+        </thead>
+        <tbody>
+          @for (traduzioneMenu of traduzioneMenus(); track trackId(traduzioneMenu)) {
+            <tr data-cy="entityTable">
+              <td>
+                <a [routerLink]="['/traduzione-menu', traduzioneMenu.id, 'view']">{{ traduzioneMenu.id }}</a>
+              </td>
+              <td>{{ traduzioneMenu.lingua }}</td>
+              <td>{{ traduzioneMenu.contenutoJson }}</td>
+              <td>{{ traduzioneMenu.modificata }}</td>
+              <td>
+                @if (traduzioneMenu.menu) {
+                  <div>
+                    <a [routerLink]="['/menu', traduzioneMenu.menu.id, 'view']">{{ traduzioneMenu.menu.id }}</a>
+                  </div>
+                }
+              </td>
+              <td class="text-end">
+                <div class="btn-group">
+                  <a
+                    [routerLink]="['/traduzione-menu', traduzioneMenu.id, 'view']"
+                    class="btn btn-info btn-sm"
+                    data-cy="entityDetailsButton"
+                  >
+                    <fa-icon icon="eye"></fa-icon>
+                    <span class="d-none d-md-inline" jhiTranslate="entity.action.view">Visualizza</span>
+                  </a>
+
+                  <a
+                    [routerLink]="['/traduzione-menu', traduzioneMenu.id, 'edit']"
+                    class="btn btn-primary btn-sm"
+                    data-cy="entityEditButton"
+                  >
+                    <fa-icon icon="pencil-alt"></fa-icon>
+                    <span class="d-none d-md-inline" jhiTranslate="entity.action.edit">Modifica</span>
+                  </a>
+
+                  <button type="submit" (click)="delete(traduzioneMenu)" class="btn btn-danger btn-sm" data-cy="entityDeleteButton">
+                    <fa-icon icon="times"></fa-icon>
+                    <span class="d-none d-md-inline" jhiTranslate="entity.action.delete">Elimina</span>
+                  </button>
+                </div>
+              </td>
+            </tr>
+          }
+        </tbody>
+      </table>
+    </div>
+  }
+</div>

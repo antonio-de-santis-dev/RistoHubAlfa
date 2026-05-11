@@ -1,0 +1,11 @@
+id;lingua;contenuto_json;modificata;menu_id
+1;regul;../fake-data/blob/hipster.txt;true;1
+2;nephe;../fake-data/blob/hipster.txt;true;2
+3;gripp;../fake-data/blob/hipster.txt;true;3
+4;judic;../fake-data/blob/hipster.txt;false;4
+5;booho;../fake-data/blob/hipster.txt;false;5
+6;kooki;../fake-data/blob/hipster.txt;false;6
+7;carel;../fake-data/blob/hipster.txt;true;7
+8;slake;../fake-data/blob/hipster.txt;true;8
+9;cream;../fake-data/blob/hipster.txt;false;9
+10;sunde;../fake-data/blob/hipster.txt;false;10

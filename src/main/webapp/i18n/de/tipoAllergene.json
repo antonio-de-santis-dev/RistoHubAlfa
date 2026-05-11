@@ -1,0 +1,9 @@
+{
+  "ristoHubAlfaApp": {
+    "TipoAllergene": {
+      "null": "",
+      "DEFAULT": "DEFAULT",
+      "PERSONALIZZATO": "PERSONALIZZATO"
+    }
+  }
+}

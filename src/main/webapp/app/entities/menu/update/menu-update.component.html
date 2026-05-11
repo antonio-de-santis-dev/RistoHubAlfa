@@ -1,0 +1,158 @@
+<div class="d-flex justify-content-center">
+  <div class="col-8">
+    <form name="editForm" novalidate (ngSubmit)="save()" [formGroup]="editForm">
+      <h2 id="jhi-menu-heading" data-cy="MenuCreateUpdateHeading" jhiTranslate="ristoHubAlfaApp.menu.home.createOrEditLabel">
+        Genera o modifica un Menu
+      </h2>
+
+      <div>
+        <jhi-alert-error />
+
+        @if (editForm.controls.id.value !== null) {
+          <div class="mb-3">
+            <label class="form-label" for="field_id" jhiTranslate="ristoHubAlfaApp.menu.id">ID</label>
+            <input type="number" class="form-control" name="id" id="field_id" data-cy="id" formControlName="id" [readonly]="true" />
+          </div>
+        }
+
+        @let nomeRef = editForm.get('nome')!;
+        <div class="mb-3">
+          <label class="form-label" for="field_nome" jhiTranslate="ristoHubAlfaApp.menu.nome">Nome</label>
+          <input type="text" class="form-control" name="nome" id="field_nome" data-cy="nome" formControlName="nome" />
+          @if (nomeRef.invalid && (nomeRef.dirty || nomeRef.touched)) {
+            <div>
+              @if (editForm.get('nome')?.errors?.required) {
+                <small class="form-text text-danger" jhiTranslate="entity.validation.required">Questo campo è obbligatorio.</small>
+              }
+            </div>
+          }
+        </div>
+
+        <div class="mb-3">
+          <label class="form-label" for="field_descrizione" jhiTranslate="ristoHubAlfaApp.menu.descrizione">Descrizione</label>
+          <input
+            type="text"
+            class="form-control"
+            name="descrizione"
+            id="field_descrizione"
+            data-cy="descrizione"
+            formControlName="descrizione"
+          />
+        </div>
+
+        @let attivoRef = editForm.get('attivo')!;
+        <div class="mb-3">
+          <label class="form-label" for="field_attivo" jhiTranslate="ristoHubAlfaApp.menu.attivo">Attivo</label>
+          <input type="checkbox" class="form-check" name="attivo" id="field_attivo" data-cy="attivo" formControlName="attivo" />
+          @if (attivoRef.invalid && (attivoRef.dirty || attivoRef.touched)) {
+            <div>
+              @if (editForm.get('attivo')?.errors?.required) {
+                <small class="form-text text-danger" jhiTranslate="entity.validation.required">Questo campo è obbligatorio.</small>
+              }
+            </div>
+          }
+        </div>
+
+        @let logoRef = editForm.get('logo')!;
+        <div class="mb-3">
+          <label class="form-label" for="field_logo" jhiTranslate="ristoHubAlfaApp.menu.logo">Logo</label>
+          <div>
+            @if (logoRef.value) {
+              <img
+                [src]="'data:' + editForm.get('logoContentType')!.value + ';base64,' + logoRef.value"
+                style="max-height: 100px"
+                alt="menu"
+              />
+            }
+            @if (logoRef.value) {
+              <div class="form-text text-danger clearfix">
+                <span class="pull-start">{{ editForm.get('logoContentType')!.value }}, {{ byteSize(logoRef.value!) }}</span>
+                <button
+                  type="button"
+                  (click)="clearInputImage('logo', 'logoContentType', 'file_logo')"
+                  class="btn btn-secondary btn-xs pull-end"
+                >
+                  <fa-icon icon="times"></fa-icon>
+                </button>
+              </div>
+            }
+            <input
+              type="file"
+              id="file_logo"
+              data-cy="logo"
+              (change)="setFileData($event, 'logo', true)"
+              accept="image/*"
+              jhiTranslate="entity.action.addimage"
+            />
+          </div>
+          <input type="hidden" class="form-control" name="logo" id="field_logo" data-cy="logo" formControlName="logo" />
+          <input type="hidden" class="form-control" name="logoContentType" id="field_logoContentType" formControlName="logoContentType" />
+        </div>
+
+        <div class="mb-3">
+          <label class="form-label" for="field_logoNome" jhiTranslate="ristoHubAlfaApp.menu.logoNome">Logo Nome</label>
+          <input type="text" class="form-control" name="logoNome" id="field_logoNome" data-cy="logoNome" formControlName="logoNome" />
+        </div>
+
+        <div class="mb-3">
+          <label class="form-label" for="field_contatti" jhiTranslate="ristoHubAlfaApp.menu.contatti">Contatti</label>
+          <select
+            class="form-control"
+            id="field_contatti"
+            data-cy="contatti"
+            name="contatti"
+            formControlName="contatti"
+            [compareWith]="compareListaContatti"
+          >
+            <option [ngValue]="null"></option>
+            @for (listaContattiOption of contattisCollection; track $index) {
+              <option [ngValue]="listaContattiOption">{{ listaContattiOption.id }}</option>
+            }
+          </select>
+        </div>
+
+        <div class="mb-3">
+          <label class="form-label" for="field_ristoratore" jhiTranslate="ristoHubAlfaApp.menu.ristoratore">Ristoratore</label>
+          <select
+            class="form-control"
+            id="field_ristoratore"
+            data-cy="ristoratore"
+            name="ristoratore"
+            formControlName="ristoratore"
+            [compareWith]="compareUser"
+          >
+            @if (!editForm.get('ristoratore')!.value) {
+              <option [ngValue]="null" selected></option>
+            }
+            @for (userOption of usersSharedCollection; track $index) {
+              <option [ngValue]="userOption">{{ userOption.login }}</option>
+            }
+          </select>
+        </div>
+        @if (editForm.get(['ristoratore'])!.invalid && (editForm.get(['ristoratore'])!.dirty || editForm.get(['ristoratore'])!.touched)) {
+          <div>
+            @if (editForm.get(['ristoratore'])?.errors?.required) {
+              <small class="form-text text-danger" jhiTranslate="entity.validation.required">Questo campo è obbligatorio.</small>
+            }
+          </div>
+        }
+      </div>
+
+      <div>
+        <button type="button" id="cancel-save" data-cy="entityCreateCancelButton" class="btn btn-secondary" (click)="previousState()">
+          <fa-icon icon="ban"></fa-icon>&nbsp;<span jhiTranslate="entity.action.cancel">Annulla</span>
+        </button>
+
+        <button
+          type="submit"
+          id="save-entity"
+          data-cy="entityCreateSaveButton"
+          [disabled]="editForm.invalid || isSaving"
+          class="btn btn-primary"
+        >
+          <fa-icon icon="save"></fa-icon>&nbsp;<span jhiTranslate="entity.action.save">Salva</span>
+        </button>
+      </div>
+    </form>
+  </div>
+</div>

@@ -1,0 +1,27 @@
+{
+  "ristoHubAlfaApp": {
+    "traduzioneMenu": {
+      "home": {
+        "title": "TraduzioneMenus",
+        "refreshListLabel": "Actualiser la liste",
+        "createLabel": "Créer un nouveau Traduzione Menu",
+        "createOrEditLabel": "Créer ou éditer un Traduzione Menu",
+        "notFound": "Aucun Traduzione Menu trouvé"
+      },
+      "created": "Un nouveau Traduzione Menu a été créé avec l'identifiant {{ param }}",
+      "updated": "Le Traduzione Menu avec l'identifiant {{ param }} a été mis à jour",
+      "deleted": "Le Traduzione Menu avec l'identifiant {{ param }} a été supprimé",
+      "delete": {
+        "question": "Êtes-vous certain de vouloir supprimer le Traduzione Menu {{ id }} ?"
+      },
+      "detail": {
+        "title": "Traduzione Menu"
+      },
+      "id": "ID",
+      "lingua": "Lingua",
+      "contenutoJson": "Contenuto Json",
+      "modificata": "Modificata",
+      "menu": "Menu"
+    }
+  }
+}

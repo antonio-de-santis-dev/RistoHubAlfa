@@ -1,0 +1,69 @@
+<div class="d-flex justify-content-center">
+  <div class="col-8">
+    @if (menu(); as menuRef) {
+      <div>
+        <h2 data-cy="menuDetailsHeading"><span jhiTranslate="ristoHubAlfaApp.menu.detail.title">Menu</span></h2>
+
+        <hr />
+
+        <jhi-alert-error />
+
+        <jhi-alert />
+
+        <dl class="row-md jh-entity-details">
+          <dt><span jhiTranslate="global.field.id">ID</span></dt>
+          <dd>
+            <span>{{ menuRef.id }}</span>
+          </dd>
+          <dt><span jhiTranslate="ristoHubAlfaApp.menu.nome">Nome</span></dt>
+          <dd>
+            <span>{{ menuRef.nome }}</span>
+          </dd>
+          <dt><span jhiTranslate="ristoHubAlfaApp.menu.descrizione">Descrizione</span></dt>
+          <dd>
+            <span>{{ menuRef.descrizione }}</span>
+          </dd>
+          <dt><span jhiTranslate="ristoHubAlfaApp.menu.attivo">Attivo</span></dt>
+          <dd>
+            <span>{{ menuRef.attivo }}</span>
+          </dd>
+          <dt><span jhiTranslate="ristoHubAlfaApp.menu.logo">Logo</span></dt>
+          <dd>
+            @if (menuRef.logo) {
+              <div>
+                <a (click)="openFile(menuRef.logo ?? '', menuRef.logoContentType)">
+                  <img [src]="'data:' + menuRef.logoContentType + ';base64,' + menuRef.logo" style="max-width: 100%" alt="menu" />
+                </a>
+                {{ menuRef.logoContentType }}, {{ byteSize(menuRef.logo ?? '') }}
+              </div>
+            }
+          </dd>
+          <dt><span jhiTranslate="ristoHubAlfaApp.menu.logoNome">Logo Nome</span></dt>
+          <dd>
+            <span>{{ menuRef.logoNome }}</span>
+          </dd>
+          <dt><span jhiTranslate="ristoHubAlfaApp.menu.contatti">Contatti</span></dt>
+          <dd>
+            @if (menu()!.contatti) {
+              <div>
+                <a [routerLink]="['/lista-contatti', menu()!.contatti?.id, 'view']">{{ menuRef.contatti?.id }}</a>
+              </div>
+            }
+          </dd>
+          <dt><span jhiTranslate="ristoHubAlfaApp.menu.ristoratore">Ristoratore</span></dt>
+          <dd>
+            <span>{{ menuRef.ristoratore?.login }}</span>
+          </dd>
+        </dl>
+
+        <button type="submit" (click)="previousState()" class="btn btn-info" data-cy="entityDetailsBackButton">
+          <fa-icon icon="arrow-left"></fa-icon>&nbsp;<span jhiTranslate="entity.action.back">Indietro</span>
+        </button>
+
+        <button type="button" [routerLink]="['/menu', menuRef.id, 'edit']" class="btn btn-primary">
+          <fa-icon icon="pencil-alt"></fa-icon>&nbsp;<span jhiTranslate="entity.action.edit">Modifica</span>
+        </button>
+      </div>
+    }
+  </div>
+</div>

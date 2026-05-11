@@ -1,0 +1,27 @@
+{
+  "ristoHubAlfaApp": {
+    "allergene": {
+      "home": {
+        "title": "Allergenes",
+        "refreshListLabel": "Actualiser la liste",
+        "createLabel": "Créer un nouveau Allergene",
+        "createOrEditLabel": "Créer ou éditer un Allergene",
+        "notFound": "Aucun Allergene trouvé"
+      },
+      "created": "Un nouveau Allergene a été créé avec l'identifiant {{ param }}",
+      "updated": "Le Allergene avec l'identifiant {{ param }} a été mis à jour",
+      "deleted": "Le Allergene avec l'identifiant {{ param }} a été supprimé",
+      "delete": {
+        "question": "Êtes-vous certain de vouloir supprimer le Allergene {{ id }} ?"
+      },
+      "detail": {
+        "title": "Allergene"
+      },
+      "id": "ID",
+      "nome": "Nome",
+      "tipo": "Tipo",
+      "nomeDefault": "Nome Default",
+      "prodotti": "Prodotti"
+    }
+  }
+}

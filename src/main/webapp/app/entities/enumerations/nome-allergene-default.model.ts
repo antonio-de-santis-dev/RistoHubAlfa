@@ -1,0 +1,29 @@
+export enum NomeAllergeneDefault {
+  GLUTINE = 'GLUTINE',
+
+  UOVO = 'UOVO',
+
+  LATTE = 'LATTE',
+
+  ARACHIDI = 'ARACHIDI',
+
+  FRUTTA_A_GUSCIO = 'FRUTTA_A_GUSCIO',
+
+  PESCE = 'PESCE',
+
+  MOLLUSCHI = 'MOLLUSCHI',
+
+  CROSTACEI = 'CROSTACEI',
+
+  SOIA = 'SOIA',
+
+  SESAMO = 'SESAMO',
+
+  SEDANO = 'SEDANO',
+
+  SENAPE = 'SENAPE',
+
+  SOLFITI = 'SOLFITI',
+
+  LUPINI = 'LUPINI',
+}

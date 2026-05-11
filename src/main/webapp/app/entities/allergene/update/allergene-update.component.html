@@ -1,0 +1,96 @@
+<div class="d-flex justify-content-center">
+  <div class="col-8">
+    <form name="editForm" novalidate (ngSubmit)="save()" [formGroup]="editForm">
+      <h2 id="jhi-allergene-heading" data-cy="AllergeneCreateUpdateHeading" jhiTranslate="ristoHubAlfaApp.allergene.home.createOrEditLabel">
+        Genera o modifica un Allergene
+      </h2>
+
+      <div>
+        <jhi-alert-error />
+
+        @if (editForm.controls.id.value !== null) {
+          <div class="mb-3">
+            <label class="form-label" for="field_id" jhiTranslate="ristoHubAlfaApp.allergene.id">ID</label>
+            <input type="number" class="form-control" name="id" id="field_id" data-cy="id" formControlName="id" [readonly]="true" />
+          </div>
+        }
+
+        @let nomeRef = editForm.get('nome')!;
+        <div class="mb-3">
+          <label class="form-label" for="field_nome" jhiTranslate="ristoHubAlfaApp.allergene.nome">Nome</label>
+          <input type="text" class="form-control" name="nome" id="field_nome" data-cy="nome" formControlName="nome" />
+          @if (nomeRef.invalid && (nomeRef.dirty || nomeRef.touched)) {
+            <div>
+              @if (editForm.get('nome')?.errors?.required) {
+                <small class="form-text text-danger" jhiTranslate="entity.validation.required">Questo campo è obbligatorio.</small>
+              }
+            </div>
+          }
+        </div>
+
+        @let tipoRef = editForm.get('tipo')!;
+        <div class="mb-3">
+          <label class="form-label" for="field_tipo" jhiTranslate="ristoHubAlfaApp.allergene.tipo">Tipo</label>
+          <select class="form-control" name="tipo" formControlName="tipo" id="field_tipo" data-cy="tipo">
+            <option [ngValue]="null">{{ 'ristoHubAlfaApp.TipoAllergene.null' | translate }}</option>
+            @for (tipoAllergene of tipoAllergeneValues; track $index) {
+              <option [value]="tipoAllergene">{{ 'ristoHubAlfaApp.TipoAllergene.' + tipoAllergene | translate }}</option>
+            }
+          </select>
+          @if (tipoRef.invalid && (tipoRef.dirty || tipoRef.touched)) {
+            <div>
+              @if (editForm.get('tipo')?.errors?.required) {
+                <small class="form-text text-danger" jhiTranslate="entity.validation.required">Questo campo è obbligatorio.</small>
+              }
+            </div>
+          }
+        </div>
+
+        <div class="mb-3">
+          <label class="form-label" for="field_nomeDefault" jhiTranslate="ristoHubAlfaApp.allergene.nomeDefault">Nome Default</label>
+          <select class="form-control" name="nomeDefault" formControlName="nomeDefault" id="field_nomeDefault" data-cy="nomeDefault">
+            <option [ngValue]="null">{{ 'ristoHubAlfaApp.NomeAllergeneDefault.null' | translate }}</option>
+            @for (nomeAllergeneDefault of nomeAllergeneDefaultValues; track $index) {
+              <option [value]="nomeAllergeneDefault">
+                {{ 'ristoHubAlfaApp.NomeAllergeneDefault.' + nomeAllergeneDefault | translate }}
+              </option>
+            }
+          </select>
+        </div>
+
+        <div class="mb-3">
+          <label for="field_prodottis" jhiTranslate="ristoHubAlfaApp.allergene.prodotti">Prodotti</label>
+          <select
+            class="form-control"
+            id="field_prodottis"
+            data-cy="prodotti"
+            multiple
+            name="prodottis"
+            formControlName="prodottis"
+            [compareWith]="compareProdotto"
+          >
+            @for (prodottoOption of prodottosSharedCollection; track $index) {
+              <option [ngValue]="prodottoOption">{{ prodottoOption.id }}</option>
+            }
+          </select>
+        </div>
+      </div>
+
+      <div>
+        <button type="button" id="cancel-save" data-cy="entityCreateCancelButton" class="btn btn-secondary" (click)="previousState()">
+          <fa-icon icon="ban"></fa-icon>&nbsp;<span jhiTranslate="entity.action.cancel">Annulla</span>
+        </button>
+
+        <button
+          type="submit"
+          id="save-entity"
+          data-cy="entityCreateSaveButton"
+          [disabled]="editForm.invalid || isSaving"
+          class="btn btn-primary"
+        >
+          <fa-icon icon="save"></fa-icon>&nbsp;<span jhiTranslate="entity.action.save">Salva</span>
+        </button>
+      </div>
+    </form>
+  </div>
+</div>

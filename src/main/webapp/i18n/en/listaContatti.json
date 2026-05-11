@@ -1,0 +1,26 @@
+{
+  "ristoHubAlfaApp": {
+    "listaContatti": {
+      "home": {
+        "title": "Lista Contattis",
+        "refreshListLabel": "Refresh list",
+        "createLabel": "Create a new Lista Contatti",
+        "createOrEditLabel": "Create or edit a Lista Contatti",
+        "notFound": "No Lista Contattis found"
+      },
+      "created": "A new Lista Contatti is created with identifier {{ param }}",
+      "updated": "A Lista Contatti is updated with identifier {{ param }}",
+      "deleted": "A Lista Contatti is deleted with identifier {{ param }}",
+      "delete": {
+        "question": "Are you sure you want to delete Lista Contatti {{ id }}?"
+      },
+      "detail": {
+        "title": "Lista Contatti"
+      },
+      "id": "ID",
+      "note": "Note",
+      "contatti": "Contatti",
+      "menu": "Menu"
+    }
+  }
+}

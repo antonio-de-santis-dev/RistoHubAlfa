@@ -1,0 +1,53 @@
+{
+  "annotations": {
+    "changelogDate": "20260511093526"
+  },
+  "applications": "*",
+  "documentation": "Portata (sezione) del menu.\\n\\nIl campo \"ordine\" e' gestito dal backend con valori fissi:\\nANTIPASTO=10, PRIMO=20, SECONDO=30, CONTORNO=40,\\nPERSONALIZZATA=45+ (auto-incrementale per permettere piu' portate custom),\\nDOLCE=50, BEVANDA=60, VINO_ROSSO=70, VINO_BIANCO=80,\\nVINO_ROSATO=90, BIRRA=100, DIGESTIVO=110\\n\\nCosi' le portate personalizzate si posizionano sempre\\ndopo CONTORNO e prima di DOLCE, come richiesto.",
+  "dto": "mapstruct",
+  "fields": [
+    {
+      "fieldName": "tipo",
+      "fieldType": "TipoPortata",
+      "fieldTypeDocumentation": "Tipo portata: predefinita dal sistema o aggiunta dall'utente",
+      "fieldValidateRules": ["required"],
+      "fieldValues": "DEFAULT,PERSONALIZZATA"
+    },
+    {
+      "fieldName": "nomeDefault",
+      "fieldType": "NomePortataDefault",
+      "fieldTypeDocumentation": "Portate predefinite con ordine fisso nel menu.\\nLe PERSONALIZZATE si inseriscono sempre dopo CONTORNO e prima di DOLCE.\\n\\nOrdine di visualizzazione (gestito dal campo \"ordine\" nel Service):\\n1. ANTIPASTO   -> ordine = 10\\n2. PRIMO       -> ordine = 20\\n3. SECONDO     -> ordine = 30\\n4. CONTORNO    -> ordine = 40\\n[portate PERSONALIZZATE] -> ordine = 45, 46, 47 ... (auto-incrementale)\\n5. DOLCE       -> ordine = 50\\n6. BEVANDA     -> ordine = 60\\n7. VINO_ROSSO  -> ordine = 70\\n8. VINO_BIANCO -> ordine = 80\\n9. VINO_ROSATO -> ordine = 90\\n10. BIRRA       -> ordine = 100\\n11. DIGESTIVO   -> ordine = 110",
+      "fieldValues": "ANTIPASTO,PRIMO,SECONDO,CONTORNO,DOLCE,BEVANDA,VINO_ROSSO,VINO_BIANCO,VINO_ROSATO,BIRRA,DIGESTIVO"
+    },
+    {
+      "fieldName": "nomePersonalizzato",
+      "fieldType": "String"
+    },
+    {
+      "fieldName": "ordine",
+      "fieldType": "Integer",
+      "fieldValidateRules": ["required", "min"],
+      "fieldValidateRulesMin": "0"
+    }
+  ],
+  "name": "Portata",
+  "relationships": [
+    {
+      "otherEntityName": "prodotto",
+      "otherEntityRelationshipName": "portata",
+      "relationshipName": "prodotti",
+      "relationshipSide": "left",
+      "relationshipType": "one-to-many"
+    },
+    {
+      "otherEntityName": "menu",
+      "otherEntityRelationshipName": "portate",
+      "relationshipName": "menu",
+      "relationshipSide": "right",
+      "relationshipType": "many-to-one",
+      "relationshipValidateRules": "required"
+    }
+  ],
+  "searchEngine": "no",
+  "service": "serviceClass"
+}

@@ -1,0 +1,52 @@
+<div class="d-flex justify-content-center">
+  <div class="col-8">
+    @if (traduzioneMenu(); as traduzioneMenuRef) {
+      <div>
+        <h2 data-cy="traduzioneMenuDetailsHeading">
+          <span jhiTranslate="ristoHubAlfaApp.traduzioneMenu.detail.title">Traduzione Menu</span>
+        </h2>
+
+        <hr />
+
+        <jhi-alert-error />
+
+        <jhi-alert />
+
+        <dl class="row-md jh-entity-details">
+          <dt><span jhiTranslate="global.field.id">ID</span></dt>
+          <dd>
+            <span>{{ traduzioneMenuRef.id }}</span>
+          </dd>
+          <dt><span jhiTranslate="ristoHubAlfaApp.traduzioneMenu.lingua">Lingua</span></dt>
+          <dd>
+            <span>{{ traduzioneMenuRef.lingua }}</span>
+          </dd>
+          <dt><span jhiTranslate="ristoHubAlfaApp.traduzioneMenu.contenutoJson">Contenuto Json</span></dt>
+          <dd>
+            <span>{{ traduzioneMenuRef.contenutoJson }}</span>
+          </dd>
+          <dt><span jhiTranslate="ristoHubAlfaApp.traduzioneMenu.modificata">Modificata</span></dt>
+          <dd>
+            <span>{{ traduzioneMenuRef.modificata }}</span>
+          </dd>
+          <dt><span jhiTranslate="ristoHubAlfaApp.traduzioneMenu.menu">Menu</span></dt>
+          <dd>
+            @if (traduzioneMenu()!.menu) {
+              <div>
+                <a [routerLink]="['/menu', traduzioneMenu()!.menu?.id, 'view']">{{ traduzioneMenuRef.menu?.id }}</a>
+              </div>
+            }
+          </dd>
+        </dl>
+
+        <button type="submit" (click)="previousState()" class="btn btn-info" data-cy="entityDetailsBackButton">
+          <fa-icon icon="arrow-left"></fa-icon>&nbsp;<span jhiTranslate="entity.action.back">Indietro</span>
+        </button>
+
+        <button type="button" [routerLink]="['/traduzione-menu', traduzioneMenuRef.id, 'edit']" class="btn btn-primary">
+          <fa-icon icon="pencil-alt"></fa-icon>&nbsp;<span jhiTranslate="entity.action.edit">Modifica</span>
+        </button>
+      </div>
+    }
+  </div>
+</div>

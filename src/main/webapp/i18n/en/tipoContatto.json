@@ -1,0 +1,22 @@
+{
+  "ristoHubAlfaApp": {
+    "TipoContatto": {
+      "null": "",
+      "TELEFONO": "TELEFONO",
+      "EMAIL": "EMAIL",
+      "SITO_WEB": "SITO_WEB",
+      "FACEBOOK": "FACEBOOK",
+      "INSTAGRAM": "INSTAGRAM",
+      "X": "X",
+      "YOUTUBE": "YOUTUBE",
+      "TIKTOK": "TIKTOK",
+      "TELEGRAM": "TELEGRAM",
+      "MESSENGER": "MESSENGER",
+      "THREADS": "THREADS",
+      "SNAPCHAT": "SNAPCHAT",
+      "WHATSAPP": "WHATSAPP",
+      "GOOGLE": "GOOGLE",
+      "TRIPADVISOR": "TRIPADVISOR"
+    }
+  }
+}

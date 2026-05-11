@@ -1,0 +1,40 @@
+{
+  "annotations": {
+    "changelogDate": "20260511093528"
+  },
+  "applications": "*",
+  "documentation": "Allergene associabile ai prodotti.\\n\\ntipo = DEFAULT:\\n- nomeDefault valorizzato con uno dei 14 EU\\n- nome pre-compilato col nome italiano (es. \"Glutine\")\\n- icona: /assets/images/allergeni/{nomeDefault_minuscolo}.png\\n\\ntipo = PERSONALIZZATO:\\n- nomeDefault e' null\\n- nome libero inserito dal ristoratore (es. \"Ananas\", \"Cannella\")\\n- icona: /assets/images/allergeni/custom.png (universale)",
+  "dto": "mapstruct",
+  "fields": [
+    {
+      "fieldName": "nome",
+      "fieldType": "String",
+      "fieldValidateRules": ["required"]
+    },
+    {
+      "fieldName": "tipo",
+      "fieldType": "TipoAllergene",
+      "fieldTypeDocumentation": "Tipo allergene.\\nDEFAULT       -> uno dei 14 EU, icona PNG dedicata per ognuno\\nPERSONALIZZATO -> aggiunto dal ristoratore, icona generica universale",
+      "fieldValidateRules": ["required"],
+      "fieldValues": "DEFAULT,PERSONALIZZATO"
+    },
+    {
+      "fieldName": "nomeDefault",
+      "fieldType": "NomeAllergeneDefault",
+      "fieldTypeDocumentation": "I 14 allergeni obbligatori per legge (Reg. UE 1169/2011).\\nOgni valore corrisponde a un file PNG: /assets/images/allergeni/{valore_minuscolo}.png\\nEs: GLUTINE -> /assets/images/allergeni/glutine.png\\nGli allergeni personalizzati usano sempre: /assets/images/allergeni/custom.png\\nInseriti come data seeder Liquibase al primo avvio dell'applicazione.",
+      "fieldValues": "GLUTINE,UOVO,LATTE,ARACHIDI,FRUTTA_A_GUSCIO,PESCE,MOLLUSCHI,CROSTACEI,SOIA,SESAMO,SEDANO,SENAPE,SOLFITI,LUPINI"
+    }
+  ],
+  "name": "Allergene",
+  "relationships": [
+    {
+      "otherEntityName": "prodotto",
+      "otherEntityRelationshipName": "allergeni",
+      "relationshipName": "prodotti",
+      "relationshipSide": "right",
+      "relationshipType": "many-to-many"
+    }
+  ],
+  "searchEngine": "no",
+  "service": "serviceClass"
+}

@@ -1,0 +1,118 @@
+<div class="d-flex justify-content-center">
+  <div class="col-8">
+    <form name="editForm" novalidate (ngSubmit)="save()" [formGroup]="editForm">
+      <h2
+        id="jhi-traduzione-menu-heading"
+        data-cy="TraduzioneMenuCreateUpdateHeading"
+        jhiTranslate="ristoHubAlfaApp.traduzioneMenu.home.createOrEditLabel"
+      >
+        Genera o modifica un Traduzione Menu
+      </h2>
+
+      <div>
+        <jhi-alert-error />
+
+        @if (editForm.controls.id.value !== null) {
+          <div class="mb-3">
+            <label class="form-label" for="field_id" jhiTranslate="ristoHubAlfaApp.traduzioneMenu.id">ID</label>
+            <input type="number" class="form-control" name="id" id="field_id" data-cy="id" formControlName="id" [readonly]="true" />
+          </div>
+        }
+
+        @let linguaRef = editForm.get('lingua')!;
+        <div class="mb-3">
+          <label class="form-label" for="field_lingua" jhiTranslate="ristoHubAlfaApp.traduzioneMenu.lingua">Lingua</label>
+          <input type="text" class="form-control" name="lingua" id="field_lingua" data-cy="lingua" formControlName="lingua" />
+          @if (linguaRef.invalid && (linguaRef.dirty || linguaRef.touched)) {
+            <div>
+              @if (editForm.get('lingua')?.errors?.required) {
+                <small class="form-text text-danger" jhiTranslate="entity.validation.required">Questo campo è obbligatorio.</small>
+              }
+              @if (editForm.get('lingua')?.errors?.maxlength) {
+                <small class="form-text text-danger" jhiTranslate="entity.validation.maxlength" [translateValues]="{ max: '5' }"
+                  >Questo campo non può essere più di 5 caratteri.</small
+                >
+              }
+            </div>
+          }
+        </div>
+
+        @let contenutoJsonRef = editForm.get('contenutoJson')!;
+        <div class="mb-3">
+          <label class="form-label" for="field_contenutoJson" jhiTranslate="ristoHubAlfaApp.traduzioneMenu.contenutoJson"
+            >Contenuto Json</label
+          >
+          <textarea
+            class="form-control"
+            name="contenutoJson"
+            id="field_contenutoJson"
+            data-cy="contenutoJson"
+            formControlName="contenutoJson"
+          ></textarea>
+          @if (contenutoJsonRef.invalid && (contenutoJsonRef.dirty || contenutoJsonRef.touched)) {
+            <div>
+              @if (editForm.get('contenutoJson')?.errors?.required) {
+                <small class="form-text text-danger" jhiTranslate="entity.validation.required">Questo campo è obbligatorio.</small>
+              }
+            </div>
+          }
+        </div>
+
+        @let modificataRef = editForm.get('modificata')!;
+        <div class="mb-3">
+          <label class="form-label" for="field_modificata" jhiTranslate="ristoHubAlfaApp.traduzioneMenu.modificata">Modificata</label>
+          <input
+            type="checkbox"
+            class="form-check"
+            name="modificata"
+            id="field_modificata"
+            data-cy="modificata"
+            formControlName="modificata"
+          />
+          @if (modificataRef.invalid && (modificataRef.dirty || modificataRef.touched)) {
+            <div>
+              @if (editForm.get('modificata')?.errors?.required) {
+                <small class="form-text text-danger" jhiTranslate="entity.validation.required">Questo campo è obbligatorio.</small>
+              }
+            </div>
+          }
+        </div>
+
+        <div class="mb-3">
+          <label class="form-label" for="field_menu" jhiTranslate="ristoHubAlfaApp.traduzioneMenu.menu">Menu</label>
+          <select class="form-control" id="field_menu" data-cy="menu" name="menu" formControlName="menu" [compareWith]="compareMenu">
+            @if (editForm.get(['menu'])!.value === null) {
+              <option [ngValue]="null" selected></option>
+            }
+            @for (menuOption of menusSharedCollection; track $index) {
+              <option [ngValue]="menuOption">{{ menuOption.id }}</option>
+            }
+          </select>
+        </div>
+        @if (editForm.get(['menu'])!.invalid && (editForm.get(['menu'])!.dirty || editForm.get(['menu'])!.touched)) {
+          <div>
+            @if (editForm.get(['menu'])?.errors?.required) {
+              <small class="form-text text-danger" jhiTranslate="entity.validation.required">Questo campo è obbligatorio.</small>
+            }
+          </div>
+        }
+      </div>
+
+      <div>
+        <button type="button" id="cancel-save" data-cy="entityCreateCancelButton" class="btn btn-secondary" (click)="previousState()">
+          <fa-icon icon="ban"></fa-icon>&nbsp;<span jhiTranslate="entity.action.cancel">Annulla</span>
+        </button>
+
+        <button
+          type="submit"
+          id="save-entity"
+          data-cy="entityCreateSaveButton"
+          [disabled]="editForm.invalid || isSaving"
+          class="btn btn-primary"
+        >
+          <fa-icon icon="save"></fa-icon>&nbsp;<span jhiTranslate="entity.action.save">Salva</span>
+        </button>
+      </div>
+    </form>
+  </div>
+</div>

@@ -1,0 +1,49 @@
+{
+  "annotations": {
+    "changelogDate": "20260511093527"
+  },
+  "applications": "*",
+  "documentation": "Prodotto (piatto o bevanda) appartenente a una portata.\\nInserito manualmente o importato da PDF: nessuna distinzione salvata.\\nvisibile=false -> nascosto nella visualizzazione pubblica (QR),\\nma resta nel menu e puo' essere riattivato in qualsiasi momento.",
+  "dto": "mapstruct",
+  "fields": [
+    {
+      "fieldName": "nome",
+      "fieldType": "String",
+      "fieldValidateRules": ["required"]
+    },
+    {
+      "fieldName": "descrizione",
+      "fieldType": "String"
+    },
+    {
+      "fieldName": "prezzo",
+      "fieldType": "BigDecimal",
+      "fieldValidateRules": ["required"]
+    },
+    {
+      "fieldName": "visibile",
+      "fieldType": "Boolean",
+      "fieldValidateRules": ["required"]
+    }
+  ],
+  "name": "Prodotto",
+  "relationships": [
+    {
+      "otherEntityName": "allergene",
+      "otherEntityRelationshipName": "prodotti",
+      "relationshipName": "allergeni",
+      "relationshipSide": "left",
+      "relationshipType": "many-to-many"
+    },
+    {
+      "otherEntityName": "portata",
+      "otherEntityRelationshipName": "prodotti",
+      "relationshipName": "portata",
+      "relationshipSide": "right",
+      "relationshipType": "many-to-one",
+      "relationshipValidateRules": "required"
+    }
+  ],
+  "searchEngine": "no",
+  "service": "serviceClass"
+}

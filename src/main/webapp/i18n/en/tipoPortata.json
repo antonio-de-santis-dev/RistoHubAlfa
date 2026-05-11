@@ -1,0 +1,9 @@
+{
+  "ristoHubAlfaApp": {
+    "TipoPortata": {
+      "null": "",
+      "DEFAULT": "DEFAULT",
+      "PERSONALIZZATA": "PERSONALIZZATA"
+    }
+  }
+}

@@ -1,0 +1,66 @@
+{
+  "annotations": {
+    "changelogDate": "20260511093525"
+  },
+  "applications": "*",
+  "documentation": "Menu digitale del ristorante.\\nUnico stile visivo: classico a tendina (accordion Bootstrap).\\nNessuna scelta di template, colori o font.",
+  "dto": "mapstruct",
+  "fields": [
+    {
+      "fieldName": "nome",
+      "fieldType": "String",
+      "fieldValidateRules": ["required"]
+    },
+    {
+      "fieldName": "descrizione",
+      "fieldType": "String"
+    },
+    {
+      "fieldName": "attivo",
+      "fieldType": "Boolean",
+      "fieldValidateRules": ["required"]
+    },
+    {
+      "fieldName": "logo",
+      "fieldType": "ImageBlob"
+    },
+    {
+      "fieldName": "logoNome",
+      "fieldType": "String"
+    }
+  ],
+  "name": "Menu",
+  "relationships": [
+    {
+      "otherEntityName": "listaContatti",
+      "relationshipName": "contatti",
+      "relationshipSide": "left",
+      "relationshipType": "one-to-one"
+    },
+    {
+      "otherEntityName": "portata",
+      "otherEntityRelationshipName": "menu",
+      "relationshipName": "portate",
+      "relationshipSide": "left",
+      "relationshipType": "one-to-many"
+    },
+    {
+      "otherEntityName": "traduzioneMenu",
+      "otherEntityRelationshipName": "menu",
+      "relationshipName": "traduzioni",
+      "relationshipSide": "left",
+      "relationshipType": "one-to-many"
+    },
+    {
+      "otherEntityField": "login",
+      "otherEntityName": "user",
+      "relationshipName": "ristoratore",
+      "relationshipSide": "left",
+      "relationshipType": "many-to-one",
+      "relationshipValidateRules": "required",
+      "relationshipWithBuiltInEntity": true
+    }
+  ],
+  "searchEngine": "no",
+  "service": "serviceClass"
+}

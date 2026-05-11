@@ -1,0 +1,42 @@
+<div class="d-flex justify-content-center">
+  <div class="col-8">
+    @if (profiloRistoratore(); as profiloRistoratoreRef) {
+      <div>
+        <h2 data-cy="profiloRistoratoreDetailsHeading">
+          <span jhiTranslate="ristoHubAlfaApp.profiloRistoratore.detail.title">Profilo Ristoratore</span>
+        </h2>
+
+        <hr />
+
+        <jhi-alert-error />
+
+        <jhi-alert />
+
+        <dl class="row-md jh-entity-details">
+          <dt><span jhiTranslate="global.field.id">ID</span></dt>
+          <dd>
+            <span>{{ profiloRistoratoreRef.id }}</span>
+          </dd>
+          <dt><span jhiTranslate="ristoHubAlfaApp.profiloRistoratore.livello">Livello</span></dt>
+          <dd>
+            <span [jhiTranslate]="'ristoHubAlfaApp.LivelloUtente.' + (profiloRistoratoreRef.livello ?? 'null')">{{
+              { null: '', LIVELLO_1: 'LIVELLO_1', LIVELLO_2: 'LIVELLO_2', LIVELLO_3: 'LIVELLO_3' }[profiloRistoratoreRef.livello ?? 'null']
+            }}</span>
+          </dd>
+          <dt><span jhiTranslate="ristoHubAlfaApp.profiloRistoratore.user">User</span></dt>
+          <dd>
+            <span>{{ profiloRistoratoreRef.user?.login }}</span>
+          </dd>
+        </dl>
+
+        <button type="submit" (click)="previousState()" class="btn btn-info" data-cy="entityDetailsBackButton">
+          <fa-icon icon="arrow-left"></fa-icon>&nbsp;<span jhiTranslate="entity.action.back">Indietro</span>
+        </button>
+
+        <button type="button" [routerLink]="['/profilo-ristoratore', profiloRistoratoreRef.id, 'edit']" class="btn btn-primary">
+          <fa-icon icon="pencil-alt"></fa-icon>&nbsp;<span jhiTranslate="entity.action.edit">Modifica</span>
+        </button>
+      </div>
+    }
+  </div>
+</div>

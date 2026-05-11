@@ -8,7 +8,15 @@
       "entities": {
         "main": "Entities",
         "jhipster-needle-menu-add-entry": "JHipster will add additional entities here (do not translate!)",
-        "adminAuthority": "Authority"
+        "profiloRistoratore": "Profilo Ristoratore",
+        "menu": "Menu",
+        "portata": "Portata",
+        "prodotto": "Prodotto",
+        "allergene": "Allergene",
+        "piattoDelGiorno": "Piatto Del Giorno",
+        "listaContatti": "Lista Contatti",
+        "contattoItem": "Contatto Item",
+        "traduzioneMenu": "Traduzione Menu"
       },
       "account": {
         "main": "Account",

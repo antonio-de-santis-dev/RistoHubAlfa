@@ -1,0 +1,26 @@
+{
+  "ristoHubAlfaApp": {
+    "listaContatti": {
+      "home": {
+        "title": "Lista Contattis",
+        "refreshListLabel": "Liste aktualisieren",
+        "createLabel": "Lista Contatti erstellen",
+        "createOrEditLabel": "Lista Contatti erstellen oder bearbeiten",
+        "notFound": "Keine Lista Contattis gefunden"
+      },
+      "created": "Lista Contatti erstellt mit ID {{ param }}",
+      "updated": "Lista Contatti aktualisiert mit ID {{ param }}",
+      "deleted": "Lista Contatti gelöscht mit ID {{ param }}",
+      "delete": {
+        "question": "Soll Lista Contatti {{ id }} wirklich dauerhaft gelöscht werden?"
+      },
+      "detail": {
+        "title": "Lista Contatti"
+      },
+      "id": "ID",
+      "note": "Note",
+      "contatti": "Contatti",
+      "menu": "Menu"
+    }
+  }
+}

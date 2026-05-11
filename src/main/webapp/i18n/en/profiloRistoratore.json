@@ -1,0 +1,25 @@
+{
+  "ristoHubAlfaApp": {
+    "profiloRistoratore": {
+      "home": {
+        "title": "Profilo Ristoratores",
+        "refreshListLabel": "Refresh list",
+        "createLabel": "Create a new Profilo Ristoratore",
+        "createOrEditLabel": "Create or edit a Profilo Ristoratore",
+        "notFound": "No Profilo Ristoratores found"
+      },
+      "created": "A new Profilo Ristoratore is created with identifier {{ param }}",
+      "updated": "A Profilo Ristoratore is updated with identifier {{ param }}",
+      "deleted": "A Profilo Ristoratore is deleted with identifier {{ param }}",
+      "delete": {
+        "question": "Are you sure you want to delete Profilo Ristoratore {{ id }}?"
+      },
+      "detail": {
+        "title": "Profilo Ristoratore"
+      },
+      "id": "ID",
+      "livello": "Livello",
+      "user": "User"
+    }
+  }
+}

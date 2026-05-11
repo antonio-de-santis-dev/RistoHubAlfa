@@ -1,0 +1,30 @@
+package main.service.mapper;
+
+import main.domain.ListaContatti;
+import main.domain.Menu;
+import main.domain.User;
+import main.service.dto.ListaContattiDTO;
+import main.service.dto.MenuDTO;
+import main.service.dto.UserDTO;
+import org.mapstruct.*;
+
+/**
+ * Mapper for the entity {@link Menu} and its DTO {@link MenuDTO}.
+ */
+@Mapper(componentModel = "spring")
+public interface MenuMapper extends EntityMapper<MenuDTO, Menu> {
+    @Mapping(target = "contatti", source = "contatti", qualifiedByName = "listaContattiId")
+    @Mapping(target = "ristoratore", source = "ristoratore", qualifiedByName = "userLogin")
+    MenuDTO toDto(Menu s);
+
+    @Named("listaContattiId")
+    @BeanMapping(ignoreByDefault = true)
+    @Mapping(target = "id", source = "id")
+    ListaContattiDTO toDtoListaContattiId(ListaContatti listaContatti);
+
+    @Named("userLogin")
+    @BeanMapping(ignoreByDefault = true)
+    @Mapping(target = "id", source = "id")
+    @Mapping(target = "login", source = "login")
+    UserDTO toDtoUserLogin(User user);
+}

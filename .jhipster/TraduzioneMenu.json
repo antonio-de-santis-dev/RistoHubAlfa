@@ -1,0 +1,39 @@
+{
+  "annotations": {
+    "changelogDate": "20260511093532"
+  },
+  "applications": "*",
+  "documentation": "Traduzione automatica del menu in una lingua specifica.\\nGenerata via API esterna al salvataggio del menu.\\nmodificata=true -> l'utente ha editato la traduzione automatica.\\nIl campo lingua usa codici ISO 639-1: \"en\", \"fr\", \"de\", \"es\"",
+  "dto": "mapstruct",
+  "fields": [
+    {
+      "fieldName": "lingua",
+      "fieldType": "String",
+      "fieldValidateRules": ["required", "maxlength"],
+      "fieldValidateRulesMaxlength": "5"
+    },
+    {
+      "fieldName": "contenutoJson",
+      "fieldType": "TextBlob",
+      "fieldValidateRules": ["required"]
+    },
+    {
+      "fieldName": "modificata",
+      "fieldType": "Boolean",
+      "fieldValidateRules": ["required"]
+    }
+  ],
+  "name": "TraduzioneMenu",
+  "relationships": [
+    {
+      "otherEntityName": "menu",
+      "otherEntityRelationshipName": "traduzioni",
+      "relationshipName": "menu",
+      "relationshipSide": "right",
+      "relationshipType": "many-to-one",
+      "relationshipValidateRules": "required"
+    }
+  ],
+  "searchEngine": "no",
+  "service": "serviceClass"
+}

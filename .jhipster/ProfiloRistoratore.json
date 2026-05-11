@@ -1,0 +1,31 @@
+{
+  "annotations": {
+    "changelogDate": "20260511093524"
+  },
+  "applications": "*",
+  "documentation": "Profilo aggiuntivo del ristoratore, collegato 1-a-1 all'utente JHipster.\\nL'attivazione account e' gia' gestita dall'entita' User built-in di JHipster\\n(campo \"activated\" nella tabella jhi_user) — non serve duplicarla qui.\\nL'admin attiva l'utente dal pannello di amministrazione JHipster standard.\\n\\nIl campo \"livello\" determina i limiti dell'account (vedi enum LivelloUtente).\\nIl controllo viene eseguito nel MenuServiceImpl contando i Menu\\nassociati all'utente corrente con findAllByRistoratoreIsCurrentUser().",
+  "dto": "mapstruct",
+  "fields": [
+    {
+      "fieldName": "livello",
+      "fieldType": "LivelloUtente",
+      "fieldTypeDocumentation": "Livello dell'utente ristoratore.\\nNON sostituisce i ruoli JHipster (ROLE_USER / ROLE_ADMIN),\\ne' un campo aggiuntivo sul ProfiloRistoratore.\\n\\nFunzionalita' COMUNI a tutti i livelli:\\n- Import prodotti da PDF\\n- Traduzione automatica del menu via API esterna\\n\\nRegole di business (implementate nel Service layer):\\nIl controllo si basa sul conteggio dei Menu ESISTENTI dell'utente,\\nnon su quanti ne ha mai creati. Se un utente cancella un menu,\\nquel posto torna disponibile e puo' crearne uno nuovo.\\n\\nLIVELLO_1 -> max 1 menu attivo simultaneo\\npiatti del giorno: NON disponibili\\nLIVELLO_2 -> max 2 menu attivi simultanei\\npiatti del giorno: max 5 (conteggio totale tra tutti i suoi menu)\\nLIVELLO_3 -> menu illimitati\\npiatti del giorno illimitati",
+      "fieldValidateRules": ["required"],
+      "fieldValues": "LIVELLO_1,LIVELLO_2,LIVELLO_3"
+    }
+  ],
+  "name": "ProfiloRistoratore",
+  "relationships": [
+    {
+      "otherEntityField": "login",
+      "otherEntityName": "user",
+      "relationshipName": "user",
+      "relationshipSide": "left",
+      "relationshipType": "one-to-one",
+      "relationshipValidateRules": "required",
+      "relationshipWithBuiltInEntity": true
+    }
+  ],
+  "searchEngine": "no",
+  "service": "serviceClass"
+}

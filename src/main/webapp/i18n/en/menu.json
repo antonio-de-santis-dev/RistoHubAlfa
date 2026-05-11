@@ -1,0 +1,32 @@
+{
+  "ristoHubAlfaApp": {
+    "menu": {
+      "home": {
+        "title": "Menus",
+        "refreshListLabel": "Refresh list",
+        "createLabel": "Create a new Menu",
+        "createOrEditLabel": "Create or edit a Menu",
+        "notFound": "No Menus found"
+      },
+      "created": "A new Menu is created with identifier {{ param }}",
+      "updated": "A Menu is updated with identifier {{ param }}",
+      "deleted": "A Menu is deleted with identifier {{ param }}",
+      "delete": {
+        "question": "Are you sure you want to delete Menu {{ id }}?"
+      },
+      "detail": {
+        "title": "Menu"
+      },
+      "id": "ID",
+      "nome": "Nome",
+      "descrizione": "Descrizione",
+      "attivo": "Attivo",
+      "logo": "Logo",
+      "logoNome": "Logo Nome",
+      "contatti": "Contatti",
+      "portate": "Portate",
+      "traduzioni": "Traduzioni",
+      "ristoratore": "Ristoratore"
+    }
+  }
+}

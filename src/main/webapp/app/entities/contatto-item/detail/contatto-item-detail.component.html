@@ -1,0 +1,73 @@
+<div class="d-flex justify-content-center">
+  <div class="col-8">
+    @if (contattoItem(); as contattoItemRef) {
+      <div>
+        <h2 data-cy="contattoItemDetailsHeading"><span jhiTranslate="ristoHubAlfaApp.contattoItem.detail.title">Contatto Item</span></h2>
+
+        <hr />
+
+        <jhi-alert-error />
+
+        <jhi-alert />
+
+        <dl class="row-md jh-entity-details">
+          <dt><span jhiTranslate="global.field.id">ID</span></dt>
+          <dd>
+            <span>{{ contattoItemRef.id }}</span>
+          </dd>
+          <dt><span jhiTranslate="ristoHubAlfaApp.contattoItem.tipo">Tipo</span></dt>
+          <dd>
+            <span [jhiTranslate]="'ristoHubAlfaApp.TipoContatto.' + (contattoItemRef.tipo ?? 'null')">{{
+              {
+                null: '',
+                TELEFONO: 'TELEFONO',
+                EMAIL: 'EMAIL',
+                SITO_WEB: 'SITO_WEB',
+                FACEBOOK: 'FACEBOOK',
+                INSTAGRAM: 'INSTAGRAM',
+                X: 'X',
+                YOUTUBE: 'YOUTUBE',
+                TIKTOK: 'TIKTOK',
+                TELEGRAM: 'TELEGRAM',
+                MESSENGER: 'MESSENGER',
+                THREADS: 'THREADS',
+                SNAPCHAT: 'SNAPCHAT',
+                WHATSAPP: 'WHATSAPP',
+                GOOGLE: 'GOOGLE',
+                TRIPADVISOR: 'TRIPADVISOR',
+              }[contattoItemRef.tipo ?? 'null']
+            }}</span>
+          </dd>
+          <dt><span jhiTranslate="ristoHubAlfaApp.contattoItem.valore">Valore</span></dt>
+          <dd>
+            <span>{{ contattoItemRef.valore }}</span>
+          </dd>
+          <dt><span jhiTranslate="ristoHubAlfaApp.contattoItem.etichetta">Etichetta</span></dt>
+          <dd>
+            <span>{{ contattoItemRef.etichetta }}</span>
+          </dd>
+          <dt><span jhiTranslate="ristoHubAlfaApp.contattoItem.ordine">Ordine</span></dt>
+          <dd>
+            <span>{{ contattoItemRef.ordine }}</span>
+          </dd>
+          <dt><span jhiTranslate="ristoHubAlfaApp.contattoItem.lista">Lista</span></dt>
+          <dd>
+            @if (contattoItem()!.lista) {
+              <div>
+                <a [routerLink]="['/lista-contatti', contattoItem()!.lista?.id, 'view']">{{ contattoItemRef.lista?.id }}</a>
+              </div>
+            }
+          </dd>
+        </dl>
+
+        <button type="submit" (click)="previousState()" class="btn btn-info" data-cy="entityDetailsBackButton">
+          <fa-icon icon="arrow-left"></fa-icon>&nbsp;<span jhiTranslate="entity.action.back">Indietro</span>
+        </button>
+
+        <button type="button" [routerLink]="['/contatto-item', contattoItemRef.id, 'edit']" class="btn btn-primary">
+          <fa-icon icon="pencil-alt"></fa-icon>&nbsp;<span jhiTranslate="entity.action.edit">Modifica</span>
+        </button>
+      </div>
+    }
+  </div>
+</div>
