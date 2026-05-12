@@ -1,0 +1,152 @@
+/* PERCORSO: src/main/webapp/app/menu-public/menu-public.component.scss */
+/* Pagina standalone — NO navbar sopra, layout centrato su mobile */
+
+.mp-page {
+  min-height: 100vh;
+  background: #fafafa;
+  font-family: 'Segoe UI', system-ui, sans-serif;
+}
+
+.mp-header {
+  background: #fff;
+  border-bottom: 1px solid #eee;
+  padding: 2rem 1rem;
+}
+
+.mp-title {
+  font-size: 2rem;
+  font-weight: 700;
+  color: #1a1a1a;
+  margin: 0;
+}
+
+.mp-subtitle {
+  font-size: 1rem;
+  margin-top: 0.25rem;
+}
+
+.mp-content {
+  max-width: 720px;
+  margin: 0 auto;
+  padding: 1.5rem 1rem 2rem;
+}
+
+/* Accordion */
+.mp-accordion-item {
+  border: 1px solid #e5e5e5;
+  border-radius: 0.5rem !important;
+  margin-bottom: 0.5rem;
+  overflow: hidden;
+}
+
+.mp-accordion-btn {
+  font-weight: 600;
+  font-size: 1rem;
+  background: #fff;
+  color: #1a1a1a;
+
+  &:not(.collapsed) {
+    background: var(--bs-primary);
+    color: #fff;
+    box-shadow: none;
+  }
+}
+
+/* Prodotto */
+.mp-prodotto {
+  padding: 0.85rem 1.25rem;
+}
+
+.mp-prodotto-nome {
+  font-weight: 500;
+  font-size: 0.975rem;
+  color: #1a1a1a;
+}
+
+.mp-prodotto-desc {
+  font-size: 0.85rem;
+  margin-top: 0.15rem;
+}
+
+.mp-prezzo {
+  font-weight: 600;
+  font-size: 0.975rem;
+  color: var(--bs-primary);
+  white-space: nowrap;
+}
+
+/* Allergeni */
+.mp-allergeni-inline {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 4px;
+  margin-top: 0.3rem;
+}
+
+.mp-allergene-icon-sm {
+  width: 20px;
+  height: 20px;
+  object-fit: contain;
+}
+
+.mp-allergeni-grid {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 0.75rem;
+}
+
+.mp-allergene-item {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 4px;
+  width: 64px;
+  text-align: center;
+}
+
+.mp-allergene-icon {
+  width: 36px;
+  height: 36px;
+  object-fit: contain;
+}
+
+.mp-allergene-nome {
+  font-size: 0.7rem;
+  color: #555;
+  line-height: 1.2;
+}
+
+/* Contatti */
+.mp-contatti-list {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 0.75rem;
+}
+
+.mp-contatto-item {
+  display: flex;
+  align-items: center;
+  gap: 0.4rem;
+  padding: 0.4rem 0.75rem;
+  border: 1px solid #dee2e6;
+  border-radius: 2rem;
+  color: #333;
+  font-size: 0.875rem;
+  background: #fff;
+  transition: background 0.15s;
+
+  &:hover {
+    background: #f0f0f0;
+    color: #000;
+  }
+}
+
+.mp-contatto-icon {
+  font-size: 1rem;
+}
+
+/* Footer */
+.mp-footer {
+  border-top: 1px solid #eee;
+  font-size: 0.8rem;
+}

@@ -1,0 +1,289 @@
+<!-- Percorso: src/main/webapp/app/menu-editor/menu-editor.component.html -->
+
+@if (isLoading()) {
+  <div class="text-center py-5">
+    <div class="spinner-border text-primary"></div>
+  </div>
+}
+
+@if (!isLoading() && menu()) {
+  <div class="container-fluid py-4 rh-editor">
+    <!-- ── Intestazione ─────────────────────────────────────────────────── -->
+    <div class="d-flex align-items-center justify-content-between mb-4 flex-wrap gap-2">
+      <div class="d-flex align-items-center gap-3">
+        <button class="btn btn-sm btn-outline-secondary" (click)="tornaAllaMappa()">
+          <fa-icon icon="arrow-left"></fa-icon>
+        </button>
+        @if (menu()!.logo) {
+          <img [src]="'data:' + menu()!.logoContentType + ';base64,' + menu()!.logo" class="rh-editor-logo" alt="logo" />
+        }
+        <div>
+          <h2 class="mb-0 fw-bold">{{ menu()!.nome }}</h2>
+          @if (menu()!.attivo) {
+            <span class="badge bg-success">Attivo</span>
+          } @else {
+            <span class="badge bg-secondary">Non attivo</span>
+          }
+        </div>
+      </div>
+      <div class="d-flex gap-2">
+        <a [routerLink]="['/menu-public', menu()!.id]" class="btn btn-outline-primary btn-sm" target="_blank">
+          <fa-icon icon="eye" class="me-1"></fa-icon>Vista QR
+        </a>
+        <a [routerLink]="['/entities/menu', menu()!.id, 'edit']" class="btn btn-outline-secondary btn-sm">
+          <fa-icon icon="cog" class="me-1"></fa-icon>Impostazioni
+        </a>
+      </div>
+    </div>
+
+    <!-- ── Accordion portate ────────────────────────────────────────────── -->
+    <div class="accordion rh-accordion" id="accordionPortate">
+      @for (portata of portate(); track portata.id; let i = $index) {
+        <div class="accordion-item border-0 mb-2 shadow-sm rounded-3 overflow-hidden">
+          <h2 class="accordion-header">
+            <button
+              class="accordion-button rh-portata-header fw-semibold"
+              type="button"
+              [attr.data-bs-toggle]="'collapse'"
+              [attr.data-bs-target]="'#portata-' + portata.id"
+              [attr.aria-expanded]="i === 0 ? 'true' : 'false'"
+            >
+              {{ getNomePortata(portata) }}
+              <span class="ms-2 badge bg-light text-dark fw-normal"> {{ getProdotti(portata.id!).length }} prodotti </span>
+            </button>
+          </h2>
+
+          <div
+            [id]="'portata-' + portata.id"
+            class="accordion-collapse collapse"
+            [class.show]="i === 0"
+            [attr.data-bs-parent]="'#accordionPortate'"
+          >
+            <div class="accordion-body p-0">
+              <!-- Lista prodotti -->
+              @if (getProdotti(portata.id!).length === 0) {
+                <p class="text-muted text-center py-4 mb-0">Nessun prodotto in questa portata.</p>
+              }
+
+              @for (prodotto of getProdotti(portata.id!); track prodotto.id) {
+                <div
+                  class="rh-prodotto-row d-flex align-items-center gap-3 px-4 py-3 border-bottom"
+                  [class.rh-nascosto]="!prodotto.visibile"
+                >
+                  <!-- Info prodotto -->
+                  <div class="flex-grow-1">
+                    <div class="d-flex align-items-center gap-2 flex-wrap">
+                      <span class="fw-semibold" [class.text-muted]="!prodotto.visibile">{{ prodotto.nome }}</span>
+                      @if (!prodotto.visibile) {
+                        <fa-icon icon="eye-slash" class="text-muted" title="Nascosto"></fa-icon>
+                      }
+                    </div>
+                    @if (prodotto.descrizione) {
+                      <small class="text-muted">{{ prodotto.descrizione }}</small>
+                    }
+                    <!-- Icone allergeni -->
+                    @if (prodotto.allergeni && prodotto.allergeni.length > 0) {
+                      <div class="rh-allergeni-row mt-1 d-flex flex-wrap gap-1">
+                        @for (a of prodotto.allergeni; track a.id) {
+                          <img
+                            [src]="
+                              a.tipo === 'DEFAULT'
+                                ? '/content/images/allergeni/' + a.nomeDefault?.toLowerCase() + '.png'
+                                : '/content/images/allergeni/custom.png'
+                            "
+                            [title]="a.nome ?? ''"
+                            class="rh-allergene-icon"
+                            width="22"
+                            height="22"
+                          />
+                        }
+                      </div>
+                    }
+                  </div>
+
+                  <!-- Prezzo -->
+                  <div class="rh-prezzo fw-semibold text-end" style="min-width: 64px">
+                    {{ prodotto.prezzo | currency: 'EUR' : 'symbol' : '1.2-2' }}
+                  </div>
+
+                  <!-- Azioni -->
+                  <div class="d-flex gap-1">
+                    <button
+                      class="btn btn-sm btn-icon btn-outline-primary"
+                      title="Modifica"
+                      (click)="apriModalModificaProdotto(prodotto, portata)"
+                    >
+                      <fa-icon icon="edit"></fa-icon>
+                    </button>
+                    <button
+                      class="btn btn-sm btn-icon btn-outline-secondary"
+                      [title]="prodotto.visibile ? 'Nascondi' : 'Mostra'"
+                      (click)="toggleVisibilita(prodotto)"
+                    >
+                      <fa-icon [icon]="prodotto.visibile ? 'eye-slash' : 'eye'"></fa-icon>
+                    </button>
+                    <button class="btn btn-sm btn-icon btn-outline-danger" title="Elimina" (click)="eliminaProdotto(prodotto)">
+                      <fa-icon icon="trash"></fa-icon>
+                    </button>
+                  </div>
+                </div>
+              }
+
+              <!-- Bottone aggiungi -->
+              <div class="p-3 text-center">
+                <button class="btn btn-sm btn-outline-primary" (click)="apriModalNuovoProdotto(portata)">
+                  <fa-icon icon="plus" class="me-1"></fa-icon>
+                  Aggiungi prodotto
+                </button>
+              </div>
+            </div>
+          </div>
+        </div>
+      }
+    </div>
+  </div>
+}
+
+<!-- ════════════════════════════════════════════════════════════════════════
+     MODAL — Aggiunta / Modifica prodotto
+     ════════════════════════════════════════════════════════════════════════ -->
+@if (showModalProdotto()) {
+  <div class="modal d-block rh-modal-backdrop" tabindex="-1">
+    <div class="modal-dialog modal-lg modal-dialog-centered">
+      <div class="modal-content border-0 shadow-lg rounded-4">
+        <div class="modal-header border-0 pb-0">
+          <h5 class="modal-title fw-bold">
+            {{ prodottoInEdit()?.id ? 'Modifica prodotto' : 'Nuovo prodotto' }}
+            <small class="text-muted fw-normal ms-2">{{ getNomePortata(portataSelezionata()!) }}</small>
+          </h5>
+          <button type="button" class="btn-close" (click)="chiudiModal()"></button>
+        </div>
+
+        <!-- Tab selezione -->
+        <div class="modal-body pt-2">
+          <ul class="nav nav-tabs mb-4">
+            <li class="nav-item">
+              <button class="nav-link" [class.active]="tabModal() === 'manuale'" (click)="tabModal.set('manuale')">
+                <fa-icon icon="keyboard" class="me-1"></fa-icon>Manuale
+              </button>
+            </li>
+            <li class="nav-item">
+              <button class="nav-link" [class.active]="tabModal() === 'pdf'" (click)="tabModal.set('pdf')">
+                <fa-icon icon="file-pdf" class="me-1"></fa-icon>Importa da PDF
+              </button>
+            </li>
+          </ul>
+
+          <!-- ── Tab MANUALE ────────────────────────────────────────────── -->
+          @if (tabModal() === 'manuale') {
+            <div class="row g-3">
+              <div class="col-12">
+                <label class="form-label fw-semibold">Nome *</label>
+                <input type="text" class="form-control" [(ngModel)]="prodottoInEdit()!.nome" placeholder="es. Spaghetti alla carbonara" />
+              </div>
+              <div class="col-12">
+                <label class="form-label fw-semibold">Descrizione</label>
+                <textarea
+                  class="form-control"
+                  rows="2"
+                  [(ngModel)]="prodottoInEdit()!.descrizione"
+                  placeholder="Ingredienti, note..."
+                ></textarea>
+              </div>
+              <div class="col-md-4">
+                <label class="form-label fw-semibold">Prezzo (€) *</label>
+                <input type="number" step="0.50" min="0" class="form-control" [(ngModel)]="prodottoInEdit()!.prezzo" placeholder="9.50" />
+              </div>
+              <div class="col-12">
+                <label class="form-label fw-semibold d-block mb-2">Allergeni</label>
+                <div class="rh-allergeni-chips d-flex flex-wrap gap-2">
+                  @for (a of allergeniDisponibili(); track a.id) {
+                    <button
+                      type="button"
+                      class="rh-chip"
+                      [class.rh-chip-active]="isAllergeneSelezionato(a.id!)"
+                      (click)="toggleAllergene(a.id!)"
+                    >
+                      <img
+                        [src]="
+                          a.tipo === 'DEFAULT'
+                            ? '/content/images/allergeni/' + a.nomeDefault?.toLowerCase() + '.png'
+                            : '/content/images/allergeni/custom.png'
+                        "
+                        width="18"
+                        height="18"
+                        class="me-1"
+                      />
+                      {{ a.nome }}
+                    </button>
+                  }
+                </div>
+              </div>
+            </div>
+          }
+
+          <!-- ── Tab PDF ────────────────────────────────────────────────── -->
+          @if (tabModal() === 'pdf') {
+            <div>
+              <p class="text-muted small">
+                Carica un PDF con il formato: <code>Nome | Descrizione | Prezzo | Allergeni</code><br />
+                Esempio: <code>Pasta al Pomodoro | Con basilico fresco | 9.50 | Glutine</code>
+              </p>
+              <div class="d-flex gap-2 align-items-center mb-3">
+                <input type="file" accept=".pdf" class="form-control" (change)="onPdfSelezionato($event)" />
+                <button class="btn btn-outline-primary" (click)="inviaImportPdf()" [disabled]="!pdfFile()">
+                  <fa-icon icon="upload"></fa-icon>
+                </button>
+              </div>
+
+              @if (pdfPreview().length > 0) {
+                <div class="table-responsive">
+                  <table class="table table-sm table-bordered">
+                    <thead class="table-light">
+                      <tr>
+                        <th>Nome</th>
+                        <th>Descrizione</th>
+                        <th>Prezzo</th>
+                      </tr>
+                    </thead>
+                    <tbody>
+                      @for (p of pdfPreview(); track $index) {
+                        <tr>
+                          <td>{{ p.nome }}</td>
+                          <td>{{ p.descrizione }}</td>
+                          <td>{{ p.prezzo }}</td>
+                        </tr>
+                      }
+                    </tbody>
+                  </table>
+                </div>
+              }
+            </div>
+          }
+        </div>
+
+        <!-- Footer modal -->
+        <div class="modal-footer border-0">
+          <button class="btn btn-outline-secondary" (click)="chiudiModal()">Annulla</button>
+          @if (tabModal() === 'manuale') {
+            <button class="btn btn-primary" (click)="salvaProdotto()" [disabled]="salvataggioInCorso()">
+              @if (salvataggioInCorso()) {
+                <span class="spinner-border spinner-border-sm me-1"></span>
+              }
+              Salva
+            </button>
+          }
+          @if (tabModal() === 'pdf' && pdfPreview().length > 0) {
+            <button class="btn btn-success" (click)="confermaPdfImport()" [disabled]="salvataggioInCorso()">
+              @if (salvataggioInCorso()) {
+                <span class="spinner-border spinner-border-sm me-1"></span>
+              }
+              Importa tutti ({{ pdfPreview().length }})
+            </button>
+          }
+        </div>
+      </div>
+    </div>
+  </div>
+  <div class="modal-backdrop fade show"></div>
+}

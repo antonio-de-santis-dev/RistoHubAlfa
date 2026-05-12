@@ -1,3 +1,7 @@
+// PERCORSO: src/main/java/main/web/rest/MenuResource.java
+// ISTRUZIONE: Sostituisce integralmente il file esistente.
+// Aggiunge: endpoint GET /api/menus/current-user e usa createMenu() con controllo livello.
+
 package main.web.rest;
 
 import jakarta.validation.Valid;
@@ -8,33 +12,33 @@ import java.util.List;
 import java.util.Objects;
 import java.util.Optional;
 import main.repository.MenuRepository;
+import main.service.MaxMenuRaggiuntoException;
 import main.service.MenuService;
 import main.service.dto.MenuDTO;
 import main.web.rest.errors.BadRequestAlertException;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Value;
+import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 import tech.jhipster.web.util.HeaderUtil;
 import tech.jhipster.web.util.ResponseUtil;
 
 /**
- * REST controller for managing {@link main.domain.Menu}.
+ * REST controller per la gestione dei Menu.
  */
 @RestController
 @RequestMapping("/api/menus")
 public class MenuResource {
 
     private static final Logger LOG = LoggerFactory.getLogger(MenuResource.class);
-
     private static final String ENTITY_NAME = "menu";
 
     @Value("${jhipster.clientApp.name}")
     private String applicationName;
 
     private final MenuService menuService;
-
     private final MenuRepository menuRepository;
 
     public MenuResource(MenuService menuService, MenuRepository menuRepository) {
@@ -43,33 +47,27 @@ public class MenuResource {
     }
 
     /**
-     * {@code POST  /menus} : Create a new menu.
-     *
-     * @param menuDTO the menuDTO to create.
-     * @return the {@link ResponseEntity} with status {@code 201 (Created)} and with body the new menuDTO, or with status {@code 400 (Bad Request)} if the menu has already an ID.
-     * @throws URISyntaxException if the Location URI syntax is incorrect.
+     * POST /menus : Crea un nuovo menu.
+     * Applica il controllo del livello utente tramite MenuService.createMenu().
      */
     @PostMapping("")
-    public ResponseEntity<MenuDTO> createMenu(@Valid @RequestBody MenuDTO menuDTO) throws URISyntaxException {
+    public ResponseEntity<?> createMenu(@Valid @RequestBody MenuDTO menuDTO) throws URISyntaxException {
         LOG.debug("REST request to save Menu : {}", menuDTO);
         if (menuDTO.getId() != null) {
             throw new BadRequestAlertException("A new menu cannot already have an ID", ENTITY_NAME, "idexists");
         }
-        menuDTO = menuService.save(menuDTO);
+        try {
+            menuDTO = menuService.createMenu(menuDTO);
+        } catch (MaxMenuRaggiuntoException e) {
+            return ResponseEntity.status(HttpStatus.FORBIDDEN).body(e.getMessage());
+        }
         return ResponseEntity.created(new URI("/api/menus/" + menuDTO.getId()))
             .headers(HeaderUtil.createEntityCreationAlert(applicationName, true, ENTITY_NAME, menuDTO.getId().toString()))
             .body(menuDTO);
     }
 
     /**
-     * {@code PUT  /menus/:id} : Updates an existing menu.
-     *
-     * @param id the id of the menuDTO to save.
-     * @param menuDTO the menuDTO to update.
-     * @return the {@link ResponseEntity} with status {@code 200 (OK)} and with body the updated menuDTO,
-     * or with status {@code 400 (Bad Request)} if the menuDTO is not valid,
-     * or with status {@code 500 (Internal Server Error)} if the menuDTO couldn't be updated.
-     * @throws URISyntaxException if the Location URI syntax is incorrect.
+     * PUT /menus/:id : Aggiorna un menu esistente.
      */
     @PutMapping("/{id}")
     public ResponseEntity<MenuDTO> updateMenu(
@@ -77,16 +75,9 @@ public class MenuResource {
         @Valid @RequestBody MenuDTO menuDTO
     ) throws URISyntaxException {
         LOG.debug("REST request to update Menu : {}, {}", id, menuDTO);
-        if (menuDTO.getId() == null) {
-            throw new BadRequestAlertException("Invalid id", ENTITY_NAME, "idnull");
-        }
-        if (!Objects.equals(id, menuDTO.getId())) {
-            throw new BadRequestAlertException("Invalid ID", ENTITY_NAME, "idinvalid");
-        }
-
-        if (!menuRepository.existsById(id)) {
-            throw new BadRequestAlertException("Entity not found", ENTITY_NAME, "idnotfound");
-        }
+        if (menuDTO.getId() == null) throw new BadRequestAlertException("Invalid id", ENTITY_NAME, "idnull");
+        if (!Objects.equals(id, menuDTO.getId())) throw new BadRequestAlertException("Invalid ID", ENTITY_NAME, "idinvalid");
+        if (!menuRepository.existsById(id)) throw new BadRequestAlertException("Entity not found", ENTITY_NAME, "idnotfound");
 
         menuDTO = menuService.update(menuDTO);
         return ResponseEntity.ok()
@@ -95,35 +86,19 @@ public class MenuResource {
     }
 
     /**
-     * {@code PATCH  /menus/:id} : Partial updates given fields of an existing menu, field will ignore if it is null
-     *
-     * @param id the id of the menuDTO to save.
-     * @param menuDTO the menuDTO to update.
-     * @return the {@link ResponseEntity} with status {@code 200 (OK)} and with body the updated menuDTO,
-     * or with status {@code 400 (Bad Request)} if the menuDTO is not valid,
-     * or with status {@code 404 (Not Found)} if the menuDTO is not found,
-     * or with status {@code 500 (Internal Server Error)} if the menuDTO couldn't be updated.
-     * @throws URISyntaxException if the Location URI syntax is incorrect.
+     * PATCH /menus/:id : Aggiornamento parziale.
      */
     @PatchMapping(value = "/{id}", consumes = { "application/json", "application/merge-patch+json" })
     public ResponseEntity<MenuDTO> partialUpdateMenu(
         @PathVariable(value = "id", required = false) final Long id,
         @NotNull @RequestBody MenuDTO menuDTO
     ) throws URISyntaxException {
-        LOG.debug("REST request to partial update Menu partially : {}, {}", id, menuDTO);
-        if (menuDTO.getId() == null) {
-            throw new BadRequestAlertException("Invalid id", ENTITY_NAME, "idnull");
-        }
-        if (!Objects.equals(id, menuDTO.getId())) {
-            throw new BadRequestAlertException("Invalid ID", ENTITY_NAME, "idinvalid");
-        }
-
-        if (!menuRepository.existsById(id)) {
-            throw new BadRequestAlertException("Entity not found", ENTITY_NAME, "idnotfound");
-        }
+        LOG.debug("REST request to partial update Menu : {}, {}", id, menuDTO);
+        if (menuDTO.getId() == null) throw new BadRequestAlertException("Invalid id", ENTITY_NAME, "idnull");
+        if (!Objects.equals(id, menuDTO.getId())) throw new BadRequestAlertException("Invalid ID", ENTITY_NAME, "idinvalid");
+        if (!menuRepository.existsById(id)) throw new BadRequestAlertException("Entity not found", ENTITY_NAME, "idnotfound");
 
         Optional<MenuDTO> result = menuService.partialUpdate(menuDTO);
-
         return ResponseUtil.wrapOrNotFound(
             result,
             HeaderUtil.createEntityUpdateAlert(applicationName, true, ENTITY_NAME, menuDTO.getId().toString())
@@ -131,22 +106,26 @@ public class MenuResource {
     }
 
     /**
-     * {@code GET  /menus} : get all the menus.
-     *
-     * @param eagerload flag to eager load entities from relationships (This is applicable for many-to-many).
-     * @return the {@link ResponseEntity} with status {@code 200 (OK)} and the list of menus in body.
+     * GET /menus : Restituisce tutti i menu (solo admin).
      */
     @GetMapping("")
-    public List<MenuDTO> getAllMenus(@RequestParam(name = "eagerload", required = false, defaultValue = "true") boolean eagerload) {
+    public List<MenuDTO> getAllMenus() {
         LOG.debug("REST request to get all Menus");
         return menuService.findAll();
     }
 
     /**
-     * {@code GET  /menus/:id} : get the "id" menu.
-     *
-     * @param id the id of the menuDTO to retrieve.
-     * @return the {@link ResponseEntity} with status {@code 200 (OK)} and with body the menuDTO, or with status {@code 404 (Not Found)}.
+     * GET /menus/current-user : Restituisce i menu dell'utente corrente.
+     * Usato dalla Home page e dal componente MenuList.
+     */
+    @GetMapping("/current-user")
+    public List<MenuDTO> getMenusCurrentUser() {
+        LOG.debug("REST request to get Menus of current user");
+        return menuService.findAllCurrentUser();
+    }
+
+    /**
+     * GET /menus/:id : Restituisce un menu specifico.
      */
     @GetMapping("/{id}")
     public ResponseEntity<MenuDTO> getMenu(@PathVariable("id") Long id) {
@@ -156,10 +135,7 @@ public class MenuResource {
     }
 
     /**
-     * {@code DELETE  /menus/:id} : delete the "id" menu.
-     *
-     * @param id the id of the menuDTO to delete.
-     * @return the {@link ResponseEntity} with status {@code 204 (NO_CONTENT)}.
+     * DELETE /menus/:id : Elimina un menu.
      */
     @DeleteMapping("/{id}")
     public ResponseEntity<Void> deleteMenu(@PathVariable("id") Long id) {

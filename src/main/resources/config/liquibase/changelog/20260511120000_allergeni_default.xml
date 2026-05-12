@@ -1,0 +1,118 @@
+<?xml version="1.0" encoding="utf-8"?>
+<!--
+  Seeder Liquibase — Inserisce i 14 allergeni EU obbligatori per legge (Reg. UE 1169/2011).
+
+  Percorso: src/main/resources/config/liquibase/changelog/20260511120000_allergeni_default.xml
+  → FILE NUOVO da creare
+
+  Aggiungere in master.xml prima del needle finale:
+  <include file="config/liquibase/changelog/20260511120000_allergeni_default.xml" relativeToChangelogFile="false"/>
+-->
+<databaseChangeLog
+  xmlns="http://www.liquibase.org/xml/ns/dbchangelog"
+  xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+  xsi:schemaLocation="http://www.liquibase.org/xml/ns/dbchangelog http://www.liquibase.org/xml/ns/dbchangelog/dbchangelog-latest.xsd">
+
+  <changeSet id="20260511120000_allergeni_default" author="ristohub">
+
+    <insert tableName="allergene">
+      <column name="id" valueSequenceNext="sequence_generator"/>
+      <column name="nome" value="Glutine"/>
+      <column name="tipo" value="DEFAULT"/>
+      <column name="nome_default" value="GLUTINE"/>
+    </insert>
+
+    <insert tableName="allergene">
+      <column name="id" valueSequenceNext="sequence_generator"/>
+      <column name="nome" value="Uova"/>
+      <column name="tipo" value="DEFAULT"/>
+      <column name="nome_default" value="UOVO"/>
+    </insert>
+
+    <insert tableName="allergene">
+      <column name="id" valueSequenceNext="sequence_generator"/>
+      <column name="nome" value="Latte e latticini"/>
+      <column name="tipo" value="DEFAULT"/>
+      <column name="nome_default" value="LATTE"/>
+    </insert>
+
+    <insert tableName="allergene">
+      <column name="id" valueSequenceNext="sequence_generator"/>
+      <column name="nome" value="Arachidi"/>
+      <column name="tipo" value="DEFAULT"/>
+      <column name="nome_default" value="ARACHIDI"/>
+    </insert>
+
+    <insert tableName="allergene">
+      <column name="id" valueSequenceNext="sequence_generator"/>
+      <column name="nome" value="Frutta a guscio"/>
+      <column name="tipo" value="DEFAULT"/>
+      <column name="nome_default" value="FRUTTA_A_GUSCIO"/>
+    </insert>
+
+    <insert tableName="allergene">
+      <column name="id" valueSequenceNext="sequence_generator"/>
+      <column name="nome" value="Pesce"/>
+      <column name="tipo" value="DEFAULT"/>
+      <column name="nome_default" value="PESCE"/>
+    </insert>
+
+    <insert tableName="allergene">
+      <column name="id" valueSequenceNext="sequence_generator"/>
+      <column name="nome" value="Molluschi"/>
+      <column name="tipo" value="DEFAULT"/>
+      <column name="nome_default" value="MOLLUSCHI"/>
+    </insert>
+
+    <insert tableName="allergene">
+      <column name="id" valueSequenceNext="sequence_generator"/>
+      <column name="nome" value="Crostacei"/>
+      <column name="tipo" value="DEFAULT"/>
+      <column name="nome_default" value="CROSTACEI"/>
+    </insert>
+
+    <insert tableName="allergene">
+      <column name="id" valueSequenceNext="sequence_generator"/>
+      <column name="nome" value="Soia"/>
+      <column name="tipo" value="DEFAULT"/>
+      <column name="nome_default" value="SOIA"/>
+    </insert>
+
+    <insert tableName="allergene">
+      <column name="id" valueSequenceNext="sequence_generator"/>
+      <column name="nome" value="Sesamo"/>
+      <column name="tipo" value="DEFAULT"/>
+      <column name="nome_default" value="SESAMO"/>
+    </insert>
+
+    <insert tableName="allergene">
+      <column name="id" valueSequenceNext="sequence_generator"/>
+      <column name="nome" value="Sedano"/>
+      <column name="tipo" value="DEFAULT"/>
+      <column name="nome_default" value="SEDANO"/>
+    </insert>
+
+    <insert tableName="allergene">
+      <column name="id" valueSequenceNext="sequence_generator"/>
+      <column name="nome" value="Senape"/>
+      <column name="tipo" value="DEFAULT"/>
+      <column name="nome_default" value="SENAPE"/>
+    </insert>
+
+    <insert tableName="allergene">
+      <column name="id" valueSequenceNext="sequence_generator"/>
+      <column name="nome" value="Anidride solforosa e solfiti"/>
+      <column name="tipo" value="DEFAULT"/>
+      <column name="nome_default" value="SOLFITI"/>
+    </insert>
+
+    <insert tableName="allergene">
+      <column name="id" valueSequenceNext="sequence_generator"/>
+      <column name="nome" value="Lupini"/>
+      <column name="tipo" value="DEFAULT"/>
+      <column name="nome_default" value="LUPINI"/>
+    </insert>
+
+  </changeSet>
+
+</databaseChangeLog>

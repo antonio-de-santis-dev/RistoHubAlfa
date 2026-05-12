@@ -1,0 +1,161 @@
+<!-- PERCORSO: src/main/webapp/app/menu-public/menu-public.component.html -->
+<!-- Pagina standalone: NO navbar, NO link login, NO link interni -->
+<div class="mp-page">
+  <!-- Loading -->
+  @if (isLoading()) {
+    <div class="mp-loading text-center py-5">
+      <div class="spinner-border text-primary" role="status"></div>
+      <p class="mt-3 text-muted">Caricamento menu...</p>
+    </div>
+  }
+
+  <!-- Errore -->
+  @if (errore()) {
+    <div class="mp-error text-center py-5">
+      <i class="bi bi-exclamation-circle display-4 text-danger"></i>
+      <p class="mt-3">{{ errore() }}</p>
+    </div>
+  }
+
+  <!-- Menu -->
+  @if (!isLoading() && !errore() && menu(); as m) {
+    <!-- Header menu -->
+    <div class="mp-header text-center py-4">
+      <h1 class="mp-title">{{ m.nome }}</h1>
+      @if (m.descrizione) {
+        <p class="mp-subtitle text-muted">{{ m.descrizione }}</p>
+      }
+    </div>
+
+    <div class="mp-content">
+      <!-- Piatto del giorno -->
+      @for (piatto of m.piattiDelGiorno; track piatto.id) {
+        @if (piatto.attivo) {
+          <div class="mp-piatto-giorno card mb-4 border-warning">
+            <div class="card-header bg-warning-subtle text-warning-emphasis fw-semibold">⭐ Piatto del Giorno</div>
+            <div class="card-body">
+              <div class="d-flex justify-content-between align-items-start">
+                <div>
+                  <h5 class="mb-1">{{ piatto.nome }}</h5>
+                  @if (piatto.descrizione) {
+                    <p class="text-muted small mb-2">{{ piatto.descrizione }}</p>
+                  }
+                  <!-- Allergeni piatto del giorno -->
+                  @if (piatto.allergeni.length > 0) {
+                    <div class="mp-allergeni-inline">
+                      @for (all of piatto.allergeni; track all.id) {
+                        <img [src]="allergeneIconUrl(all)" [title]="all.nome" class="mp-allergene-icon-sm" [alt]="all.nome" />
+                      }
+                    </div>
+                  }
+                </div>
+                @if (piatto.prezzo) {
+                  <span class="mp-prezzo ms-3">{{ formatPrezzo(piatto.prezzo) }}</span>
+                }
+              </div>
+            </div>
+          </div>
+        }
+      }
+
+      <!-- Accordion portate -->
+      <div class="accordion mp-accordion" id="menuAccordion">
+        @for (portata of m.portate; track portata.id; let i = $index) {
+          @if (portata.prodotti.length > 0) {
+            <div class="accordion-item mp-accordion-item">
+              <h2 class="accordion-header">
+                <button
+                  class="accordion-button mp-accordion-btn"
+                  [class.collapsed]="i !== 0"
+                  type="button"
+                  [attr.data-bs-toggle]="'collapse'"
+                  [attr.data-bs-target]="'#portata-' + portata.id"
+                  [attr.aria-expanded]="i === 0"
+                >
+                  {{ portataLabel(portata) }}
+                  <span class="ms-auto badge bg-secondary-subtle text-secondary rounded-pill">
+                    {{ portata.prodotti.length }}
+                  </span>
+                </button>
+              </h2>
+              <div
+                [id]="'portata-' + portata.id"
+                class="accordion-collapse collapse"
+                [class.show]="i === 0"
+                [attr.data-bs-parent]="'#menuAccordion'"
+              >
+                <div class="accordion-body p-0">
+                  @for (prodotto of portata.prodotti; track prodotto.id; let last = $last) {
+                    <div class="mp-prodotto" [class.border-bottom]="!last">
+                      <div class="d-flex justify-content-between align-items-start gap-2">
+                        <div class="flex-grow-1">
+                          <div class="mp-prodotto-nome">{{ prodotto.nome }}</div>
+                          @if (prodotto.descrizione) {
+                            <div class="mp-prodotto-desc text-muted">{{ prodotto.descrizione }}</div>
+                          }
+                          @if (prodotto.allergeni.length > 0) {
+                            <div class="mp-allergeni-inline mt-1">
+                              @for (all of prodotto.allergeni; track all.id) {
+                                <img [src]="allergeneIconUrl(all)" [title]="all.nome" class="mp-allergene-icon-sm" [alt]="all.nome" />
+                              }
+                            </div>
+                          }
+                        </div>
+                        <div class="mp-prezzo text-nowrap">{{ formatPrezzo(prodotto.prezzo) }}</div>
+                      </div>
+                    </div>
+                  }
+                </div>
+              </div>
+            </div>
+          }
+        }
+      </div>
+
+      <!-- Card Allergeni presenti nel menu -->
+      @if (getAllergeniMenu().length > 0) {
+        <div class="mp-card-allergeni card mt-4">
+          <div class="card-header fw-semibold"><i class="bi bi-exclamation-triangle me-2"></i>Allergeni presenti nel menu</div>
+          <div class="card-body">
+            <div class="mp-allergeni-grid">
+              @for (all of getAllergeniMenu(); track all.id) {
+                <div class="mp-allergene-item">
+                  <img [src]="allergeneIconUrl(all)" [alt]="all.nome" class="mp-allergene-icon" />
+                  <span class="mp-allergene-nome">{{ all.nome }}</span>
+                </div>
+              }
+            </div>
+            <p class="text-muted small mt-3 mb-0">
+              Per informazioni dettagliate sugli allergeni presenti nei singoli piatti, chiedi al personale di sala. Reg. UE 1169/2011.
+            </p>
+          </div>
+        </div>
+      }
+
+      <!-- Card Contatti -->
+      @if (m.contatti && m.contatti.contatti.length > 0) {
+        <div class="mp-card-contatti card mt-4">
+          <div class="card-header fw-semibold"><i class="bi bi-telephone me-2"></i>Contattaci</div>
+          <div class="card-body">
+            <div class="mp-contatti-list">
+              @for (c of m.contatti.contatti; track c.id) {
+                <a [href]="contattoHref(c)" target="_blank" rel="noopener noreferrer" class="mp-contatto-item text-decoration-none">
+                  <i class="bi {{ contattoIcon(c.tipo) }} mp-contatto-icon"></i>
+                  <span>{{ c.etichetta || c.valore }}</span>
+                </a>
+              }
+            </div>
+          </div>
+        </div>
+      }
+    </div>
+    <!-- /.mp-content -->
+
+    <!-- Footer minimal — NO link interni -->
+    <div class="mp-footer text-center text-muted py-4 mt-4">
+      <small>Menu digitale realizzato con RistoHub</small>
+    </div>
+  }
+  <!-- /@if menu -->
+</div>
+<!-- /.mp-page -->

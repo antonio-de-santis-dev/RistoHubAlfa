@@ -1,83 +1,110 @@
-<div class="row">
-  <div class="col-md-3">
-    <span class="hipster img-fluid rounded"></span>
+<!-- Percorso: src/main/webapp/app/home/home.component.html -->
+
+<div class="rh-home">
+  <!-- ── HERO (sempre visibile) ─────────────────────────────────────────── -->
+  <div class="rh-hero text-center py-5">
+    <img src="content/images/logo.png" alt="RistoHub" class="rh-logo mb-3" height="72" onerror="this.style.display='none'" />
+    <h1 class="rh-title fw-bold">RistoHub</h1>
+    <p class="rh-tagline lead text-muted">Il tuo menu digitale professionale</p>
   </div>
 
-  <div class="col-md-9">
-    <h1 class="display-4"><span jhiTranslate="home.title">Benvenuto, Java Hipster!</span> (Risto Hub Alfa)</h1>
+  <!-- ── UTENTE NON LOGGATO ────────────────────────────────────────────── -->
+  @if (!account()) {
+    <div class="text-center mt-4">
+      <p class="mb-4 text-muted">Gestisci il tuo menu digitale in pochi click.<br />Accedi o registrati per iniziare.</p>
+      <div class="d-flex justify-content-center gap-3 flex-wrap">
+        <button class="btn btn-primary btn-lg px-5" (click)="login()">
+          <span jhiTranslate="global.menu.account.login">Accedi</span>
+        </button>
+        <a class="btn btn-outline-secondary btn-lg px-5" routerLink="/account/register">
+          <span jhiTranslate="global.menu.account.register">Registrati</span>
+        </a>
+      </div>
+    </div>
+  }
 
-    <p class="lead" jhiTranslate="home.subtitle">Questa è la tua home page</p>
+  <!-- ── UTENTE LOGGATO: lista menu ─────────────────────────────────────── -->
+  @if (account()) {
+    <div class="container mt-4">
+      <!-- Intestazione -->
+      <div class="d-flex justify-content-between align-items-center mb-4 flex-wrap gap-2">
+        <h2 class="mb-0 fw-semibold">I tuoi menu</h2>
+        <a class="btn btn-primary" routerLink="/entities/menu/new">
+          <fa-icon icon="plus" class="me-1"></fa-icon>
+          Nuovo menu
+        </a>
+      </div>
 
-    <div>
-      @if (account() !== null) {
-        <div class="alert alert-success">
-          @if (account(); as accountRef) {
-            <span id="home-logged-message" jhiTranslate="home.logged.message" [translateValues]="{ username: accountRef.login }"
-              >Autenticato come &quot;{{ accountRef.login }}&quot;.</span
-            >
+      <!-- Loading -->
+      @if (isLoading()) {
+        <div class="text-center py-5">
+          <div class="spinner-border text-primary" role="status"></div>
+        </div>
+      }
+
+      <!-- Nessun menu -->
+      @if (!isLoading() && menus().length === 0) {
+        <div class="rh-empty text-center py-5">
+          <fa-icon icon="utensils" size="3x" class="text-muted mb-3"></fa-icon>
+          <p class="text-muted">Non hai ancora nessun menu.<br />Creane uno per iniziare!</p>
+          <a class="btn btn-primary mt-2" routerLink="/entities/menu/new">Crea il primo menu</a>
+        </div>
+      }
+
+      <!-- Grid menu -->
+      @if (!isLoading() && menus().length > 0) {
+        <div class="row row-cols-1 row-cols-md-2 row-cols-lg-3 g-4">
+          @for (menu of menus(); track menu.id) {
+            <div class="col">
+              <div class="card rh-menu-card h-100 shadow-sm">
+                <!-- Logo -->
+                @if (menu.logo) {
+                  <img
+                    [src]="'data:' + menu.logoContentType + ';base64,' + menu.logo"
+                    class="card-img-top rh-card-logo"
+                    alt="Logo {{ menu.nome }}"
+                  />
+                }
+                @if (!menu.logo) {
+                  <div class="rh-card-logo-placeholder d-flex align-items-center justify-content-center bg-light">
+                    <fa-icon icon="utensils" size="2x" class="text-muted"></fa-icon>
+                  </div>
+                }
+
+                <div class="card-body">
+                  <div class="d-flex justify-content-between align-items-start mb-2">
+                    <h5 class="card-title mb-0 fw-semibold">{{ menu.nome }}</h5>
+                    @if (menu.attivo) {
+                      <span class="badge bg-success">Attivo</span>
+                    } @else {
+                      <span class="badge bg-secondary">Non attivo</span>
+                    }
+                  </div>
+                  @if (menu.descrizione) {
+                    <p class="card-text text-muted small">{{ menu.descrizione }}</p>
+                  }
+                </div>
+
+                <div class="card-footer bg-transparent border-top-0 pb-3">
+                  <div class="d-flex gap-2 flex-wrap">
+                    <button class="btn btn-sm btn-outline-primary flex-fill" (click)="goToEditor(menu.id!)">
+                      <fa-icon icon="edit" class="me-1"></fa-icon>
+                      Modifica
+                    </button>
+                    <button class="btn btn-sm btn-outline-secondary flex-fill" (click)="goToPreview(menu.id!)">
+                      <fa-icon icon="eye" class="me-1"></fa-icon>
+                      Anteprima
+                    </button>
+                    <button class="btn btn-sm btn-outline-dark" [title]="'Link QR: ' + getQrUrl(menu.id!)" (click)="copyQrLink(menu.id!)">
+                      <fa-icon icon="qrcode"></fa-icon>
+                    </button>
+                  </div>
+                </div>
+              </div>
+            </div>
           }
-        </div>
-      } @else {
-        <div class="alert alert-warning">
-          <span jhiTranslate="global.messages.info.authenticated.prefix">Se vuoi </span>
-          <a class="alert-link" (click)="login()" jhiTranslate="global.messages.info.authenticated.link">accedere</a
-          ><span jhiTranslate="global.messages.info.authenticated.suffix"
-            >, puoi provare gli account di default: <br />
-            - Amministratore (user = &quot;admin&quot; e la password = &quot;admin&quot;) <br />
-            - utente (user = &quot;user&quot; e la password = &quot;user&quot;)</span
-          >
-        </div>
-
-        <div class="alert alert-warning">
-          <span jhiTranslate="global.messages.info.register.noaccount">Non hai ancora un account?</span>&nbsp;
-          <a class="alert-link" routerLink="/account/register" jhiTranslate="global.messages.info.register.link">Crea un account</a>
         </div>
       }
     </div>
-
-    <p jhiTranslate="home.question">In caso di domande su JHipster:</p>
-
-    <ul>
-      <li>
-        <a href="https://www.jhipster.tech/" target="_blank" rel="noopener noreferrer" jhiTranslate="home.link.homepage"
-          >Homepage JHipster</a
-        >
-      </li>
-      <li>
-        <a
-          href="https://stackoverflow.com/tags/jhipster/info"
-          target="_blank"
-          rel="noopener noreferrer"
-          jhiTranslate="home.link.stackoverflow"
-          >JHipster su Stack Overflow</a
-        >
-      </li>
-      <li>
-        <a
-          href="https://github.com/jhipster/generator-jhipster/issues?state=open"
-          target="_blank"
-          rel="noopener noreferrer"
-          jhiTranslate="home.link.bugtracker"
-          >JHipster tracciamento errori</a
-        >
-      </li>
-      <li>
-        <a href="https://gitter.im/jhipster/generator-jhipster" target="_blank" rel="noopener noreferrer" jhiTranslate="home.link.chat"
-          >Chat room pubblica di JHipster</a
-        >
-      </li>
-      <li>
-        <a href="https://twitter.com/jhipster" target="_blank" rel="noopener noreferrer" jhiTranslate="home.link.follow"
-          >segui &#64;jhipster su Twitter</a
-        >
-      </li>
-    </ul>
-
-    <p>
-      <span jhiTranslate="home.like">Se ti piace JHipster, non dimenticarti di darci una stella su</span>
-      <a href="https://github.com/jhipster/generator-jhipster" target="_blank" rel="noopener noreferrer" jhiTranslate="home.github"
-        >GitHub</a
-      >!
-    </p>
-  </div>
+  }
 </div>

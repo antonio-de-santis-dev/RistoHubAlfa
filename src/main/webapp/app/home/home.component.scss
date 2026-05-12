@@ -1,23 +1,47 @@
-/* ==========================================================================
-Main page styles
-========================================================================== */
+/* Percorso: src/main/webapp/app/home/home.component.scss */
 
-.hipster {
-  display: inline-block;
-  width: 347px;
-  height: 497px;
-  background: url('../../content/images/jhipster_family_member_0.svg') no-repeat center top;
-  background-size: contain;
+.rh-hero {
+  background: linear-gradient(135deg, #fff8f0 0%, #fff 100%);
+  border-bottom: 1px solid #f0e8df;
 }
 
-/* wait autoprefixer update to allow simple generation of high pixel density media query */
-@media only screen and (-webkit-min-device-pixel-ratio: 2),
-  only screen and (-moz-min-device-pixel-ratio: 2),
-  only screen and (-o-min-device-pixel-ratio: 2/1),
-  only screen and (min-resolution: 192dpi),
-  only screen and (min-resolution: 2dppx) {
-  .hipster {
-    background: url('../../content/images/jhipster_family_member_0.svg') no-repeat center top;
-    background-size: contain;
+.rh-logo {
+  object-fit: contain;
+}
+
+.rh-title {
+  font-size: 2.4rem;
+  color: #1a1a2e;
+}
+
+.rh-tagline {
+  font-size: 1.15rem;
+}
+
+.rh-menu-card {
+  border-radius: 12px;
+  border: 1px solid #e8e8e8;
+  transition:
+    transform 0.15s ease,
+    box-shadow 0.15s ease;
+
+  &:hover {
+    transform: translateY(-3px);
+    box-shadow: 0 8px 24px rgba(0, 0, 0, 0.1) !important;
   }
+}
+
+.rh-card-logo {
+  height: 160px;
+  object-fit: cover;
+  border-radius: 12px 12px 0 0;
+}
+
+.rh-card-logo-placeholder {
+  height: 160px;
+  border-radius: 12px 12px 0 0;
+}
+
+.rh-empty {
+  color: #6c757d;
 }

@@ -1,3 +1,5 @@
+// PERCORSO: src/main/webapp/app/entities/menu/service/menu.service.ts
+// ISTRUZIONE: Sostituisce integralmente il file esistente.
 import { Injectable, inject } from '@angular/core';
 import { HttpClient, HttpResponse } from '@angular/common/http';
 import { Observable } from 'rxjs';
@@ -8,7 +10,6 @@ import { createRequestOption } from 'app/core/request/request-util';
 import { IMenu, NewMenu } from '../menu.model';
 
 export type PartialUpdateMenu = Partial<IMenu> & Pick<IMenu, 'id'>;
-
 export type EntityResponseType = HttpResponse<IMenu>;
 export type EntityArrayResponseType = HttpResponse<IMenu[]>;
 
@@ -18,7 +19,9 @@ export class MenuService {
   protected readonly applicationConfigService = inject(ApplicationConfigService);
 
   protected resourceUrl = this.applicationConfigService.getEndpointFor('api/menus');
+  protected publicUrl = this.applicationConfigService.getEndpointFor('api/public/menu');
 
+  /** Crea un nuovo menu con controllo livello utente lato backend. */
   create(menu: NewMenu): Observable<EntityResponseType> {
     return this.http.post<IMenu>(this.resourceUrl, menu, { observe: 'response' });
   }
@@ -38,6 +41,11 @@ export class MenuService {
   query(req?: any): Observable<EntityArrayResponseType> {
     const options = createRequestOption(req);
     return this.http.get<IMenu[]>(this.resourceUrl, { params: options, observe: 'response' });
+  }
+
+  /** Restituisce solo i menu dell'utente corrente. Usato dalla Home e da MenuList. */
+  queryCurrentUser(): Observable<EntityArrayResponseType> {
+    return this.http.get<IMenu[]>(`${this.resourceUrl}/current-user`, { observe: 'response' });
   }
 
   delete(id: number): Observable<HttpResponse<{}>> {

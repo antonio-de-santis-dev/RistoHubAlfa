@@ -7,9 +7,12 @@ import java.util.*;
 import java.util.stream.Collectors;
 import main.config.Constants;
 import main.domain.Authority;
+import main.domain.ProfiloRistoratore;
 import main.domain.User;
+import main.domain.enumeration.LivelloUtente;
 import main.repository.AuthorityRepository;
 import main.repository.PersistentTokenRepository;
+import main.repository.ProfiloRistoratoreRepository;
 import main.repository.UserRepository;
 import main.security.AuthoritiesConstants;
 import main.security.SecurityUtils;
@@ -28,6 +31,11 @@ import tech.jhipster.security.RandomUtil;
 
 /**
  * Service class for managing users.
+ *
+ * Percorso: src/main/java/main/service/UserService.java
+ * → SOSTITUISCE il file generato da JHipster
+ * → Modifica: registerUser() crea automaticamente un ProfiloRistoratore
+ *   con LIVELLO_1 dopo la registrazione.
  */
 @Service
 @Transactional
@@ -36,27 +44,26 @@ public class UserService {
     private static final Logger LOG = LoggerFactory.getLogger(UserService.class);
 
     private final UserRepository userRepository;
-
     private final PasswordEncoder passwordEncoder;
-
     private final PersistentTokenRepository persistentTokenRepository;
-
     private final AuthorityRepository authorityRepository;
-
     private final CacheManager cacheManager;
+    private final ProfiloRistoratoreRepository profiloRistoratoreRepository;
 
     public UserService(
         UserRepository userRepository,
         PasswordEncoder passwordEncoder,
         PersistentTokenRepository persistentTokenRepository,
         AuthorityRepository authorityRepository,
-        CacheManager cacheManager
+        CacheManager cacheManager,
+        ProfiloRistoratoreRepository profiloRistoratoreRepository
     ) {
         this.userRepository = userRepository;
         this.passwordEncoder = passwordEncoder;
         this.persistentTokenRepository = persistentTokenRepository;
         this.authorityRepository = authorityRepository;
         this.cacheManager = cacheManager;
+        this.profiloRistoratoreRepository = profiloRistoratoreRepository;
     }
 
     public Optional<User> activateRegistration(String key) {
@@ -64,7 +71,6 @@ public class UserService {
         return userRepository
             .findOneByActivationKey(key)
             .map(user -> {
-                // activate given user for the registration key.
                 user.setActivated(true);
                 user.setActivationKey(null);
                 this.clearUserCaches(user);
@@ -99,6 +105,14 @@ public class UserService {
             });
     }
 
+    /**
+     * Registra un nuovo utente.
+     *
+     * MODIFICA RISPETTO A JHIPSTER:
+     * Dopo il salvataggio dell'utente, crea automaticamente un ProfiloRistoratore
+     * con livello LIVELLO_1. Il profilo è inattivo finché l'admin non attiva l'account
+     * tramite il pannello di amministrazione JHipster standard (campo activated su User).
+     */
     public User registerUser(AdminUserDTO userDTO, String password) {
         userRepository
             .findOneByLogin(userDTO.getLogin().toLowerCase())
@@ -116,10 +130,10 @@ public class UserService {
                     throw new EmailAlreadyUsedException();
                 }
             });
+
         User newUser = new User();
         String encryptedPassword = passwordEncoder.encode(password);
         newUser.setLogin(userDTO.getLogin().toLowerCase());
-        // new user gets initially a generated password
         newUser.setPassword(encryptedPassword);
         newUser.setFirstName(userDTO.getFirstName());
         newUser.setLastName(userDTO.getLastName());
@@ -128,23 +142,28 @@ public class UserService {
         }
         newUser.setImageUrl(userDTO.getImageUrl());
         newUser.setLangKey(userDTO.getLangKey());
-        // new user is not active
         newUser.setActivated(false);
-        // new user gets registration key
         newUser.setActivationKey(RandomUtil.generateActivationKey());
         Set<Authority> authorities = new HashSet<>();
         authorityRepository.findById(AuthoritiesConstants.USER).ifPresent(authorities::add);
         newUser.setAuthorities(authorities);
-        userRepository.save(newUser);
+        User savedUser = userRepository.save(newUser);
         this.clearUserCaches(newUser);
         LOG.debug("Created Information for User: {}", newUser);
-        return newUser;
+
+        // ── MODIFICA: crea il ProfiloRistoratore con LIVELLO_1 ────────────────
+        ProfiloRistoratore profilo = new ProfiloRistoratore();
+        profilo.setUser(savedUser);
+        profilo.setLivello(LivelloUtente.LIVELLO_1);
+        profiloRistoratoreRepository.save(profilo);
+        LOG.debug("Creato ProfiloRistoratore con LIVELLO_1 per utente: {}", savedUser.getLogin());
+        // ─────────────────────────────────────────────────────────────────────
+
+        return savedUser;
     }
 
     private boolean removeNonActivatedUser(User existingUser) {
-        if (existingUser.isActivated()) {
-            return false;
-        }
+        if (existingUser.isActivated()) return false;
         userRepository.delete(existingUser);
         userRepository.flush();
         this.clearUserCaches(existingUser);
@@ -161,7 +180,7 @@ public class UserService {
         }
         user.setImageUrl(userDTO.getImageUrl());
         if (userDTO.getLangKey() == null) {
-            user.setLangKey(Constants.DEFAULT_LANGUAGE); // default language
+            user.setLangKey(Constants.DEFAULT_LANGUAGE);
         } else {
             user.setLangKey(userDTO.getLangKey());
         }
@@ -186,12 +205,6 @@ public class UserService {
         return user;
     }
 
-    /**
-     * Update all information for a specific user, and return the modified user.
-     *
-     * @param userDTO user to update.
-     * @return updated user.
-     */
     public Optional<AdminUserDTO> updateUser(AdminUserDTO userDTO) {
         return Optional.of(userRepository.findById(userDTO.getId()))
             .filter(Optional::isPresent)
@@ -234,24 +247,13 @@ public class UserService {
             });
     }
 
-    /**
-     * Update basic information (first name, last name, email, language) for the current user.
-     *
-     * @param firstName first name of user.
-     * @param lastName  last name of user.
-     * @param email     email id of user.
-     * @param langKey   language key.
-     * @param imageUrl  image URL of user.
-     */
     public void updateUser(String firstName, String lastName, String email, String langKey, String imageUrl) {
         SecurityUtils.getCurrentUserLogin()
             .flatMap(userRepository::findOneByLogin)
             .ifPresent(user -> {
                 user.setFirstName(firstName);
                 user.setLastName(lastName);
-                if (email != null) {
-                    user.setEmail(email.toLowerCase());
-                }
+                if (email != null) user.setEmail(email.toLowerCase());
                 user.setLangKey(langKey);
                 user.setImageUrl(imageUrl);
                 userRepository.save(user);
@@ -296,12 +298,6 @@ public class UserService {
         return SecurityUtils.getCurrentUserLogin().flatMap(userRepository::findOneWithAuthoritiesByLogin);
     }
 
-    /**
-     * Persistent Token are used for providing automatic authentication, they should be automatically deleted after
-     * 30 days.
-     * <p>
-     * This is scheduled to get fired every day, at midnight.
-     */
     @Scheduled(cron = "0 0 0 * * ?")
     public void removeOldPersistentTokens() {
         LocalDate now = LocalDate.now();
@@ -315,11 +311,6 @@ public class UserService {
             });
     }
 
-    /**
-     * Not activated users should be automatically deleted after 3 days.
-     * <p>
-     * This is scheduled to get fired every day, at 01:00 (am).
-     */
     @Scheduled(cron = "0 0 1 * * ?")
     public void removeNotActivatedUsers() {
         userRepository
@@ -331,10 +322,6 @@ public class UserService {
             });
     }
 
-    /**
-     * Gets a list of all the authorities.
-     * @return a list of all the authorities.
-     */
     @Transactional(readOnly = true)
     public List<String> getAuthorities() {
         return authorityRepository.findAll().stream().map(Authority::getName).toList();

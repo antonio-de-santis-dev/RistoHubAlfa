@@ -19,6 +19,7 @@
     <property name="timeType" value="time(6)" dbms="postgresql"/>
 
     <include file="config/liquibase/changelog/00000000000000_initial_schema.xml" relativeToChangelogFile="false"/>
+
     <include file="config/liquibase/changelog/20260511093524_added_entity_ProfiloRistoratore.xml" relativeToChangelogFile="false"/>
     <include file="config/liquibase/changelog/20260511093525_added_entity_Menu.xml" relativeToChangelogFile="false"/>
     <include file="config/liquibase/changelog/20260511093526_added_entity_Portata.xml" relativeToChangelogFile="false"/>
@@ -36,6 +37,7 @@
     <include file="config/liquibase/changelog/20260511093529_added_entity_constraints_PiattoDelGiorno.xml" relativeToChangelogFile="false"/>
     <include file="config/liquibase/changelog/20260511093531_added_entity_constraints_ContattoItem.xml" relativeToChangelogFile="false"/>
     <include file="config/liquibase/changelog/20260511093532_added_entity_constraints_TraduzioneMenu.xml" relativeToChangelogFile="false"/>
+    <include file="config/liquibase/changelog/20260511120000_allergeni_default.xml" relativeToChangelogFile="false"/>
     <!-- jhipster-needle-liquibase-add-constraints-changelog - JHipster will add liquibase constraints changelogs here -->
     <!-- jhipster-needle-liquibase-add-incremental-changelog - JHipster will add incremental liquibase changelogs here -->
 </databaseChangeLog>

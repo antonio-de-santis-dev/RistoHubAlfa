@@ -11,9 +11,22 @@ import org.springframework.stereotype.Repository;
 
 /**
  * Spring Data JPA repository for the ProfiloRistoratore entity.
+ *
+ * Percorso: src/main/java/main/repository/ProfiloRistoratoreRepository.java
+ * → SOSTITUISCE il file generato da JHipster
  */
 @Repository
 public interface ProfiloRistoratoreRepository extends JpaRepository<ProfiloRistoratore, Long> {
+    // ── Metodi aggiuntivi custom ──────────────────────────────────────────────
+
+    /**
+     * Trova il profilo per login utente.
+     * Usato da MenuService e PiattoDelGiornoService per leggere il livello.
+     */
+    Optional<ProfiloRistoratore> findOneByUserLogin(String login);
+
+    // ── Metodi generati da JHipster (invariati) ───────────────────────────────
+
     default Optional<ProfiloRistoratore> findOneWithEagerRelationships(Long id) {
         return this.findOneWithToOneRelationships(id);
     }
@@ -26,17 +39,12 @@ public interface ProfiloRistoratoreRepository extends JpaRepository<ProfiloRisto
         return this.findAllWithToOneRelationships(pageable);
     }
 
-    @Query(
-        value = "select profiloRistoratore from ProfiloRistoratore profiloRistoratore left join fetch profiloRistoratore.user",
-        countQuery = "select count(profiloRistoratore) from ProfiloRistoratore profiloRistoratore"
-    )
+    @Query(value = "select p from ProfiloRistoratore p left join fetch p.user", countQuery = "select count(p) from ProfiloRistoratore p")
     Page<ProfiloRistoratore> findAllWithToOneRelationships(Pageable pageable);
 
-    @Query("select profiloRistoratore from ProfiloRistoratore profiloRistoratore left join fetch profiloRistoratore.user")
+    @Query("select p from ProfiloRistoratore p left join fetch p.user")
     List<ProfiloRistoratore> findAllWithToOneRelationships();
 
-    @Query(
-        "select profiloRistoratore from ProfiloRistoratore profiloRistoratore left join fetch profiloRistoratore.user where profiloRistoratore.id =:id"
-    )
+    @Query("select p from ProfiloRistoratore p left join fetch p.user where p.id =:id")
     Optional<ProfiloRistoratore> findOneWithToOneRelationships(@Param("id") Long id);
 }

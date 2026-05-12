@@ -1,0 +1,95 @@
+/* Percorso: src/main/webapp/app/menu-editor/menu-editor.component.scss */
+
+.rh-editor-logo {
+  width: 56px;
+  height: 56px;
+  object-fit: cover;
+  border-radius: 10px;
+  border: 1px solid #e0e0e0;
+}
+
+.rh-accordion .accordion-item {
+  border-radius: 12px !important;
+  overflow: hidden;
+}
+
+.rh-portata-header {
+  background: #f8f9fa;
+  color: #1a1a2e;
+  font-size: 1rem;
+  padding: 1rem 1.25rem;
+
+  &:not(.collapsed) {
+    background: #1a1a2e;
+    color: #fff;
+    box-shadow: none;
+  }
+
+  &::after {
+    filter: invert(0);
+  }
+
+  &:not(.collapsed)::after {
+    filter: invert(1);
+  }
+}
+
+.rh-prodotto-row {
+  transition: background 0.1s;
+
+  &:hover {
+    background: #f8f9fa;
+  }
+}
+
+.rh-nascosto {
+  opacity: 0.5;
+}
+
+.rh-prezzo {
+  color: #2c6f41;
+  font-size: 1rem;
+}
+
+.rh-allergene-icon {
+  border-radius: 4px;
+}
+
+.btn-icon {
+  width: 32px;
+  height: 32px;
+  padding: 0;
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+}
+
+/* Modal */
+.rh-modal-backdrop {
+  background: rgba(0, 0, 0, 0.5);
+  z-index: 1055;
+}
+
+/* Chips allergeni */
+.rh-chip {
+  display: inline-flex;
+  align-items: center;
+  padding: 4px 10px;
+  border-radius: 20px;
+  border: 1.5px solid #dee2e6;
+  background: #fff;
+  font-size: 0.82rem;
+  cursor: pointer;
+  transition: all 0.15s;
+
+  &:hover {
+    border-color: #0d6efd;
+    color: #0d6efd;
+  }
+
+  &.rh-chip-active {
+    background: #0d6efd;
+    color: #fff;
+    border-color: #0d6efd;
+  }
+}
