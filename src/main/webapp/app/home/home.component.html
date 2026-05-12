@@ -1,110 +1,135 @@
-<!-- Percorso: src/main/webapp/app/home/home.component.html -->
+<!-- PERCORSO: src/main/webapp/app/home/home.component.html -->
+<!-- Sostituisce il file base JHipster con il layout dark glassmorphism del vecchio RistoHub -->
 
 <div class="rh-home">
-  <!-- ── HERO (sempre visibile) ─────────────────────────────────────────── -->
-  <div class="rh-hero text-center py-5">
-    <img src="content/images/logo.png" alt="RistoHub" class="rh-logo mb-3" height="72" onerror="this.style.display='none'" />
-    <h1 class="rh-title fw-bold">RistoHub</h1>
-    <p class="rh-tagline lead text-muted">Il tuo menu digitale professionale</p>
+  <!-- ── HERO ──────────────────────────────────────────────────────────── -->
+  <div class="rh-hero">
+    <div class="rh-hero-content">
+      <img src="content/images/logo.png" alt="RistoHub" class="rh-hero-logo" onerror="this.style.display='none'" />
+      <p class="rh-hero-tagline">Il tuo menu digitale professionale</p>
+    </div>
   </div>
 
   <!-- ── UTENTE NON LOGGATO ────────────────────────────────────────────── -->
   @if (!account()) {
-    <div class="text-center mt-4">
-      <p class="mb-4 text-muted">Gestisci il tuo menu digitale in pochi click.<br />Accedi o registrati per iniziare.</p>
+    <div class="rh-dashboard text-center">
+      <p class="mb-4" style="color: rgba(255, 255, 255, 0.75)">
+        Gestisci il tuo menu digitale in pochi click.<br />
+        Accedi o registrati per iniziare.
+      </p>
       <div class="d-flex justify-content-center gap-3 flex-wrap">
         <button class="btn btn-primary btn-lg px-5" (click)="login()">
           <span jhiTranslate="global.menu.account.login">Accedi</span>
         </button>
-        <a class="btn btn-outline-secondary btn-lg px-5" routerLink="/account/register">
+        <a class="btn btn-outline-light btn-lg px-5" routerLink="/account/register">
           <span jhiTranslate="global.menu.account.register">Registrati</span>
         </a>
       </div>
     </div>
   }
 
-  <!-- ── UTENTE LOGGATO: lista menu ─────────────────────────────────────── -->
+  <!-- ── UTENTE LOGGATO ────────────────────────────────────────────────── -->
   @if (account()) {
-    <div class="container mt-4">
-      <!-- Intestazione -->
-      <div class="d-flex justify-content-between align-items-center mb-4 flex-wrap gap-2">
-        <h2 class="mb-0 fw-semibold">I tuoi menu</h2>
-        <a class="btn btn-primary" routerLink="/entities/menu/new">
-          <fa-icon icon="plus" class="me-1"></fa-icon>
-          Nuovo menu
-        </a>
+    <div class="rh-dashboard">
+      <!-- Saluto -->
+      <div class="rh-dashboard-greeting">
+        <h2>
+          Ciao, <span class="rh-user-name">{{ account()!.firstName || account()!.login }}</span> 👋
+        </h2>
+        <p>Ecco i tuoi menu digitali</p>
       </div>
 
-      <!-- Loading -->
-      @if (isLoading()) {
-        <div class="text-center py-5">
-          <div class="spinner-border text-primary" role="status"></div>
-        </div>
-      }
+      <!-- Grid dashboard -->
+      <div class="rh-dash-grid">
+        <!-- ── CARD: I tuoi menu ─────────────────────────────────────── -->
+        <div class="rh-dash-card">
+          <div class="rh-card-header">
+            <span class="rh-card-icon">🍽️</span>
+            <div class="rh-card-header-text">
+              <h3>I tuoi menu</h3>
+              <p>Gestisci e pubblica i menu</p>
+            </div>
+            <a routerLink="/entities/menu/new" class="rh-card-link">+ Nuovo</a>
+          </div>
 
-      <!-- Nessun menu -->
-      @if (!isLoading() && menus().length === 0) {
-        <div class="rh-empty text-center py-5">
-          <fa-icon icon="utensils" size="3x" class="text-muted mb-3"></fa-icon>
-          <p class="text-muted">Non hai ancora nessun menu.<br />Creane uno per iniziare!</p>
-          <a class="btn btn-primary mt-2" routerLink="/entities/menu/new">Crea il primo menu</a>
-        </div>
-      }
+          @if (isLoading()) {
+            <div class="rh-card-loading">
+              <div class="rh-mini-spinner"></div>
+              <span>Caricamento...</span>
+            </div>
+          }
 
-      <!-- Grid menu -->
-      @if (!isLoading() && menus().length > 0) {
-        <div class="row row-cols-1 row-cols-md-2 row-cols-lg-3 g-4">
-          @for (menu of menus(); track menu.id) {
-            <div class="col">
-              <div class="card rh-menu-card h-100 shadow-sm">
-                <!-- Logo -->
-                @if (menu.logo) {
-                  <img
-                    [src]="'data:' + menu.logoContentType + ';base64,' + menu.logo"
-                    class="card-img-top rh-card-logo"
-                    alt="Logo {{ menu.nome }}"
-                  />
-                }
-                @if (!menu.logo) {
-                  <div class="rh-card-logo-placeholder d-flex align-items-center justify-content-center bg-light">
-                    <fa-icon icon="utensils" size="2x" class="text-muted"></fa-icon>
-                  </div>
-                }
+          @if (!isLoading() && menus().length === 0) {
+            <div class="rh-card-empty">
+              <span class="rh-empty-icon">📋</span>
+              <p>Nessun menu creato.</p>
+              <a routerLink="/entities/menu/new" class="rh-empty-cta">Crea il primo menu →</a>
+            </div>
+          }
 
-                <div class="card-body">
-                  <div class="d-flex justify-content-between align-items-start mb-2">
-                    <h5 class="card-title mb-0 fw-semibold">{{ menu.nome }}</h5>
-                    @if (menu.attivo) {
-                      <span class="badge bg-success">Attivo</span>
-                    } @else {
-                      <span class="badge bg-secondary">Non attivo</span>
+          @if (!isLoading() && menus().length > 0) {
+            <div class="rh-menus-list">
+              @for (menu of menus().slice(0, 5); track menu.id) {
+                <div class="rh-menu-row" (click)="goToEditor(menu.id!)">
+                  <div class="rh-menu-stato" [class.rh-menu-attivo]="menu.attivo" [class.rh-menu-inattivo]="!menu.attivo"></div>
+                  <div class="rh-menu-info">
+                    <span class="rh-menu-nome">{{ menu.nome }}</span>
+                    @if (menu.descrizione) {
+                      <span class="rh-menu-desc">{{ menu.descrizione }}</span>
                     }
                   </div>
-                  @if (menu.descrizione) {
-                    <p class="card-text text-muted small">{{ menu.descrizione }}</p>
-                  }
+                  <button class="rh-qr-btn" title="Copia link QR" (click)="$event.stopPropagation(); copyQrLink(menu.id!)">
+                    <fa-icon icon="qrcode" size="sm"></fa-icon>
+                  </button>
                 </div>
-
-                <div class="card-footer bg-transparent border-top-0 pb-3">
-                  <div class="d-flex gap-2 flex-wrap">
-                    <button class="btn btn-sm btn-outline-primary flex-fill" (click)="goToEditor(menu.id!)">
-                      <fa-icon icon="edit" class="me-1"></fa-icon>
-                      Modifica
-                    </button>
-                    <button class="btn btn-sm btn-outline-secondary flex-fill" (click)="goToPreview(menu.id!)">
-                      <fa-icon icon="eye" class="me-1"></fa-icon>
-                      Anteprima
-                    </button>
-                    <button class="btn btn-sm btn-outline-dark" [title]="'Link QR: ' + getQrUrl(menu.id!)" (click)="copyQrLink(menu.id!)">
-                      <fa-icon icon="qrcode"></fa-icon>
-                    </button>
-                  </div>
+              }
+              @if (menus().length > 5) {
+                <div class="rh-more-items">
+                  <a routerLink="/entities/menu">Vedi tutti i {{ menus().length }} menu →</a>
                 </div>
-              </div>
+              }
             </div>
           }
         </div>
-      }
+
+        <!-- ── CARD: Accesso rapido ──────────────────────────────────── -->
+        <div class="rh-dash-card">
+          <div class="rh-card-header">
+            <span class="rh-card-icon">⚡</span>
+            <div class="rh-card-header-text">
+              <h3>Accesso rapido</h3>
+              <p>Funzioni principali</p>
+            </div>
+          </div>
+          <div class="rh-quick-links">
+            <a routerLink="/piatti-giorno" class="rh-quick-item">
+              <span class="rh-quick-icon">⭐</span>
+              <span class="rh-quick-label">Piatti del giorno</span>
+              <span class="rh-quick-arrow">→</span>
+            </a>
+            <a routerLink="/contatti" class="rh-quick-item">
+              <span class="rh-quick-icon">📞</span>
+              <span class="rh-quick-label">Gestione contatti</span>
+              <span class="rh-quick-arrow">→</span>
+            </a>
+            <a routerLink="/entities/menu/new" class="rh-quick-item">
+              <span class="rh-quick-icon">➕</span>
+              <span class="rh-quick-label">Crea nuovo menu</span>
+              <span class="rh-quick-arrow">→</span>
+            </a>
+            <a routerLink="/entities/menu" class="rh-quick-item">
+              <span class="rh-quick-icon">📋</span>
+              <span class="rh-quick-label">Tutti i menu</span>
+              <span class="rh-quick-arrow">→</span>
+            </a>
+          </div>
+        </div>
+      </div>
     </div>
   }
+
+  <!-- ── FOOTER ────────────────────────────────────────────────────────── -->
+  <footer class="rh-home-footer">
+    <p><strong>RistoHub</strong> — Il tuo menu digitale professionale</p>
+  </footer>
 </div>

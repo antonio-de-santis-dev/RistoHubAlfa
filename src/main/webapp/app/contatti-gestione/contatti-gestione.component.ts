@@ -1,7 +1,4 @@
 // PERCORSO: src/main/webapp/app/contatti-gestione/contatti-gestione.component.ts
-// → FILE NUOVO da creare in src/main/webapp/app/contatti-gestione/
-//
-// Adattato da RistoHub-dev per usare i service JHipster di RistoHubAlfa.
 
 import { Component, OnInit, inject, signal } from '@angular/core';
 import { CommonModule } from '@angular/common';
@@ -9,10 +6,10 @@ import { FormsModule } from '@angular/forms';
 import { HttpClient } from '@angular/common/http';
 import { RouterModule } from '@angular/router';
 import { firstValueFrom } from 'rxjs';
-import ApplicationConfigService from 'app/core/config/application-config.service';
+// ✅ FIX TS2613: named import invece di default import
+import { ApplicationConfigService } from 'app/core/config/application-config.service';
 import { IMenu } from 'app/entities/menu/menu.model';
 import { IListaContatti } from 'app/entities/lista-contatti/lista-contatti.model';
-import { IContattoItem } from 'app/entities/contatto-item/contatto-item.model';
 import { MenuService } from 'app/entities/menu/service/menu.service';
 
 // Tipi per i recapiti
@@ -88,6 +85,7 @@ export class ContattiGestioneComponent implements OnInit {
   ];
 
   private readonly http = inject(HttpClient);
+  // ✅ FIX TS2613: ApplicationConfigService named import
   private readonly configService = inject(ApplicationConfigService);
   private readonly menuService = inject(MenuService);
 
@@ -98,8 +96,10 @@ export class ContattiGestioneComponent implements OnInit {
   async caricaListe(): Promise<void> {
     try {
       const url = this.configService.getEndpointFor('api/lista-contattis');
-      this.listeContatti.set((await firstValueFrom(this.http.get<IListaContatti[]>(url))) ?? []);
-    } catch (e) {
+      // ✅ FIX TS2571: cast esplicito del tipo
+      const risultato = await firstValueFrom(this.http.get<IListaContatti[]>(url));
+      this.listeContatti.set(risultato ?? []);
+    } catch (e: unknown) {
       console.error('Errore caricamento liste contatti:', e);
     }
   }
@@ -108,7 +108,7 @@ export class ContattiGestioneComponent implements OnInit {
     try {
       const res = await firstValueFrom(this.menuService.query());
       this.menus.set(res.body ?? []);
-    } catch (e) {
+    } catch (e: unknown) {
       console.error('Errore caricamento menu:', e);
     }
   }
@@ -218,7 +218,7 @@ export class ContattiGestioneComponent implements OnInit {
       }
       await this.caricaListe();
       this.chiudiModal();
-    } catch (e) {
+    } catch (e: unknown) {
       this.erroreForm = 'Errore durante il salvataggio. Riprova.';
       console.error(e);
     } finally {
@@ -244,7 +244,7 @@ export class ContattiGestioneComponent implements OnInit {
       await firstValueFrom(this.http.delete(url));
       this.listeContatti.update(list => list.filter(l => l.id !== this.listaInEliminazione!.id));
       this.chiudiEliminazione();
-    } catch (e) {
+    } catch (e: unknown) {
       console.error(e);
     } finally {
       this.isDeleting = false;

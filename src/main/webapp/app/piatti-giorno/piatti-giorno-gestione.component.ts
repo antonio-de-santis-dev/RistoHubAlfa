@@ -1,8 +1,4 @@
 // PERCORSO: src/main/webapp/app/piatti-giorno/piatti-giorno-gestione.component.ts
-// → FILE NUOVO da creare in src/main/webapp/app/piatti-giorno/
-//
-// Adattato da RistoHub-dev per usare i service/model di RistoHubAlfa
-// invece dei model personalizzati (risto.model.ts non esiste in Alfa).
 
 import { Component, OnInit, inject, signal } from '@angular/core';
 import { HttpClient } from '@angular/common/http';
@@ -10,15 +6,26 @@ import { CommonModule } from '@angular/common';
 import { FormsModule } from '@angular/forms';
 import { RouterModule } from '@angular/router';
 import { firstValueFrom } from 'rxjs';
-import ApplicationConfigService from 'app/core/config/application-config.service';
+// ✅ FIX TS2613: named import invece di default import
+import { ApplicationConfigService } from 'app/core/config/application-config.service';
 import { IMenu } from 'app/entities/menu/menu.model';
 import { IPiattoDelGiorno } from 'app/entities/piatto-del-giorno/piatto-del-giorno.model';
+// ✅ FIX TS2339: IProdotto dal modello corretto di JHipster
 import { IProdotto } from 'app/entities/prodotto/prodotto.model';
 import { IPortata } from 'app/entities/portata/portata.model';
 import { IAllergene } from 'app/entities/allergene/allergene.model';
 import { MenuService } from 'app/entities/menu/service/menu.service';
 import { PiattoDelGiornoService } from 'app/entities/piatto-del-giorno/service/piatto-del-giorno.service';
 import { AllergeneService } from 'app/entities/allergene/service/allergene.service';
+
+// ✅ Interfaccia locale che estende IProdotto con i campi che servono
+// (il modello JHipster usa Pick<IProdotto,'id'> in alcune relazioni,
+//  ma nella lista completa i campi ci sono tutti)
+interface ProdottoEsteso extends IProdotto {
+  nome: string;
+  descrizione?: string | null;
+  prezzo?: number | null;
+}
 
 @Component({
   selector: 'jhi-piatti-giorno-gestione',
@@ -45,8 +52,9 @@ export class PiattiGiornoGestioneComponent implements OnInit {
   menuSelezionato: number | null = null;
   portataSelezionata: number | null = null;
   portate: IPortata[] = [];
-  prodotti: IProdotto[] = [];
-  prodottoSelezionato: IProdotto | null = null;
+  // ✅ FIX TS2339: usa ProdottoEsteso invece di Pick<IProdotto,'id'>
+  prodotti: ProdottoEsteso[] = [];
+  prodottoSelezionato: ProdottoEsteso | null = null;
   allergeniSelezionati: Set<number> = new Set();
 
   // Modifica
@@ -84,7 +92,7 @@ export class PiattiGiornoGestioneComponent implements OnInit {
       this.menus.set(menusRes.body ?? []);
       this.allergeniDisponibili.set(allergeniRes.body ?? []);
       this.piattiGiorno.set(piattiRes.body ?? []);
-    } catch (err) {
+    } catch (err: unknown) {
       console.error('Errore caricamento piatti del giorno:', err);
     } finally {
       this.isLoading = false;
@@ -101,8 +109,10 @@ export class PiattiGiornoGestioneComponent implements OnInit {
     this.prodottoSelezionato = null;
     const url = this.configService.getEndpointFor(`api/portatas?menuId.equals=${this.menuSelezionato}`);
     try {
-      this.portate = (await firstValueFrom(this.http.get<IPortata[]>(url))) ?? [];
-    } catch (err) {
+      // ✅ FIX TS2571: cast tipizzato
+      const risultato = await firstValueFrom(this.http.get<IPortata[]>(url));
+      this.portate = risultato ?? [];
+    } catch (err: unknown) {
       console.error('Errore portate:', err);
     }
   }
@@ -111,10 +121,12 @@ export class PiattiGiornoGestioneComponent implements OnInit {
     if (!this.portataSelezionata) return;
     this.prodotti = [];
     this.prodottoSelezionato = null;
-    const url = this.configService.getEndpointFor(`api/prodottos/by-portata/${this.portataSelezionata}`);
+    const url = this.configService.getEndpointFor(`api/prodottos?portataId.equals=${this.portataSelezionata}`);
     try {
-      this.prodotti = (await firstValueFrom(this.http.get<IProdotto[]>(url))) ?? [];
-    } catch (err) {
+      // ✅ FIX TS2339: cast a ProdottoEsteso[] per avere nome/descrizione/prezzo
+      const risultato = await firstValueFrom(this.http.get<ProdottoEsteso[]>(url));
+      this.prodotti = risultato ?? [];
+    } catch (err: unknown) {
       console.error('Errore prodotti:', err);
     }
   }
@@ -184,7 +196,7 @@ export class PiattiGiornoGestioneComponent implements OnInit {
       const nuovo = await firstValueFrom(this.http.post<IPiattoDelGiorno>(url, body));
       this.piattiGiorno.update(list => [nuovo, ...list]);
       this.chiudiModale();
-    } catch (err) {
+    } catch (err: unknown) {
       console.error('Errore salvataggio piatto:', err);
     } finally {
       this.isSaving = false;
@@ -200,7 +212,7 @@ export class PiattiGiornoGestioneComponent implements OnInit {
       const url = this.configService.getEndpointFor(`api/piatto-del-giornos/${piatto.id}`);
       await firstValueFrom(this.http.patch(url, { id: piatto.id, attivo: nuovoStato }));
       this.piattiGiorno.update(list => list.map(p => (p.id === piatto.id ? { ...p, attivo: nuovoStato } : p)));
-    } catch (err) {
+    } catch (err: unknown) {
       console.error('Errore toggle attivo:', err);
     }
   }
@@ -209,9 +221,11 @@ export class PiattiGiornoGestioneComponent implements OnInit {
 
   apriModaleModifica(piatto: IPiattoDelGiorno): void {
     this.piattoInModifica = piatto;
-    this.editNome = piatto.nome ?? piatto.prodotto?.nome ?? '';
-    this.editDescrizione = piatto.descrizione ?? piatto.prodotto?.descrizione ?? '';
-    this.editPrezzo = piatto.prezzo ?? piatto.prodotto?.prezzo ?? null;
+    // ✅ FIX TS2339: accesso sicuro ai campi tramite type assertion
+    const prodotto = piatto.prodotto as any;
+    this.editNome = piatto.nome ?? prodotto?.nome ?? '';
+    this.editDescrizione = piatto.descrizione ?? prodotto?.descrizione ?? '';
+    this.editPrezzo = piatto.prezzo ?? prodotto?.prezzo ?? null;
     this.editMenuId = (piatto.menu as any)?.id ?? null;
     this.editErrore = null;
     this.modaleModificaAperto = true;
@@ -243,7 +257,7 @@ export class PiattiGiornoGestioneComponent implements OnInit {
       const aggiornato = await firstValueFrom(this.http.put<IPiattoDelGiorno>(url, body));
       this.piattiGiorno.update(list => list.map(p => (p.id === aggiornato.id ? aggiornato : p)));
       this.chiudiModaleModifica();
-    } catch (err) {
+    } catch (err: unknown) {
       this.editErrore = 'Errore durante il salvataggio. Riprova.';
       console.error(err);
     } finally {
@@ -270,7 +284,7 @@ export class PiattiGiornoGestioneComponent implements OnInit {
       await firstValueFrom(this.piattoDelGiornoService.delete(this.piattoInEliminazione.id));
       this.piattiGiorno.update(list => list.filter(p => p.id !== this.piattoInEliminazione!.id));
       this.chiudiModaleEliminazione();
-    } catch (err) {
+    } catch (err: unknown) {
       console.error('Errore eliminazione:', err);
     } finally {
       this.isDeleting = false;
@@ -295,7 +309,7 @@ export class PiattiGiornoGestioneComponent implements OnInit {
     return new Intl.NumberFormat('it-IT', { style: 'currency', currency: 'EUR' }).format(prezzo);
   }
 
-  nomeMenu(id: number | null): string {
+  nomeMenu(id: number | null | undefined): string {
     if (!id) return '—';
     return this.menus().find(m => m.id === id)?.nome ?? String(id);
   }

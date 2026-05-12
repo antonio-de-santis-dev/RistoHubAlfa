@@ -1,47 +1,486 @@
-/* Percorso: src/main/webapp/app/home/home.component.scss */
+// PERCORSO: src/main/webapp/app/home/home.component.scss
+// Sostituisce il file base JHipster con il layout dark glassmorphism del vecchio RistoHub
 
-.rh-hero {
-  background: linear-gradient(135deg, #fff8f0 0%, #fff 100%);
-  border-bottom: 1px solid #f0e8df;
+$accent: #c8102e;
+$accent-soft: #ffb3be;
+
+:host {
+  display: block;
+  margin: -1.5% -1.5% -1.5% -1.5%;
 }
 
-.rh-logo {
-  object-fit: contain;
-}
+.rh-home {
+  min-height: 100vh;
+  display: flex;
+  flex-direction: column;
+  position: relative;
+  background-image: url('/content/images/sfondo.png');
+  background-size: cover;
+  background-position: center;
+  background-repeat: no-repeat;
+  background-attachment: fixed;
 
-.rh-title {
-  font-size: 2.4rem;
-  color: #1a1a2e;
-}
-
-.rh-tagline {
-  font-size: 1.15rem;
-}
-
-.rh-menu-card {
-  border-radius: 12px;
-  border: 1px solid #e8e8e8;
-  transition:
-    transform 0.15s ease,
-    box-shadow 0.15s ease;
-
-  &:hover {
-    transform: translateY(-3px);
-    box-shadow: 0 8px 24px rgba(0, 0, 0, 0.1) !important;
+  &::before {
+    content: '';
+    position: fixed;
+    inset: 0;
+    background: rgba(0, 0, 0, 0.6);
+    z-index: 0;
+    pointer-events: none;
   }
 }
 
-.rh-card-logo {
-  height: 160px;
-  object-fit: cover;
-  border-radius: 12px 12px 0 0;
+.rh-hero,
+.rh-dashboard,
+.rh-home-footer {
+  position: relative;
+  z-index: 1;
 }
 
-.rh-card-logo-placeholder {
-  height: 160px;
-  border-radius: 12px 12px 0 0;
+// ══ HERO ══════════════════════════════════════════════
+
+.rh-hero {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  padding: 3.5vh 2rem 3vh;
+  min-height: 30vh;
 }
 
-.rh-empty {
-  color: #6c757d;
+.rh-hero-content {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  text-align: center;
+  animation: heroIn 0.9s cubic-bezier(0.34, 1.56, 0.64, 1) both;
+}
+
+@keyframes heroIn {
+  from {
+    opacity: 0;
+    transform: translateY(28px) scale(0.93);
+  }
+  to {
+    opacity: 1;
+    transform: translateY(0) scale(1);
+  }
+}
+
+.rh-hero-logo {
+  width: clamp(110px, 16vw, 220px);
+  height: auto;
+  object-fit: contain;
+  filter: drop-shadow(0 4px 40px rgba(255, 255, 255, 0.2));
+}
+
+.rh-hero-tagline {
+  margin: 0.75rem 0 0;
+  font-family: 'Lato', 'Helvetica Neue', sans-serif;
+  font-size: clamp(0.72rem, 1.3vw, 0.92rem);
+  font-weight: 400;
+  color: rgba(255, 255, 255, 0.88);
+  letter-spacing: 0.13em;
+  text-transform: uppercase;
+  text-shadow: 0 2px 18px rgba(0, 0, 0, 0.8);
+}
+
+// ══ DASHBOARD ═════════════════════════════════════════
+
+.rh-dashboard {
+  flex: 1;
+  max-width: 1080px;
+  width: 100%;
+  margin: 0 auto;
+  padding: 1.5rem 1.5rem 2rem;
+}
+
+.rh-dashboard-greeting {
+  margin-bottom: 1.25rem;
+  h2 {
+    font-family: 'Playfair Display', 'Georgia', serif;
+    font-size: 1.5rem;
+    font-weight: 700;
+    color: #ffffff;
+    margin: 0 0 4px;
+    line-height: 1.2;
+    text-shadow:
+      0 2px 20px rgba(0, 0, 0, 0.95),
+      0 1px 4px rgba(0, 0, 0, 1);
+  }
+  p {
+    color: rgba(255, 255, 255, 0.9);
+    margin: 0;
+    font-size: 0.9rem;
+    font-weight: 500;
+    text-shadow: 0 1px 10px rgba(0, 0, 0, 0.9);
+  }
+}
+
+.rh-user-name {
+  color: $accent-soft;
+}
+
+.rh-dash-grid {
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  gap: 1.25rem;
+}
+
+.rh-dash-card {
+  background: rgba(255, 255, 255, 0.09);
+  backdrop-filter: blur(20px);
+  -webkit-backdrop-filter: blur(20px);
+  border-radius: 18px;
+  overflow: hidden;
+  border: 1px solid rgba(255, 255, 255, 0.17);
+  box-shadow:
+    0 8px 32px rgba(0, 0, 0, 0.4),
+    inset 0 1px 0 rgba(255, 255, 255, 0.1);
+  min-height: 240px;
+  display: flex;
+  flex-direction: column;
+}
+
+.rh-card-header {
+  display: flex;
+  align-items: center;
+  gap: 12px;
+  padding: 1rem 1.25rem 0.9rem;
+  border-bottom: 1px solid rgba(255, 255, 255, 0.11);
+  background: rgba(255, 255, 255, 0.05);
+}
+
+.rh-card-icon {
+  font-size: 1.6rem;
+  flex-shrink: 0;
+  line-height: 1;
+  color: rgba(255, 255, 255, 0.9);
+  display: flex;
+  align-items: center;
+}
+
+.rh-card-header-text {
+  flex: 1;
+  min-width: 0;
+  h3 {
+    font-size: 1rem;
+    font-weight: 700;
+    color: #ffffff;
+    margin: 0 0 2px;
+    line-height: 1.2;
+    text-shadow: 0 1px 6px rgba(0, 0, 0, 0.6);
+  }
+  p {
+    font-size: 0.82rem;
+    color: rgba(255, 255, 255, 0.65);
+    margin: 0;
+  }
+}
+
+.rh-card-link {
+  display: inline-flex;
+  align-items: center;
+  gap: 5px;
+  font-size: 0.82rem;
+  font-weight: 700;
+  color: $accent-soft;
+  text-decoration: none;
+  white-space: nowrap;
+  flex-shrink: 0;
+  padding: 4px 10px;
+  border-radius: 20px;
+  border: 1px solid rgba(255, 179, 190, 0.35);
+  transition: all 0.18s;
+  &:hover {
+    background: rgba(255, 179, 190, 0.14);
+    color: #fff;
+    border-color: rgba(255, 255, 255, 0.35);
+  }
+}
+
+.rh-card-loading {
+  flex: 1;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  gap: 12px;
+  color: rgba(255, 255, 255, 0.65);
+  font-size: 0.92rem;
+  padding: 2rem;
+}
+
+.rh-mini-spinner {
+  width: 20px;
+  height: 20px;
+  border: 2.5px solid rgba(255, 255, 255, 0.15);
+  border-top-color: rgba(255, 255, 255, 0.85);
+  border-radius: 50%;
+  animation: spin 0.75s linear infinite;
+  flex-shrink: 0;
+}
+
+@keyframes spin {
+  to {
+    transform: rotate(360deg);
+  }
+}
+
+.rh-card-empty {
+  flex: 1;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  gap: 8px;
+  padding: 2rem;
+  text-align: center;
+  p {
+    color: rgba(255, 255, 255, 0.72);
+    font-size: 0.92rem;
+    margin: 0;
+  }
+}
+
+.rh-empty-icon {
+  font-size: 2rem;
+  opacity: 0.55;
+}
+.rh-empty-cta {
+  color: $accent-soft;
+  font-size: 0.88rem;
+  font-weight: 700;
+  text-decoration: none;
+  margin-top: 2px;
+  &:hover {
+    color: #fff;
+    text-decoration: underline;
+  }
+}
+
+// ── Menu list ─────────────────────────────────────────
+
+.rh-menus-list {
+  flex: 1;
+  padding: 0.3rem 0;
+}
+
+.rh-menu-row {
+  display: flex;
+  align-items: center;
+  gap: 12px;
+  padding: 0.65rem 1.25rem;
+  border-bottom: 1px solid rgba(255, 255, 255, 0.07);
+  cursor: pointer;
+  transition: background 0.15s;
+  &:last-child {
+    border-bottom: none;
+  }
+  &:hover {
+    background: rgba(255, 255, 255, 0.05);
+  }
+}
+
+.rh-menu-stato {
+  width: 3px;
+  height: 32px;
+  border-radius: 3px;
+  flex-shrink: 0;
+  &.rh-menu-attivo {
+    background: #4ade80;
+    box-shadow: 0 0 6px rgba(74, 222, 128, 0.5);
+  }
+  &.rh-menu-inattivo {
+    background: rgba(255, 255, 255, 0.2);
+  }
+}
+
+.rh-menu-info {
+  flex: 1;
+  display: flex;
+  flex-direction: column;
+  gap: 2px;
+  min-width: 0;
+}
+
+.rh-menu-nome {
+  font-size: 0.95rem;
+  font-weight: 600;
+  color: #ffffff;
+  white-space: nowrap;
+  overflow: hidden;
+  text-overflow: ellipsis;
+  text-shadow: 0 1px 6px rgba(0, 0, 0, 0.5);
+}
+
+.rh-menu-desc {
+  font-size: 0.78rem;
+  color: rgba(255, 255, 255, 0.58);
+  white-space: nowrap;
+  overflow: hidden;
+  text-overflow: ellipsis;
+}
+
+.rh-qr-btn {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  flex-shrink: 0;
+  width: 32px;
+  height: 32px;
+  background: rgba(255, 255, 255, 0.12);
+  border: 1.5px solid rgba(255, 255, 255, 0.25);
+  border-radius: 8px;
+  cursor: pointer;
+  color: rgba(255, 255, 255, 0.8);
+  transition: all 0.18s;
+  &:hover {
+    background: $accent;
+    border-color: $accent;
+    color: #ffffff;
+    transform: scale(1.08);
+    box-shadow: 0 2px 12px rgba($accent, 0.55);
+  }
+  &:active {
+    transform: scale(0.95);
+  }
+}
+
+.rh-more-items {
+  padding: 0.5rem 1.25rem 0.4rem;
+  text-align: center;
+  a {
+    font-size: 0.82rem;
+    color: $accent-soft;
+    font-weight: 600;
+    text-decoration: none;
+    &:hover {
+      color: #fff;
+      text-decoration: underline;
+    }
+  }
+}
+
+// ── Accesso rapido ─────────────────────────────────────
+
+.rh-quick-links {
+  flex: 1;
+  padding: 0.3rem 0;
+  display: flex;
+  flex-direction: column;
+}
+
+.rh-quick-item {
+  display: flex;
+  align-items: center;
+  gap: 12px;
+  padding: 0.75rem 1.25rem;
+  border-bottom: 1px solid rgba(255, 255, 255, 0.07);
+  text-decoration: none;
+  transition: background 0.15s;
+  &:last-child {
+    border-bottom: none;
+  }
+  &:hover {
+    background: rgba(255, 255, 255, 0.06);
+  }
+}
+
+.rh-quick-icon {
+  font-size: 1.25rem;
+  flex-shrink: 0;
+  width: 28px;
+  text-align: center;
+}
+
+.rh-quick-label {
+  flex: 1;
+  font-size: 0.92rem;
+  font-weight: 600;
+  color: rgba(255, 255, 255, 0.85);
+}
+
+.rh-quick-arrow {
+  font-size: 0.9rem;
+  color: rgba(255, 255, 255, 0.35);
+  flex-shrink: 0;
+  transition: transform 0.15s;
+  .rh-quick-item:hover & {
+    transform: translateX(3px);
+    color: $accent-soft;
+  }
+}
+
+// ══ FOOTER ════════════════════════════════════════════
+
+.rh-home-footer {
+  position: relative;
+  z-index: 1;
+  margin-top: auto;
+  padding: 1rem 2rem;
+  background: rgba(0, 0, 0, 0.7);
+  backdrop-filter: blur(12px);
+  -webkit-backdrop-filter: blur(12px);
+  border-top: 1px solid rgba(255, 255, 255, 0.08);
+  text-align: center;
+  p {
+    margin: 0;
+    font-size: 0.78rem;
+    color: rgba(255, 255, 255, 0.42);
+    letter-spacing: 0.03em;
+    strong {
+      color: rgba(255, 255, 255, 0.65);
+      font-weight: 700;
+    }
+  }
+}
+
+// ══ RESPONSIVE ════════════════════════════════════════
+
+@media (max-width: 768px) {
+  :host {
+    margin: -0.75rem -0.75rem -0.75rem -0.75rem;
+  }
+  .rh-hero {
+    min-height: 26vh;
+    padding: 3vh 1.5rem 2.5vh;
+  }
+  .rh-hero-logo {
+    width: clamp(100px, 42vw, 180px);
+  }
+  .rh-dashboard {
+    padding: 1.25rem 1.1rem 1.5rem;
+  }
+  .rh-dash-grid {
+    grid-template-columns: 1fr;
+    gap: 1rem;
+  }
+  .rh-dash-card {
+    margin: 0 0.6rem;
+  }
+  .rh-dashboard-greeting {
+    padding: 0 0.6rem;
+  }
+  .rh-dashboard-greeting h2 {
+    font-size: 1.3rem;
+  }
+}
+
+@media (max-width: 480px) {
+  .rh-hero-logo {
+    width: clamp(90px, 50vw, 160px);
+  }
+  .rh-card-header {
+    padding: 0.9rem 1rem 0.8rem;
+  }
+  .rh-menu-row,
+  .rh-quick-item {
+    padding: 0.6rem 1rem;
+  }
+  .rh-qr-btn {
+    width: 28px;
+    height: 28px;
+  }
+  .rh-dash-card {
+    margin: 0 0.5rem;
+  }
 }
