@@ -1,7 +1,7 @@
 // PERCORSO: src/main/webapp/app/app.routes.ts
-// → SOSTITUISCE il file generato da JHipster
-// Aggiunge le route custom: /menu-editor/:id, /menu-public/:id,
-// /piatti-giorno, /contatti, /admin/utenti
+// Sostituisce il file esistente di Alfa.
+// Cambiamento principale: la route '' ora carica LandingComponent
+// invece di HomeComponent. Home è spostata a '/home'.
 
 import { Routes } from '@angular/router';
 
@@ -10,29 +10,37 @@ import { UserRouteAccessService } from 'app/core/auth/user-route-access.service'
 import { errorRoute } from './layouts/error/error.route';
 
 const routes: Routes = [
-  // ── Home ─────────────────────────────────────────────────────────────────
+  // ── LANDING (root) ────────────────────────────────────────────────────
+  // La landing è la pagina radice: card con animazione → login.
+  // Non richiede autenticazione.
   {
     path: '',
-    loadComponent: () => import('./home/home.component'),
-    title: 'home.title',
+    loadComponent: () => import('./landing/landing.component').then(m => m.LandingComponent),
+    pathMatch: 'full',
   },
 
-  // ── Navbar outlet ────────────────────────────────────────────────────────
+  // ── NAVBAR (outlet secondario) ────────────────────────────────────────
   {
     path: '',
     loadComponent: () => import('./layouts/navbar/navbar.component'),
     outlet: 'navbar',
   },
 
-  // ── Login ────────────────────────────────────────────────────────────────
+  // ── HOME (dashboard utente loggato) ───────────────────────────────────
+  {
+    path: 'home',
+    loadComponent: () => import('./home/home.component'),
+    title: 'home.title',
+  },
+
+  // ── LOGIN ─────────────────────────────────────────────────────────────
   {
     path: 'login',
     loadComponent: () => import('./login/login.component'),
     title: 'login.title',
   },
 
-  // ── Menu Editor ──────────────────────────────────────────────────────────
-  // Accessibile solo agli utenti autenticati.
+  // ── MENU EDITOR ───────────────────────────────────────────────────────
   {
     path: 'menu-editor/:id',
     loadComponent: () => import('./menu-editor/menu-editor.component'),
@@ -41,15 +49,14 @@ const routes: Routes = [
     title: 'Editor Menu',
   },
 
-  // ── Menu Public (visualizzazione QR) ─────────────────────────────────────
-  // Accessibile senza autenticazione — standalone, nessun navbar.
+  // ── MENU PUBLIC (visualizzazione QR — nessuna autenticazione) ────────
   {
     path: 'menu-public/:id',
     loadComponent: () => import('./menu-public/menu-public.component'),
     title: 'Menu',
   },
 
-  // ── Piatti del Giorno ────────────────────────────────────────────────────
+  // ── PIATTI DEL GIORNO ────────────────────────────────────────────────
   {
     path: 'piatti-giorno',
     loadComponent: () => import('./piatti-giorno/piatti-giorno-gestione.component').then(m => m.PiattiGiornoGestioneComponent),
@@ -58,7 +65,7 @@ const routes: Routes = [
     title: 'Piatti del Giorno',
   },
 
-  // ── Gestione Contatti ────────────────────────────────────────────────────
+  // ── GESTIONE CONTATTI ─────────────────────────────────────────────────
   {
     path: 'contatti',
     loadComponent: () => import('./contatti-gestione/contatti-gestione.component').then(m => m.ContattiGestioneComponent),
@@ -67,7 +74,7 @@ const routes: Routes = [
     title: 'Contatti',
   },
 
-  // ── Admin ────────────────────────────────────────────────────────────────
+  // ── ADMIN ─────────────────────────────────────────────────────────────
   {
     path: 'admin',
     data: { authorities: [Authority.ADMIN] },
@@ -75,19 +82,19 @@ const routes: Routes = [
     loadChildren: () => import('./admin/admin.routes'),
   },
 
-  // ── Account ──────────────────────────────────────────────────────────────
+  // ── ACCOUNT ───────────────────────────────────────────────────────────
   {
     path: 'account',
     loadChildren: () => import('./account/account.route'),
   },
 
-  // ── Entità JHipster (CRUD generato) ──────────────────────────────────────
+  // ── ENTITÀ JHIPSTER (CRUD generato) ───────────────────────────────────
   {
     path: '',
     loadChildren: () => import('./entities/entity.routes'),
   },
 
-  // ── Errori ───────────────────────────────────────────────────────────────
+  // ── ERRORI ────────────────────────────────────────────────────────────
   ...errorRoute,
 ];
 

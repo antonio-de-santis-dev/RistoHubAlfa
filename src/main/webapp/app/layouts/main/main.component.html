@@ -1,13 +1,27 @@
+<!-- PERCORSO: src/main/webapp/app/layouts/main/main.component.html -->
+<!-- Sostituisce il file generato da JHipster. -->
+
 <jhi-page-ribbon />
 
-<div>
-  <router-outlet name="navbar" />
-</div>
-
-<div class="container-fluid">
-  <div class="card jh-card">
-    <router-outlet />
+@if (showNavbar()) {
+  <div>
+    <router-outlet name="navbar" />
   </div>
+}
 
-  <jhi-footer />
-</div>
+@if (isFullscreen()) {
+  <!-- Rotte fullscreen (menu-public): nessun wrapper, occupa tutto il viewport -->
+  <router-outlet />
+} @else {
+  <div class="rh-main-wrapper">
+    <div class="card jh-card">
+      <router-outlet />
+    </div>
+  </div>
+}
+
+<!-- Footer: visibile solo sulle rotte in allowlist -->
+<jhi-footer [class.rh-footer-hidden]="!showFooter()" />
+
+<!-- Loader globale: appendito al <body> via JS in LoaderComponent.ngOnInit() -->
+<rh-loader />

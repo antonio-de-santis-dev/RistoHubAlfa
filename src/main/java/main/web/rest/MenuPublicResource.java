@@ -121,7 +121,7 @@ public class MenuPublicResource {
                         pd.setDescrizione(prod.getDescrizione());
                         pd.setPrezzo(prod.getPrezzo());
                         List<AllergenePublicDTO> allergeni = prod
-                            .getAllergeni()
+                            .getAllergenis()
                             .stream()
                             .map(a -> {
                                 AllergenePublicDTO ad = new AllergenePublicDTO();
@@ -174,7 +174,7 @@ public class MenuPublicResource {
             ListaContattiPublicDTO lcDTO = new ListaContattiPublicDTO();
             lcDTO.setNote(lc.getNote());
             List<ContattoItemPublicDTO> items = lc
-                .getContatti()
+                .getContattis()
                 .stream()
                 .sorted(Comparator.comparingInt(ContattoItem::getOrdine))
                 .map(item -> {

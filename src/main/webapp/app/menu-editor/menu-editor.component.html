@@ -82,9 +82,9 @@
                       <small class="text-muted">{{ prodotto.descrizione }}</small>
                     }
                     <!-- Icone allergeni -->
-                    @if (prodotto.allergeni && prodotto.allergeni.length > 0) {
+                    @if (prodotto.allergenis && prodotto.allergenis.length > 0) {
                       <div class="rh-allergeni-row mt-1 d-flex flex-wrap gap-1">
-                        @for (a of prodotto.allergeni; track a.id) {
+                        @for (a of prodotto.allergenis; track a.id) {
                           <img
                             [src]="
                               a.tipo === 'DEFAULT'
