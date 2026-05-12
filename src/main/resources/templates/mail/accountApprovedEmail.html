@@ -1,0 +1,22 @@
+<!doctype html>
+<html lang="it" xmlns:th="http://www.thymeleaf.org">
+  <!--
+  PERCORSO: src/main/resources/templates/mail/accountApprovedEmail.html
+  → FILE NUOVO da creare
+  Email inviata all'UTENTE quando l'admin approva il suo account.
+  Aggiungere in MailService: sendAccountApprovedEmail(User user)
+  e chiamarla da ProfiloRistoratoreResource quando l'admin attiva un profilo.
+-->
+  <head>
+    <meta charset="UTF-8" />
+    <title>Account approvato</title>
+  </head>
+  <body>
+    <p th:text="#{email.accountApproved.greeting(${user.login})}">Ciao,</p>
+    <p>Il tuo account RistoHub è stato approvato! Puoi accedere subito e iniziare a gestire il tuo menu digitale.</p>
+    <p>
+      <a th:href="@{|${baseUrl}/login|}" th:text="#{email.accountApproved.link}"> Accedi a RistoHub </a>
+    </p>
+    <p th:text="#{email.signature}">Il team di RistoHub</p>
+  </body>
+</html>

@@ -8,6 +8,7 @@ import java.util.List;
 import java.util.Objects;
 import java.util.Optional;
 import main.repository.ProdottoRepository;
+import main.security.AuthoritiesConstants;
 import main.service.ProdottoService;
 import main.service.dto.ProdottoDTO;
 import main.web.rest.errors.BadRequestAlertException;
@@ -15,26 +16,29 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.http.ResponseEntity;
+import org.springframework.security.access.annotation.Secured;
 import org.springframework.web.bind.annotation.*;
 import tech.jhipster.web.util.HeaderUtil;
 import tech.jhipster.web.util.ResponseUtil;
 
 /**
- * REST controller for managing {@link main.domain.Prodotto}.
+ * PERCORSO: src/main/java/main/web/rest/ProdottoResource.java
+ * → SOSTITUISCE il file generato da JHipster
+ *   Aggiunge:
+ *   - GET /api/prodottos/by-portata/{portataId}  → usato dal menu-editor
+ *   - GET /api/menus/{menuId}/prodotti-completi   → usato da piatti-giorno-gestione
  */
 @RestController
-@RequestMapping("/api/prodottos")
+@RequestMapping("/api")
 public class ProdottoResource {
 
     private static final Logger LOG = LoggerFactory.getLogger(ProdottoResource.class);
-
     private static final String ENTITY_NAME = "prodotto";
 
     @Value("${jhipster.clientApp.name}")
     private String applicationName;
 
     private final ProdottoService prodottoService;
-
     private final ProdottoRepository prodottoRepository;
 
     public ProdottoResource(ProdottoService prodottoService, ProdottoRepository prodottoRepository) {
@@ -42,131 +46,123 @@ public class ProdottoResource {
         this.prodottoRepository = prodottoRepository;
     }
 
-    /**
-     * {@code POST  /prodottos} : Create a new prodotto.
-     *
-     * @param prodottoDTO the prodottoDTO to create.
-     * @return the {@link ResponseEntity} with status {@code 201 (Created)} and with body the new prodottoDTO, or with status {@code 400 (Bad Request)} if the prodotto has already an ID.
-     * @throws URISyntaxException if the Location URI syntax is incorrect.
-     */
-    @PostMapping("")
+    // ── CRUD standard JHipster ─────────────────────────────────────────────────
+
+    @PostMapping("/prodottos")
+    @Secured(AuthoritiesConstants.USER)
     public ResponseEntity<ProdottoDTO> createProdotto(@Valid @RequestBody ProdottoDTO prodottoDTO) throws URISyntaxException {
         LOG.debug("REST request to save Prodotto : {}", prodottoDTO);
         if (prodottoDTO.getId() != null) {
-            throw new BadRequestAlertException("A new prodotto cannot already have an ID", ENTITY_NAME, "idexists");
+            throw new BadRequestAlertException("Un nuovo prodotto non può avere un ID", ENTITY_NAME, "idexists");
         }
-        prodottoDTO = prodottoService.save(prodottoDTO);
-        return ResponseEntity.created(new URI("/api/prodottos/" + prodottoDTO.getId()))
-            .headers(HeaderUtil.createEntityCreationAlert(applicationName, true, ENTITY_NAME, prodottoDTO.getId().toString()))
-            .body(prodottoDTO);
+        ProdottoDTO result = prodottoService.save(prodottoDTO);
+        return ResponseEntity.created(new URI("/api/prodottos/" + result.getId()))
+            .headers(HeaderUtil.createEntityCreationAlert(applicationName, true, ENTITY_NAME, result.getId().toString()))
+            .body(result);
     }
 
-    /**
-     * {@code PUT  /prodottos/:id} : Updates an existing prodotto.
-     *
-     * @param id the id of the prodottoDTO to save.
-     * @param prodottoDTO the prodottoDTO to update.
-     * @return the {@link ResponseEntity} with status {@code 200 (OK)} and with body the updated prodottoDTO,
-     * or with status {@code 400 (Bad Request)} if the prodottoDTO is not valid,
-     * or with status {@code 500 (Internal Server Error)} if the prodottoDTO couldn't be updated.
-     * @throws URISyntaxException if the Location URI syntax is incorrect.
-     */
-    @PutMapping("/{id}")
+    @PutMapping("/prodottos/{id}")
+    @Secured(AuthoritiesConstants.USER)
     public ResponseEntity<ProdottoDTO> updateProdotto(
         @PathVariable(value = "id", required = false) final Long id,
         @Valid @RequestBody ProdottoDTO prodottoDTO
     ) throws URISyntaxException {
         LOG.debug("REST request to update Prodotto : {}, {}", id, prodottoDTO);
         if (prodottoDTO.getId() == null) {
-            throw new BadRequestAlertException("Invalid id", ENTITY_NAME, "idnull");
+            throw new BadRequestAlertException("ID mancante", ENTITY_NAME, "idnull");
         }
         if (!Objects.equals(id, prodottoDTO.getId())) {
-            throw new BadRequestAlertException("Invalid ID", ENTITY_NAME, "idinvalid");
+            throw new BadRequestAlertException("ID non coincide", ENTITY_NAME, "idinvalid");
         }
-
         if (!prodottoRepository.existsById(id)) {
-            throw new BadRequestAlertException("Entity not found", ENTITY_NAME, "idnotfound");
+            throw new BadRequestAlertException("Entità non trovata", ENTITY_NAME, "idnotfound");
         }
-
-        prodottoDTO = prodottoService.update(prodottoDTO);
+        ProdottoDTO result = prodottoService.update(prodottoDTO);
         return ResponseEntity.ok()
             .headers(HeaderUtil.createEntityUpdateAlert(applicationName, true, ENTITY_NAME, prodottoDTO.getId().toString()))
-            .body(prodottoDTO);
+            .body(result);
     }
 
-    /**
-     * {@code PATCH  /prodottos/:id} : Partial updates given fields of an existing prodotto, field will ignore if it is null
-     *
-     * @param id the id of the prodottoDTO to save.
-     * @param prodottoDTO the prodottoDTO to update.
-     * @return the {@link ResponseEntity} with status {@code 200 (OK)} and with body the updated prodottoDTO,
-     * or with status {@code 400 (Bad Request)} if the prodottoDTO is not valid,
-     * or with status {@code 404 (Not Found)} if the prodottoDTO is not found,
-     * or with status {@code 500 (Internal Server Error)} if the prodottoDTO couldn't be updated.
-     * @throws URISyntaxException if the Location URI syntax is incorrect.
-     */
-    @PatchMapping(value = "/{id}", consumes = { "application/json", "application/merge-patch+json" })
+    @PatchMapping(value = "/prodottos/{id}", consumes = { "application/json", "application/merge-patch+json" })
+    @Secured(AuthoritiesConstants.USER)
     public ResponseEntity<ProdottoDTO> partialUpdateProdotto(
         @PathVariable(value = "id", required = false) final Long id,
         @NotNull @RequestBody ProdottoDTO prodottoDTO
     ) throws URISyntaxException {
-        LOG.debug("REST request to partial update Prodotto partially : {}, {}", id, prodottoDTO);
+        LOG.debug("REST request to partial update Prodotto : {}, {}", id, prodottoDTO);
         if (prodottoDTO.getId() == null) {
-            throw new BadRequestAlertException("Invalid id", ENTITY_NAME, "idnull");
+            throw new BadRequestAlertException("ID mancante", ENTITY_NAME, "idnull");
         }
         if (!Objects.equals(id, prodottoDTO.getId())) {
-            throw new BadRequestAlertException("Invalid ID", ENTITY_NAME, "idinvalid");
+            throw new BadRequestAlertException("ID non coincide", ENTITY_NAME, "idinvalid");
         }
-
         if (!prodottoRepository.existsById(id)) {
-            throw new BadRequestAlertException("Entity not found", ENTITY_NAME, "idnotfound");
+            throw new BadRequestAlertException("Entità non trovata", ENTITY_NAME, "idnotfound");
         }
-
         Optional<ProdottoDTO> result = prodottoService.partialUpdate(prodottoDTO);
-
         return ResponseUtil.wrapOrNotFound(
             result,
             HeaderUtil.createEntityUpdateAlert(applicationName, true, ENTITY_NAME, prodottoDTO.getId().toString())
         );
     }
 
-    /**
-     * {@code GET  /prodottos} : get all the prodottos.
-     *
-     * @param eagerload flag to eager load entities from relationships (This is applicable for many-to-many).
-     * @return the {@link ResponseEntity} with status {@code 200 (OK)} and the list of prodottos in body.
-     */
-    @GetMapping("")
-    public List<ProdottoDTO> getAllProdottos(@RequestParam(name = "eagerload", required = false, defaultValue = "true") boolean eagerload) {
-        LOG.debug("REST request to get all Prodottos");
-        return prodottoService.findAll();
+    @GetMapping("/prodottos")
+    public ResponseEntity<List<ProdottoDTO>> getAllProdottos(
+        @RequestParam(required = false) Long portataId,
+        @RequestParam(required = false) Long menuId
+    ) {
+        LOG.debug("REST request to get Prodottos. portataId={}, menuId={}", portataId, menuId);
+        if (portataId != null) {
+            return ResponseEntity.ok(prodottoService.findByPortataId(portataId));
+        }
+        if (menuId != null) {
+            return ResponseEntity.ok(prodottoService.findByMenuId(menuId));
+        }
+        return ResponseEntity.ok(prodottoService.findAll());
     }
 
-    /**
-     * {@code GET  /prodottos/:id} : get the "id" prodotto.
-     *
-     * @param id the id of the prodottoDTO to retrieve.
-     * @return the {@link ResponseEntity} with status {@code 200 (OK)} and with body the prodottoDTO, or with status {@code 404 (Not Found)}.
-     */
-    @GetMapping("/{id}")
-    public ResponseEntity<ProdottoDTO> getProdotto(@PathVariable("id") Long id) {
+    @GetMapping("/prodottos/{id}")
+    public ResponseEntity<ProdottoDTO> getProdotto(@PathVariable Long id) {
         LOG.debug("REST request to get Prodotto : {}", id);
         Optional<ProdottoDTO> prodottoDTO = prodottoService.findOne(id);
         return ResponseUtil.wrapOrNotFound(prodottoDTO);
     }
 
-    /**
-     * {@code DELETE  /prodottos/:id} : delete the "id" prodotto.
-     *
-     * @param id the id of the prodottoDTO to delete.
-     * @return the {@link ResponseEntity} with status {@code 204 (NO_CONTENT)}.
-     */
-    @DeleteMapping("/{id}")
-    public ResponseEntity<Void> deleteProdotto(@PathVariable("id") Long id) {
+    @DeleteMapping("/prodottos/{id}")
+    @Secured(AuthoritiesConstants.USER)
+    public ResponseEntity<Void> deleteProdotto(@PathVariable Long id) {
         LOG.debug("REST request to delete Prodotto : {}", id);
         prodottoService.delete(id);
         return ResponseEntity.noContent()
             .headers(HeaderUtil.createEntityDeletionAlert(applicationName, true, ENTITY_NAME, id.toString()))
             .build();
+    }
+
+    // ── Endpoint custom ────────────────────────────────────────────────────────
+
+    /**
+     * GET /api/prodottos/by-portata/{portataId}
+     *
+     * Tutti i prodotti (visibili e non) di una portata con allergeni.
+     * Usato dal menu-editor per mostrare la lista completa al ristoratore.
+     */
+    @GetMapping("/prodottos/by-portata/{portataId}")
+    @Secured(AuthoritiesConstants.USER)
+    public ResponseEntity<List<ProdottoDTO>> getProdottiByPortata(@PathVariable Long portataId) {
+        LOG.debug("REST request to get Prodotti by portata {}", portataId);
+        return ResponseEntity.ok(prodottoService.findByPortataId(portataId));
+    }
+
+    /**
+     * GET /api/menus/{menuId}/prodotti-completi
+     *
+     * Tutti i prodotti del menu con allergeni già caricati.
+     * Usato da piatti-giorno-gestione per la selezione del prodotto.
+     */
+    @GetMapping("/menus/{menuId}/prodotti-completi")
+    @Secured(AuthoritiesConstants.USER)
+    public ResponseEntity<List<ProdottoDTO>> getProdottiCompletiByMenu(@PathVariable Long menuId) {
+        LOG.debug("REST request to get tutti i prodotti del menu {}", menuId);
+        return ResponseEntity.ok(prodottoService.findByMenuId(menuId));
     }
 }

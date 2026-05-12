@@ -16,7 +16,8 @@ import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
 /**
- * Service Implementation for managing {@link main.domain.Prodotto}.
+ * PERCORSO: src/main/java/main/service/ProdottoService.java
+ * → SOSTITUISCE il file generato da JHipster (aggiunge metodi custom)
  */
 @Service
 @Transactional
@@ -25,7 +26,6 @@ public class ProdottoService {
     private static final Logger LOG = LoggerFactory.getLogger(ProdottoService.class);
 
     private final ProdottoRepository prodottoRepository;
-
     private final ProdottoMapper prodottoMapper;
 
     public ProdottoService(ProdottoRepository prodottoRepository, ProdottoMapper prodottoMapper) {
@@ -33,12 +33,6 @@ public class ProdottoService {
         this.prodottoMapper = prodottoMapper;
     }
 
-    /**
-     * Save a prodotto.
-     *
-     * @param prodottoDTO the entity to save.
-     * @return the persisted entity.
-     */
     public ProdottoDTO save(ProdottoDTO prodottoDTO) {
         LOG.debug("Request to save Prodotto : {}", prodottoDTO);
         Prodotto prodotto = prodottoMapper.toEntity(prodottoDTO);
@@ -46,12 +40,6 @@ public class ProdottoService {
         return prodottoMapper.toDto(prodotto);
     }
 
-    /**
-     * Update a prodotto.
-     *
-     * @param prodottoDTO the entity to save.
-     * @return the persisted entity.
-     */
     public ProdottoDTO update(ProdottoDTO prodottoDTO) {
         LOG.debug("Request to update Prodotto : {}", prodottoDTO);
         Prodotto prodotto = prodottoMapper.toEntity(prodottoDTO);
@@ -59,65 +47,62 @@ public class ProdottoService {
         return prodottoMapper.toDto(prodotto);
     }
 
-    /**
-     * Partially update a prodotto.
-     *
-     * @param prodottoDTO the entity to update partially.
-     * @return the persisted entity.
-     */
     public Optional<ProdottoDTO> partialUpdate(ProdottoDTO prodottoDTO) {
         LOG.debug("Request to partially update Prodotto : {}", prodottoDTO);
-
         return prodottoRepository
             .findById(prodottoDTO.getId())
-            .map(existingProdotto -> {
-                prodottoMapper.partialUpdate(existingProdotto, prodottoDTO);
-
-                return existingProdotto;
+            .map(existing -> {
+                prodottoMapper.partialUpdate(existing, prodottoDTO);
+                return existing;
             })
             .map(prodottoRepository::save)
             .map(prodottoMapper::toDto);
     }
 
-    /**
-     * Get all the prodottos.
-     *
-     * @return the list of entities.
-     */
     @Transactional(readOnly = true)
     public List<ProdottoDTO> findAll() {
-        LOG.debug("Request to get all Prodottos");
-        return prodottoRepository.findAll().stream().map(prodottoMapper::toDto).collect(Collectors.toCollection(LinkedList::new));
+        LOG.debug("Request to get all Prodotti");
+        return prodottoRepository
+            .findAllWithEagerRelationships()
+            .stream()
+            .map(prodottoMapper::toDto)
+            .collect(Collectors.toCollection(LinkedList::new));
     }
 
-    /**
-     * Get all the prodottos with eager load of many-to-many relationships.
-     *
-     * @return the list of entities.
-     */
     public Page<ProdottoDTO> findAllWithEagerRelationships(Pageable pageable) {
         return prodottoRepository.findAllWithEagerRelationships(pageable).map(prodottoMapper::toDto);
     }
 
-    /**
-     * Get one prodotto by id.
-     *
-     * @param id the id of the entity.
-     * @return the entity.
-     */
     @Transactional(readOnly = true)
     public Optional<ProdottoDTO> findOne(Long id) {
         LOG.debug("Request to get Prodotto : {}", id);
         return prodottoRepository.findOneWithEagerRelationships(id).map(prodottoMapper::toDto);
     }
 
-    /**
-     * Delete the prodotto by id.
-     *
-     * @param id the id of the entity.
-     */
     public void delete(Long id) {
         LOG.debug("Request to delete Prodotto : {}", id);
         prodottoRepository.deleteById(id);
+    }
+
+    // ── Metodi custom ──────────────────────────────────────────────────────────
+
+    /**
+     * Prodotti di una portata con allergeni, visibili e non visibili.
+     * Usato dal menu-editor per mostrare tutti i prodotti al ristoratore.
+     */
+    @Transactional(readOnly = true)
+    public List<ProdottoDTO> findByPortataId(Long portataId) {
+        LOG.debug("Request to get Prodotti by portata id={}", portataId);
+        return prodottoRepository.findByPortataIdWithAllergeni(portataId).stream().map(prodottoMapper::toDto).collect(Collectors.toList());
+    }
+
+    /**
+     * Prodotti di un intero menu con allergeni.
+     * Usato dalla gestione piatti del giorno per la selezione.
+     */
+    @Transactional(readOnly = true)
+    public List<ProdottoDTO> findByMenuId(Long menuId) {
+        LOG.debug("Request to get Prodotti by menu id={}", menuId);
+        return prodottoRepository.findByMenuIdWithAllergeni(menuId).stream().map(prodottoMapper::toDto).collect(Collectors.toList());
     }
 }

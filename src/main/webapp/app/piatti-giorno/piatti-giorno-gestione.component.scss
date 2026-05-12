@@ -1,0 +1,29 @@
+/* PERCORSO: src/main/webapp/app/piatti-giorno/piatti-giorno-gestione.component.scss */
+
+.pg-page {
+  max-width: 1100px;
+  margin: 0 auto;
+}
+
+.pg-card {
+  border-radius: 12px;
+  border: 1px solid #e5e5e5;
+  transition:
+    transform 0.15s ease,
+    box-shadow 0.15s ease;
+
+  &:hover {
+    transform: translateY(-2px);
+    box-shadow: 0 6px 20px rgba(0, 0, 0, 0.08) !important;
+  }
+}
+
+.pg-inattivo {
+  opacity: 0.65;
+}
+
+.pg-prodotti-list {
+  max-height: 280px;
+  overflow-y: auto;
+  border-radius: 8px;
+}

@@ -1,0 +1,26 @@
+<!doctype html>
+<html lang="it" xmlns:th="http://www.thymeleaf.org">
+  <!--
+  PERCORSO: src/main/resources/templates/mail/pendingApprovalEmail.html
+  → FILE NUOVO da creare
+  Email inviata all'ADMIN quando un nuovo utente si registra e attende approvazione.
+  Aggiungere in MailService: sendPendingApprovalEmail(User user)
+-->
+  <head>
+    <meta charset="UTF-8" />
+    <title>Nuova registrazione in attesa</title>
+  </head>
+  <body>
+    <p th:text="#{email.pendingApproval.greeting(${user.login})}">Ciao Admin,</p>
+    <p>Un nuovo utente si è registrato su RistoHub e attende la tua approvazione:</p>
+    <p>
+      <strong>Username:</strong> <span th:text="${user.login}">username</span><br />
+      <strong>Email:</strong> <span th:text="${user.email}">email@esempio.it</span>
+    </p>
+    <p>
+      Per attivare il profilo, accedi al pannello di amministrazione e vai su
+      <strong>Gestione Utenti</strong>.
+    </p>
+    <p th:text="#{email.signature}">Il team di RistoHub</p>
+  </body>
+</html>
