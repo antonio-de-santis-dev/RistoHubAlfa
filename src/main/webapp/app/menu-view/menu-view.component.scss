@@ -1,0 +1,125 @@
+// PERCORSO: src/main/webapp/app/menu-view/menu-view.component.scss
+.mv-page {
+  max-width: 760px;
+  margin: 0 auto;
+  padding: 2rem 1rem;
+  font-family: 'Playfair Display', Georgia, serif;
+  color: #2c2c2c;
+}
+
+.mv-loading,
+.mv-error {
+  text-align: center;
+  padding: 3rem 1rem;
+  font-size: 1.1rem;
+  color: #777;
+}
+
+.mv-header {
+  text-align: center;
+  margin-bottom: 2rem;
+
+  .mv-title {
+    font-size: 2.4rem;
+    font-weight: 700;
+    margin: 0;
+    color: #c8102e;
+  }
+  .mv-subtitle {
+    margin-top: 0.5rem;
+    color: #777;
+    font-style: italic;
+  }
+}
+
+.mv-accordion {
+  display: flex;
+  flex-direction: column;
+  gap: 0.75rem;
+}
+
+.mv-portata {
+  background: #fff;
+  border: 1px solid #eadfc8;
+  border-radius: 10px;
+  overflow: hidden;
+  box-shadow: 0 2px 6px rgba(0, 0, 0, 0.04);
+
+  &[open] .mv-chevron {
+    transform: rotate(180deg);
+  }
+}
+
+.mv-portata-header {
+  display: flex;
+  align-items: center;
+  gap: 0.75rem;
+  padding: 1rem 1.25rem;
+  cursor: pointer;
+  list-style: none;
+  background: #faf6ec;
+  font-size: 1.25rem;
+  font-weight: 600;
+  color: #2c2c2c;
+  user-select: none;
+
+  &::-webkit-details-marker {
+    display: none;
+  }
+
+  .mv-portata-nome {
+    flex: 1;
+  }
+  .mv-portata-count {
+    background: #c8102e;
+    color: #fff;
+    font-size: 0.8rem;
+    font-weight: 600;
+    padding: 0.15rem 0.55rem;
+    border-radius: 999px;
+    font-family: system-ui, sans-serif;
+  }
+  .mv-chevron {
+    transition: transform 0.2s ease;
+    color: #c8102e;
+  }
+}
+
+.mv-prodotti {
+  list-style: none;
+  margin: 0;
+  padding: 0;
+}
+
+.mv-prodotto {
+  display: flex;
+  justify-content: space-between;
+  align-items: flex-start;
+  gap: 1rem;
+  padding: 0.9rem 1.25rem;
+  border-top: 1px dashed #f0e4cb;
+
+  &:first-child {
+    border-top: none;
+  }
+
+  .mv-prodotto-info {
+    flex: 1;
+  }
+  .mv-prodotto-nome {
+    font-weight: 600;
+    font-size: 1.05rem;
+  }
+  .mv-prodotto-desc {
+    font-size: 0.9rem;
+    color: #777;
+    font-style: italic;
+    margin-top: 0.2rem;
+  }
+  .mv-prodotto-prezzo {
+    font-weight: 700;
+    color: #c8102e;
+    white-space: nowrap;
+    font-family: system-ui, sans-serif;
+  }
+}

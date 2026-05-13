@@ -102,6 +102,16 @@ const routes: Routes = [
     path: '',
     loadChildren: () => import('./entities/entity.routes'),
   },
+  {
+    path: 'menu-wizard',
+    loadComponent: () => import('./menu-wizard/menu-wizard.component').then(m => m.MenuWizardComponent),
+    canActivate: [UserRouteAccessService],
+  },
+  {
+    path: 'menu-view/:id',
+    loadComponent: () => import('./menu-view/menu-view.component').then(m => m.default),
+    canActivate: [UserRouteAccessService],
+  },
 
   // ── ERRORI ────────────────────────────────────────────────────────────
   ...errorRoute,

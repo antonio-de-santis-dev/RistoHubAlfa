@@ -1,0 +1,48 @@
+<!-- PERCORSO: src/main/webapp/app/menu-view/menu-view.component.html -->
+<!-- Vista CLASSICA: accordion nativo <details> (nessuna dipendenza da Bootstrap JS) -->
+<div class="mv-page">
+  @if (isLoading()) {
+    <div class="mv-loading">⏳ Caricamento menu...</div>
+  }
+
+  @if (errore()) {
+    <div class="mv-error">⚠️ {{ errore() }}</div>
+  }
+
+  @if (!isLoading() && !errore() && menu(); as m) {
+    <header class="mv-header">
+      <h1 class="mv-title">{{ m.nome }}</h1>
+      @if (m.descrizione) {
+        <p class="mv-subtitle">{{ m.descrizione }}</p>
+      }
+    </header>
+
+    <section class="mv-accordion">
+      @for (portata of m.portate; track portata.id; let i = $index) {
+        @if (portata.prodotti.length > 0) {
+          <details class="mv-portata" [attr.open]="i === 0 ? '' : null">
+            <summary class="mv-portata-header">
+              <span class="mv-portata-nome">{{ portataLabel(portata) }}</span>
+              <span class="mv-portata-count">{{ portata.prodotti.length }}</span>
+              <span class="mv-chevron">▾</span>
+            </summary>
+
+            <ul class="mv-prodotti">
+              @for (prodotto of portata.prodotti; track prodotto.id) {
+                <li class="mv-prodotto">
+                  <div class="mv-prodotto-info">
+                    <div class="mv-prodotto-nome">{{ prodotto.nome }}</div>
+                    @if (prodotto.descrizione) {
+                      <div class="mv-prodotto-desc">{{ prodotto.descrizione }}</div>
+                    }
+                  </div>
+                  <div class="mv-prodotto-prezzo">{{ formatPrezzo(prodotto.prezzo) }}</div>
+                </li>
+              }
+            </ul>
+          </details>
+        }
+      }
+    </section>
+  }
+</div>
