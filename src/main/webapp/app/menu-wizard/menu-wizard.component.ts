@@ -1,6 +1,8 @@
 // PERCORSO: src/main/webapp/app/menu-wizard/menu-wizard.component.ts
 // Wizard CREAZIONE menu — 4 step (Colori, Logo, Font, Portate).
-// Allineato a menu-wizard-edit (nessun step "scelta template").
+// FIX: il payload POST /api/menus contiene SOLO i campi presenti nell'entity
+// Menu (nome, descrizione, attivo). Colori e font vengono salvati in
+// localStorage perché non esistono più sull'entity backend.
 
 import { Component, OnInit } from '@angular/core';
 import { Router, RouterModule } from '@angular/router';
@@ -24,6 +26,7 @@ export class MenuWizardComponent implements OnInit {
   currentStep = 1;
   totalSteps = 4;
   isLoading = false;
+  erroreCreazione: string | null = null;
 
   // Step 1 — Colori
   colorePrimario = '#C8102E';
@@ -91,6 +94,16 @@ export class MenuWizardComponent implements OnInit {
     this.coloreSecondario = c.secondario;
   }
 
+  // Evita il warning "value '' does not conform to #rrggbb" quando l'utente
+  // svuota momentaneamente l'input hex.
+  onHexChange(campo: 'primario' | 'secondario', valore: string): void {
+    const v = (valore ?? '').trim();
+    const ok = /^#[0-9A-Fa-f]{6}$/.test(v);
+    if (!ok) return;
+    if (campo === 'primario') this.colorePrimario = v;
+    else this.coloreSecondario = v;
+  }
+
   onLogoSelezionato(event: Event): void {
     const input = event.target as HTMLInputElement;
     if (input.files?.[0]) {
@@ -147,21 +160,37 @@ export class MenuWizardComponent implements OnInit {
   async generaMenu(): Promise<void> {
     if (!this.validaStep()) return;
     this.isLoading = true;
+    this.erroreCreazione = null;
     try {
-      // 1. Crea menu
+      // 1. Crea menu — SOLO i campi presenti nell'entity Menu del backend Alfa.
+      //    NON inviare colorePrimario / coloreSecondario / fontMenu: non
+      //    esistono più nell'entity e farebbero rispondere 400 Bad Request.
       const menu = await firstValueFrom(
         this.http.post<IMenu>('/api/menus', {
-          nome: this.nomeMenu,
-          descrizione: this.descrizioneMenu,
+          nome: this.nomeMenu.trim(),
+          descrizione: this.descrizioneMenu?.trim() || null,
           attivo: true,
-          colorePrimario: this.colorePrimario,
-          coloreSecondario: this.coloreSecondario,
-          fontMenu: this.fontSelezionato,
         }),
       );
 
+      if (!menu?.id) throw new Error('Risposta backend senza id menu');
+
+      // Persistiamo lo stile lato client (lo legge menu-view/menu-public).
+      try {
+        localStorage.setItem(
+          `menu-style-${menu.id}`,
+          JSON.stringify({
+            colorePrimario: this.colorePrimario,
+            coloreSecondario: this.coloreSecondario,
+            fontMenu: this.fontSelezionato,
+          }),
+        );
+      } catch {
+        /* localStorage può fallire in modalità privata: non bloccante */
+      }
+
       // 2. Upload logo (se presente)
-      if (this.logoFile && menu.id) {
+      if (this.logoFile) {
         const formData = new FormData();
         formData.append('file', this.logoFile);
         await firstValueFrom(this.http.post(`/api/menus/${menu.id}/logo/upload`, formData));
@@ -190,9 +219,11 @@ export class MenuWizardComponent implements OnInit {
         );
       }
 
-      this.router.navigate(['/menu-view', menu.id]);
-    } catch (err) {
+      // Torna alla home dove vedrai la card del nuovo menu.
+      this.router.navigate(['/home']);
+    } catch (err: any) {
       console.error('Errore creazione menu:', err);
+      this.erroreCreazione = err?.error?.detail || err?.error?.title || err?.message || 'Errore durante la creazione del menu';
     } finally {
       this.isLoading = false;
     }
