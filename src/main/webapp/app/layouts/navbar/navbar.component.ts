@@ -2,7 +2,7 @@
 // Navbar a drawer laterale — portata dal vecchio RistoHub al nuovo RistoHubAlfa
 
 import { Component, OnInit, inject, signal, HostListener } from '@angular/core';
-import { Router, RouterModule } from '@angular/router';
+import { Router, RouterLink, RouterLinkActive, RouterModule } from '@angular/router';
 import { TranslateService } from '@ngx-translate/core';
 
 import { StateStorageService } from 'app/core/auth/state-storage.service';
@@ -20,7 +20,11 @@ import NavbarItem from './navbar-item.model';
   selector: 'jhi-navbar',
   templateUrl: './navbar.component.html',
   styleUrl: './navbar.component.scss',
-  imports: [RouterModule, SharedModule, HasAnyAuthorityDirective],
+  // FIX: RouterLink e RouterLinkActive aggiunti esplicitamente.
+  // In Angular 17+ i componenti standalone devono importare ogni direttiva
+  // singolarmente; RouterModule da solo non è sufficiente per far riconoscere
+  // [routerLinkActiveOptions] come proprietà nota di <a routerLinkActive>.
+  imports: [RouterLink, RouterLinkActive, RouterModule, SharedModule, HasAnyAuthorityDirective],
 })
 export default class NavbarComponent implements OnInit {
   inProduction?: boolean;

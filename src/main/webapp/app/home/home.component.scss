@@ -11,13 +11,7 @@ $border-glass: rgba(255, 255, 255, 0.14);
 
 :host {
   display: block;
-  margin: -1.5rem -15px 0;
-}
-
-@media (max-width: 768px) {
-  :host {
-    margin: -0.75rem -0.75rem 0;
-  }
+  margin: 0;
 }
 
 // ════════════════════════════════════════════════════════
@@ -26,18 +20,20 @@ $border-glass: rgba(255, 255, 255, 0.14);
 
 .rh-home {
   min-height: 100vh;
+  display: flex;
+  flex-direction: column;
   position: relative;
-  background-image: url('/content/images/sfondo.png');
+  background-image: url('/content/images/unnamed.jpg');
   background-size: cover;
   background-position: center;
-  background-repeat: repeat;
-  background-attachment: fixed;
+  background-repeat: no-repeat;
+  background-attachment: scroll;
 
   &::before {
     content: '';
-    position: fixed;
+    position: absolute;
     inset: 0;
-    background: rgba(0, 0, 0, 0.62);
+    background: rgba(0, 0, 0, 0.6);
     z-index: 0;
     pointer-events: none;
   }
@@ -53,7 +49,7 @@ $border-glass: rgba(255, 255, 255, 0.14);
   display: flex;
   align-items: center;
   justify-content: center;
-  padding: 4rem 2rem 3rem;
+  padding: 3rem 2rem 2rem;
   min-height: 28vh;
 }
 
@@ -102,7 +98,7 @@ $border-glass: rgba(255, 255, 255, 0.14);
   z-index: 1;
   max-width: 1080px;
   margin: 0 auto;
-  padding: 2rem 1.5rem 3rem;
+  padding: 1rem 1.5rem 3rem;
 }
 
 // Testo guest non loggato
@@ -268,7 +264,7 @@ $border-glass: rgba(255, 255, 255, 0.14);
 
 .ml-grid {
   display: grid;
-  grid-template-columns: repeat(auto-fill, minmax(310px, 1fr));
+  grid-template-columns: repeat(3, 1fr);
   gap: 1.5rem;
 }
 
@@ -393,6 +389,7 @@ $border-glass: rgba(255, 255, 255, 0.14);
 // ── Card azioni ───────────────────────────────────────
 .ml-card-actions {
   display: grid;
+  grid-template-columns: 1fr 1fr;
   gap: 7px;
   padding: 1rem;
   background: rgba(0, 0, 0, 0.25);
@@ -445,6 +442,14 @@ $border-glass: rgba(255, 255, 255, 0.14);
     border: 1px solid rgba(45, 212, 190, 0.28);
     &:hover {
       background: rgba(45, 212, 190, 0.28);
+    }
+  }
+  &.ml-btn-delete {
+    background: rgba(248, 113, 113, 0.15);
+    color: #f87171;
+    border: 1px solid rgba(248, 113, 113, 0.25);
+    &:hover {
+      background: rgba(248, 113, 113, 0.28);
     }
   }
 }
@@ -669,6 +674,9 @@ $border-glass: rgba(255, 255, 255, 0.14);
   }
   .ml-card-actions.ml-card-actions-3 {
     grid-template-columns: 1fr 1fr 1fr;
+  }
+  .ml-card-actions {
+    grid-template-columns: 1fr 1fr;
   }
   .ml-btn {
     font-size: 0.76rem;

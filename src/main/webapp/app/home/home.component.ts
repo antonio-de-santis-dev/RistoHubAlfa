@@ -22,6 +22,9 @@ export default class HomeComponent implements OnInit, OnDestroy {
   menus = signal<IMenu[]>([]);
   isLoading = signal(false);
 
+  // Toggle attivo
+  toggling: number | null = null;
+
   // QR modal
   qrVisible = false;
   qrUrl = '';
@@ -55,12 +58,22 @@ export default class HomeComponent implements OnInit, OnDestroy {
 
   loadMenus(): void {
     this.isLoading.set(true);
-    this.menuService.query().subscribe({
+    // Usa queryCurrentUser() per caricare solo i menu dell'utente loggato
+    this.menuService.queryCurrentUser().subscribe({
       next: res => {
         this.menus.set(res.body ?? []);
         this.isLoading.set(false);
       },
-      error: () => this.isLoading.set(false),
+      error: () => {
+        // Fallback a query generica se l'endpoint non è ancora disponibile
+        this.menuService.query().subscribe({
+          next: res => {
+            this.menus.set(res.body ?? []);
+            this.isLoading.set(false);
+          },
+          error: () => this.isLoading.set(false),
+        });
+      },
     });
   }
 
@@ -76,11 +89,49 @@ export default class HomeComponent implements OnInit, OnDestroy {
     this.router.navigate(['/menu-editor', menuId]);
   }
 
+  // ── Toggle Attivo/Inattivo ───────────────────────────────────
+
+  async toggleAttivo(menu: IMenu): Promise<void> {
+    if (this.toggling === menu.id) return;
+    this.toggling = menu.id!;
+    const nuovoStato = !menu.attivo;
+    this.menuService.partialUpdate({ id: menu.id!, attivo: nuovoStato }).subscribe({
+      next: res => {
+        const updated = res.body;
+        if (updated) {
+          this.menus.update(list => list.map(m => (m.id === menu.id ? { ...m, attivo: nuovoStato } : m)));
+          this.showToast(
+            nuovoStato ? `✅ "${menu.nome}" è ora visibile ai clienti` : `🔒 "${menu.nome}" è stato nascosto ai clienti`,
+            'success',
+          );
+        }
+        this.toggling = null;
+      },
+      error: () => {
+        // Fallback: tenta con update completo
+        this.menuService.update({ ...menu, attivo: nuovoStato } as IMenu).subscribe({
+          next: () => {
+            this.menus.update(list => list.map(m => (m.id === menu.id ? { ...m, attivo: nuovoStato } : m)));
+            this.showToast(
+              nuovoStato ? `✅ "${menu.nome}" è ora visibile ai clienti` : `🔒 "${menu.nome}" è stato nascosto ai clienti`,
+              'success',
+            );
+            this.toggling = null;
+          },
+          error: () => {
+            this.showToast("❌ Errore durante l'aggiornamento. Riprova.", 'error');
+            this.toggling = null;
+          },
+        });
+      },
+    });
+  }
+
   // ── QR ──────────────────────────────────────────────
 
   mostraQr(menuId: number): void {
     this.qrUrl = `${window.location.origin}/menu-public/${menuId}`;
-    this.qrImageUrl = `https://api.qrserver.com/v1/create-qr-code/?size=220x220&data=${encodeURIComponent(this.qrUrl)}`;
+    this.qrImageUrl = `https://api.qrserver.com/v1/create-qr-code/?size=250x250&data=${encodeURIComponent(this.qrUrl)}`;
     this.qrVisible = true;
   }
 
@@ -107,10 +158,10 @@ export default class HomeComponent implements OnInit, OnDestroy {
         this.menus.update(list => list.filter(m => m.id !== this.menuDaEliminare!.id));
         this.confermaEliminazioneVisibile = false;
         this.menuDaEliminare = null;
-        this.showToast('Menu eliminato con successo', 'success');
+        this.showToast('🗑️ Menu eliminato con successo', 'success');
       },
       error: () => {
-        this.showToast("Errore durante l'eliminazione", 'error');
+        this.showToast("❌ Errore durante l'eliminazione", 'error');
       },
     });
   }
@@ -123,7 +174,7 @@ export default class HomeComponent implements OnInit, OnDestroy {
     if (this.toastTimer) clearTimeout(this.toastTimer);
     this.toastTimer = setTimeout(() => {
       this.toastMsg = '';
-    }, 2800);
+    }, 3500);
   }
 
   ngOnDestroy(): void {
