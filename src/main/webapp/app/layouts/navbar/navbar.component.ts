@@ -1,4 +1,7 @@
-import { Component, OnInit, inject, signal } from '@angular/core';
+// PERCORSO: src/main/webapp/app/layouts/navbar/navbar.component.ts
+// Navbar a drawer laterale — portata dal vecchio RistoHub al nuovo RistoHubAlfa
+
+import { Component, OnInit, inject, signal, HostListener } from '@angular/core';
 import { Router, RouterModule } from '@angular/router';
 import { TranslateService } from '@ngx-translate/core';
 
@@ -11,18 +14,24 @@ import { LoginService } from 'app/login/login.service';
 import { ProfileService } from 'app/layouts/profiles/profile.service';
 import { EntityNavbarItems } from 'app/entities/entity-navbar-items';
 import { environment } from 'environments/environment';
-import ActiveMenuDirective from './active-menu.directive';
 import NavbarItem from './navbar-item.model';
 
 @Component({
   selector: 'jhi-navbar',
   templateUrl: './navbar.component.html',
   styleUrl: './navbar.component.scss',
-  imports: [RouterModule, SharedModule, HasAnyAuthorityDirective, ActiveMenuDirective],
+  imports: [RouterModule, SharedModule, HasAnyAuthorityDirective],
 })
 export default class NavbarComponent implements OnInit {
   inProduction?: boolean;
+  // isNavbarCollapsed kept for compatibility — not used in drawer mode
   isNavbarCollapsed = signal(true);
+  // Stato del drawer laterale
+  isSidebarOpen = signal(false);
+  // Sotto-menu espansi nel drawer
+  adminExpanded = signal(false);
+  gestioneExpanded = signal(false);
+
   languages = LANGUAGES;
   openAPIEnabled?: boolean;
   version = '';
@@ -50,13 +59,39 @@ export default class NavbarComponent implements OnInit {
     });
   }
 
+  // Chiude sidebar se si preme ESC
+  @HostListener('document:keydown.escape')
+  onEscape(): void {
+    this.closeSidebar();
+  }
+
   changeLanguage(languageKey: string): void {
     this.stateStorageService.storeLocale(languageKey);
     this.translateService.use(languageKey);
   }
 
   collapseNavbar(): void {
-    this.isNavbarCollapsed.set(true);
+    this.closeSidebar();
+  }
+
+  openSidebar(): void {
+    this.isSidebarOpen.set(true);
+  }
+
+  closeSidebar(): void {
+    this.isSidebarOpen.set(false);
+  }
+
+  toggleSidebar(): void {
+    this.isSidebarOpen.update(v => !v);
+  }
+
+  toggleGestione(): void {
+    this.gestioneExpanded.update(v => !v);
+  }
+
+  toggleAdmin(): void {
+    this.adminExpanded.update(v => !v);
   }
 
   login(): void {
@@ -64,12 +99,12 @@ export default class NavbarComponent implements OnInit {
   }
 
   logout(): void {
-    this.collapseNavbar();
+    this.closeSidebar();
     this.loginService.logout();
     this.router.navigate(['']);
   }
 
   toggleNavbar(): void {
-    this.isNavbarCollapsed.update(isNavbarCollapsed => !isNavbarCollapsed);
+    this.toggleSidebar();
   }
 }

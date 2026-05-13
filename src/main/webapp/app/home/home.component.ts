@@ -1,3 +1,5 @@
+// PERCORSO: src/main/webapp/app/home/home.component.ts
+
 import { Component, OnDestroy, OnInit, inject, signal } from '@angular/core';
 import { Router, RouterModule } from '@angular/router';
 import { Subject } from 'rxjs';
@@ -9,13 +11,6 @@ import { Account } from 'app/core/auth/account.model';
 import { MenuService } from 'app/entities/menu/service/menu.service';
 import { IMenu } from 'app/entities/menu/menu.model';
 
-/**
- * Percorso: src/main/webapp/app/home/home.component.ts
- * → SOSTITUISCE il file generato da JHipster
- *
- * Se l'utente è loggato mostra direttamente la lista dei suoi menu.
- * Se non è loggato mostra i pulsanti Login / Registrati.
- */
 @Component({
   selector: 'jhi-home',
   templateUrl: './home.component.html',
@@ -26,7 +21,20 @@ export default class HomeComponent implements OnInit, OnDestroy {
   account = signal<Account | null>(null);
   menus = signal<IMenu[]>([]);
   isLoading = signal(false);
-  errorMaxMenu = signal(false);
+
+  // QR modal
+  qrVisible = false;
+  qrUrl = '';
+  qrImageUrl = '';
+
+  // Conferma eliminazione
+  confermaEliminazioneVisibile = false;
+  menuDaEliminare: IMenu | null = null;
+
+  // Toast
+  toastMsg = '';
+  toastType: 'success' | 'error' = 'success';
+  private toastTimer: ReturnType<typeof setTimeout> | null = null;
 
   private readonly destroy$ = new Subject<void>();
   private readonly accountService = inject(AccountService);
@@ -60,24 +68,67 @@ export default class HomeComponent implements OnInit, OnDestroy {
     this.router.navigate(['/login']);
   }
 
-  goToEditor(menuId: number): void {
-    this.router.navigate(['/menu-editor', menuId]);
-  }
-
-  goToPreview(menuId: number): void {
+  visualizza(menuId: number): void {
     this.router.navigate(['/menu-public', menuId]);
   }
 
-  getQrUrl(menuId: number): string {
-    return `${window.location.origin}/menu-public/${menuId}`;
+  modifica(menuId: number): void {
+    this.router.navigate(['/menu-editor', menuId]);
   }
 
-  copyQrLink(menuId: number): void {
-    navigator.clipboard.writeText(this.getQrUrl(menuId));
+  // ── QR ──────────────────────────────────────────────
+
+  mostraQr(menuId: number): void {
+    this.qrUrl = `${window.location.origin}/menu-public/${menuId}`;
+    this.qrImageUrl = `https://api.qrserver.com/v1/create-qr-code/?size=220x220&data=${encodeURIComponent(this.qrUrl)}`;
+    this.qrVisible = true;
+  }
+
+  chiudiQr(): void {
+    this.qrVisible = false;
+  }
+
+  // ── Elimina ──────────────────────────────────────────
+
+  chiediConfermaElimina(menu: IMenu): void {
+    this.menuDaEliminare = menu;
+    this.confermaEliminazioneVisibile = true;
+  }
+
+  annullaElimina(): void {
+    this.confermaEliminazioneVisibile = false;
+    this.menuDaEliminare = null;
+  }
+
+  confermaElimina(): void {
+    if (!this.menuDaEliminare?.id) return;
+    this.menuService.delete(this.menuDaEliminare.id).subscribe({
+      next: () => {
+        this.menus.update(list => list.filter(m => m.id !== this.menuDaEliminare!.id));
+        this.confermaEliminazioneVisibile = false;
+        this.menuDaEliminare = null;
+        this.showToast('Menu eliminato con successo', 'success');
+      },
+      error: () => {
+        this.showToast("Errore durante l'eliminazione", 'error');
+      },
+    });
+  }
+
+  // ── Toast ────────────────────────────────────────────
+
+  showToast(msg: string, type: 'success' | 'error' = 'success'): void {
+    this.toastMsg = msg;
+    this.toastType = type;
+    if (this.toastTimer) clearTimeout(this.toastTimer);
+    this.toastTimer = setTimeout(() => {
+      this.toastMsg = '';
+    }, 2800);
   }
 
   ngOnDestroy(): void {
     this.destroy$.next();
     this.destroy$.complete();
+    if (this.toastTimer) clearTimeout(this.toastTimer);
   }
 }

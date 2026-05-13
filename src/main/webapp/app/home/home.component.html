@@ -1,11 +1,10 @@
 <!-- PERCORSO: src/main/webapp/app/home/home.component.html -->
-<!-- Sostituisce il file base JHipster con il layout dark glassmorphism del vecchio RistoHub -->
 
 <div class="rh-home">
   <!-- ── HERO ──────────────────────────────────────────────────────────── -->
   <div class="rh-hero">
     <div class="rh-hero-content">
-      <img src="content/images/logo.png" alt="RistoHub" class="rh-hero-logo" onerror="this.style.display='none'" />
+      <img src="content/images/LogoBianco.png" alt="RistoHub" class="rh-hero-logo" onerror="this.style.display='none'" />
       <p class="rh-hero-tagline">Il tuo menu digitale professionale</p>
     </div>
   </div>
@@ -13,123 +12,155 @@
   <!-- ── UTENTE NON LOGGATO ────────────────────────────────────────────── -->
   @if (!account()) {
     <div class="rh-dashboard text-center">
-      <p class="mb-4" style="color: rgba(255, 255, 255, 0.75)">
+      <p class="rh-guest-text">
         Gestisci il tuo menu digitale in pochi click.<br />
         Accedi o registrati per iniziare.
       </p>
       <div class="d-flex justify-content-center gap-3 flex-wrap">
-        <button class="btn btn-primary btn-lg px-5" (click)="login()">
-          <span jhiTranslate="global.menu.account.login">Accedi</span>
-        </button>
-        <a class="btn btn-outline-light btn-lg px-5" routerLink="/account/register">
-          <span jhiTranslate="global.menu.account.register">Registrati</span>
-        </a>
+        <button class="btn-cta btn-cta-primary" (click)="login()">Accedi</button>
+        <a class="btn-cta btn-cta-outline" routerLink="/account/register">Registrati</a>
       </div>
     </div>
   }
 
-  <!-- ── UTENTE LOGGATO ────────────────────────────────────────────────── -->
+  <!-- ── UTENTE LOGGATO — LISTA MENU CARDS ────────────────────────────── -->
   @if (account()) {
     <div class="rh-dashboard">
-      <!-- Saluto -->
-      <div class="rh-dashboard-greeting">
-        <h2>
-          Ciao, <span class="rh-user-name">{{ account()!.firstName || account()!.login }}</span> 👋
-        </h2>
-        <p>Ecco i tuoi menu digitali</p>
+      <!-- Header -->
+      <div class="ml-header">
+        <div class="ml-header-left">
+          <h1>I miei Menu</h1>
+          <p>{{ menus().length }} menu creati</p>
+        </div>
+        <button class="btn-crea" routerLink="/entities/menu/new">
+          <svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5">
+            <line x1="12" y1="5" x2="12" y2="19" />
+            <line x1="5" y1="12" x2="19" y2="12" />
+          </svg>
+          Crea Menu
+        </button>
       </div>
 
-      <!-- Grid dashboard -->
-      <div class="rh-dash-grid">
-        <!-- ── CARD: I tuoi menu ─────────────────────────────────────── -->
-        <div class="rh-dash-card">
-          <div class="rh-card-header">
-            <span class="rh-card-icon">🍽️</span>
-            <div class="rh-card-header-text">
-              <h3>I tuoi menu</h3>
-              <p>Gestisci e pubblica i menu</p>
-            </div>
-            <a routerLink="/entities/menu/new" class="rh-card-link">+ Nuovo</a>
-          </div>
+      <!-- Loading -->
+      @if (isLoading()) {
+        <div class="ml-loading">
+          <div class="ml-spinner"></div>
+          <span>Caricamento menu...</span>
+        </div>
+      }
 
-          @if (isLoading()) {
-            <div class="rh-card-loading">
-              <div class="rh-mini-spinner"></div>
-              <span>Caricamento...</span>
-            </div>
-          }
+      <!-- Empty -->
+      @else if (menus().length === 0) {
+        <div class="ml-empty">
+          <span class="ml-empty-icon">🍽️</span>
+          <h3>Nessun menu ancora creato</h3>
+          <p>Crea il tuo primo menu digitale e condividilo con i clienti tramite QR Code.</p>
+          <button class="btn-crea" routerLink="/entities/menu/new">Crea il tuo primo menu</button>
+        </div>
+      }
 
-          @if (!isLoading() && menus().length === 0) {
-            <div class="rh-card-empty">
-              <span class="rh-empty-icon">📋</span>
-              <p>Nessun menu creato.</p>
-              <a routerLink="/entities/menu/new" class="rh-empty-cta">Crea il primo menu →</a>
-            </div>
-          }
+      <!-- Grid cards menu -->
+      @else {
+        <div class="ml-grid">
+          @for (menu of menus(); track menu.id) {
+            <div class="ml-card" [class.ml-card-inattivo]="!menu.attivo">
+              <div class="ml-card-bar" style="background: #c8102e"></div>
 
-          @if (!isLoading() && menus().length > 0) {
-            <div class="rh-menus-list">
-              @for (menu of menus().slice(0, 5); track menu.id) {
-                <div class="rh-menu-row" (click)="goToEditor(menu.id!)">
-                  <div class="rh-menu-stato" [class.rh-menu-attivo]="menu.attivo" [class.rh-menu-inattivo]="!menu.attivo"></div>
-                  <div class="rh-menu-info">
-                    <span class="rh-menu-nome">{{ menu.nome }}</span>
-                    @if (menu.descrizione) {
-                      <span class="rh-menu-desc">{{ menu.descrizione }}</span>
-                    }
-                  </div>
-                  <button class="rh-qr-btn" title="Copia link QR" (click)="$event.stopPropagation(); copyQrLink(menu.id!)">
-                    <fa-icon icon="qrcode" size="sm"></fa-icon>
-                  </button>
+              <div class="ml-card-body">
+                <div class="ml-card-top">
+                  <h2>{{ menu.nome }}</h2>
+                  <span class="btn-toggle-attivo" [class.is-attivo]="menu.attivo" [class.is-inattivo]="!menu.attivo">
+                    <span class="toggle-dot"></span>
+                    <span>{{ menu.attivo ? 'Attivo' : 'Inattivo' }}</span>
+                  </span>
                 </div>
-              }
-              @if (menus().length > 5) {
-                <div class="rh-more-items">
-                  <a routerLink="/entities/menu">Vedi tutti i {{ menus().length }} menu →</a>
-                </div>
-              }
+                @if (menu.descrizione) {
+                  <p class="ml-card-desc">{{ menu.descrizione }}</p>
+                }
+              </div>
+
+              <div class="ml-card-actions">
+                <button class="ml-btn ml-btn-view" (click)="visualizza(menu.id!)">
+                  <svg width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                    <path d="M1 12s4-8 11-8 11 8 11 8-4 8-11 8-11-8-11-8z" />
+                    <circle cx="12" cy="12" r="3" />
+                  </svg>
+                  Visualizza
+                </button>
+                <button class="ml-btn ml-btn-edit" (click)="modifica(menu.id!)">
+                  <svg width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                    <path d="M11 4H4a2 2 0 0 0-2 2v14a2 2 0 0 0 2 2h14a2 2 0 0 0 2-2v-7" />
+                    <path d="M18.5 2.5a2.121 2.121 0 0 1 3 3L12 15l-4 1 1-4 9.5-9.5z" />
+                  </svg>
+                  Modifica
+                </button>
+                <button class="ml-btn ml-btn-qr" (click)="mostraQr(menu.id!)">
+                  <svg width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                    <rect x="3" y="3" width="5" height="5" />
+                    <rect x="16" y="3" width="5" height="5" />
+                    <rect x="3" y="16" width="5" height="5" />
+                    <path d="M21 16h-3a2 2 0 0 0-2 2v3" />
+                    <path d="M21 21v.01" />
+                  </svg>
+                  QR Code
+                </button>
+                <button class="ml-btn ml-btn-delete" (click)="chiediConfermaElimina(menu)">
+                  <svg width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                    <polyline points="3 6 5 6 21 6" />
+                    <path d="M19 6v14a2 2 0 0 1-2 2H7a2 2 0 0 1-2-2V6m3 0V4a1 1 0 0 1 1-1h4a1 1 0 0 1 1 1v2" />
+                  </svg>
+                  Elimina
+                </button>
+              </div>
             </div>
           }
         </div>
+      }
+    </div>
+  }
 
-        <!-- ── CARD: Accesso rapido ──────────────────────────────────── -->
-        <div class="rh-dash-card">
-          <div class="rh-card-header">
-            <span class="rh-card-icon">⚡</span>
-            <div class="rh-card-header-text">
-              <h3>Accesso rapido</h3>
-              <p>Funzioni principali</p>
-            </div>
-          </div>
-          <div class="rh-quick-links">
-            <a routerLink="/piatti-giorno" class="rh-quick-item">
-              <span class="rh-quick-icon">⭐</span>
-              <span class="rh-quick-label">Piatti del giorno</span>
-              <span class="rh-quick-arrow">→</span>
-            </a>
-            <a routerLink="/contatti" class="rh-quick-item">
-              <span class="rh-quick-icon">📞</span>
-              <span class="rh-quick-label">Gestione contatti</span>
-              <span class="rh-quick-arrow">→</span>
-            </a>
-            <a routerLink="/entities/menu/new" class="rh-quick-item">
-              <span class="rh-quick-icon">➕</span>
-              <span class="rh-quick-label">Crea nuovo menu</span>
-              <span class="rh-quick-arrow">→</span>
-            </a>
-            <a routerLink="/entities/menu" class="rh-quick-item">
-              <span class="rh-quick-icon">📋</span>
-              <span class="rh-quick-label">Tutti i menu</span>
-              <span class="rh-quick-arrow">→</span>
-            </a>
-          </div>
+  <!-- ── MODAL Conferma Eliminazione ──────────────────────────────────── -->
+  @if (confermaEliminazioneVisibile) {
+    <div class="rh-modal-overlay" (click)="annullaElimina()">
+      <div class="rh-modal-box" (click)="$event.stopPropagation()">
+        <div class="rh-modal-icon">🗑️</div>
+        <h3>Elimina menu</h3>
+        <p>
+          Sei sicuro di voler eliminare <strong style="color: #fff">{{ menuDaEliminare?.nome }}</strong
+          >?<br />
+          L'operazione non è reversibile.
+        </p>
+        <div class="rh-modal-actions">
+          <button class="btn-annulla" (click)="annullaElimina()">Annulla</button>
+          <button class="btn-conferma-elimina" (click)="confermaElimina()">Elimina</button>
         </div>
       </div>
     </div>
   }
 
-  <!-- ── FOOTER ────────────────────────────────────────────────────────── -->
-  <footer class="rh-home-footer">
-    <p><strong>RistoHub</strong> — Il tuo menu digitale professionale</p>
-  </footer>
+  <!-- ── MODAL QR ───────────────────────────────────────────────────────── -->
+  @if (qrVisible) {
+    <div class="rh-modal-overlay" (click)="chiudiQr()">
+      <div class="rh-modal-box rh-modal-qr" (click)="$event.stopPropagation()">
+        <div class="rh-modal-icon">📱</div>
+        <h3>QR Code del Menu</h3>
+        <p class="qr-subtitle">I clienti scansionano questo codice per visualizzare il menu</p>
+        <div class="qr-image-wrap">
+          <img [src]="qrImageUrl" alt="QR Code" class="qr-image" />
+        </div>
+        <p class="qr-link">{{ qrUrl }}</p>
+        <div class="rh-modal-actions">
+          <a [href]="qrImageUrl" download="qr-menu.png" class="btn-download">⬇ Scarica QR</a>
+          <button class="btn-annulla" (click)="chiudiQr()">Chiudi</button>
+        </div>
+      </div>
+    </div>
+  }
+
+  <!-- Toast -->
+  @if (toastMsg) {
+    <div class="rh-toast" [class.rh-toast-success]="toastType === 'success'" [class.rh-toast-error]="toastType === 'error'">
+      {{ toastMsg }}
+    </div>
+  }
 </div>

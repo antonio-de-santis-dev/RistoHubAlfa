@@ -1,3 +1,5 @@
+// PERCORSO: src/main/webapp/app/config/font-awesome-icons.ts
+
 import {
   faArrowLeft,
   faAsterisk,
@@ -18,6 +20,7 @@ import {
   faLock,
   faPencilAlt,
   faPlus,
+  faQrcode, // ← FIX: aggiunta per <fa-icon icon="qrcode"> in home.component.html
   faRoad,
   faSave,
   faSearch,
@@ -60,6 +63,7 @@ export const fontAwesomeIcons = [
   faLock,
   faPencilAlt,
   faPlus,
+  faQrcode, // ← FIX: registrata nella libreria FA
   faRoad,
   faSave,
   faSearch,
