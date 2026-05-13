@@ -9,10 +9,17 @@ import SharedModule from 'app/shared/shared.module';
 import PasswordStrengthBarComponent from '../password/password-strength-bar/password-strength-bar.component';
 import { RegisterService } from './register.service';
 
+/**
+ * PERCORSO: src/main/webapp/app/account/register/register.component.ts
+ * → SOSTITUISCE il file esistente.
+ * Modifiche: aggiunto styleUrl per il nuovo design glassmorphism.
+ */
 @Component({
   selector: 'jhi-register',
+  standalone: true,
   imports: [SharedModule, RouterModule, FormsModule, ReactiveFormsModule, PasswordStrengthBarComponent],
   templateUrl: './register.component.html',
+  styleUrl: './register.component.scss',
 })
 export default class RegisterComponent implements AfterViewInit {
   login = viewChild.required<ElementRef>('login');
@@ -65,9 +72,10 @@ export default class RegisterComponent implements AfterViewInit {
       this.doNotMatch.set(true);
     } else {
       const { login, email } = this.registerForm.getRawValue();
-      this.registerService
-        .save({ login, email, password, langKey: this.translateService.currentLang })
-        .subscribe({ next: () => this.success.set(true), error: response => this.processError(response) });
+      this.registerService.save({ login, email, password, langKey: this.translateService.currentLang }).subscribe({
+        next: () => this.success.set(true),
+        error: (response: HttpErrorResponse) => this.processError(response),
+      });
     }
   }
 
