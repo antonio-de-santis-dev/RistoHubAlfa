@@ -49,6 +49,15 @@ const routes: Routes = [
     title: 'Editor Menu',
   },
 
+  // ── MENU WIZARD EDIT (modifica stile, colori, logo, font, portate) ────
+  {
+    path: 'menu-wizard-edit/:id',
+    loadComponent: () => import('./menu-wizard-edit/menu-wizard-edit.component').then(m => m.MenuWizardEditComponent),
+    canActivate: [UserRouteAccessService],
+    data: { authorities: [Authority.USER] },
+    title: 'Modifica Menu',
+  },
+
   // ── MENU PUBLIC (visualizzazione QR — nessuna autenticazione) ────────
   {
     path: 'menu-public/:id',
