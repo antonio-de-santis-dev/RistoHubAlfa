@@ -1,22 +1,29 @@
-// PERCORSO: src/main/webapp/app/menu-wizard/menu-wizard.component.scss
-// Copia intatta del file originale + classi aggiuntive per il wizard semplificato
-
+// OPT-06 FIX: @use "sass:color" per color.adjust() — sostituisce darken() deprecato in Dart Sass 3
 @use 'sass:color';
+
+// ══════════════════════════════════════════════════════
+//  RistoHub — Wizard Menu (Tema Dark Glassmorphism)
+//  Struttura e dimensioni originali mantenute al 100%
+// ══════════════════════════════════════════════════════
 
 $accent: #c8102e;
 $accent-light: rgba(200, 16, 46, 0.15);
 $text: #ffffff;
 $muted: rgba(255, 255, 255, 0.65);
-$border: rgba(255, 255, 255, 0.15);
+$border: rgba(255, 255, 255, 0.25); // Bordo un po' più visibile
 $radius: 12px;
 $shadow: 0 8px 32px rgba(0, 0, 0, 0.3);
 
+// Rimuove i margini di default del layout di JHipster/Angular
+// Lo sfondo viene applicato su :host per NON creare un nuovo stacking context
+// che coprirebbe il footer del layout principale.
 :host {
   display: block;
   margin: -1.5rem -15px 0;
   position: relative;
   z-index: 0;
 
+  // Immagine di sfondo fissa — ripetuta per coprire tutta la pagina
   &::before {
     content: '';
     position: fixed;
@@ -24,15 +31,17 @@ $shadow: 0 8px 32px rgba(0, 0, 0, 0.3);
     left: 0;
     width: 100vw;
     height: 100vh;
-    background-image: url('/content/images/sfondo.png');
-    background-size: auto;
-    background-repeat: repeat;
+    // --- IMPOSTATA LA TUA IMMAGINE ---
+    background-image: url('/content/images/unnamed.jpg');
+    background-size: cover;
+    background-repeat: no-repeat;
     background-position: center;
     background-color: #1a0a05;
     z-index: -2;
     pointer-events: none;
   }
 
+  // Overlay scura sopra l'immagine (aiuta a far leggere i testi)
   &::after {
     content: '';
     position: fixed;
@@ -40,7 +49,7 @@ $shadow: 0 8px 32px rgba(0, 0, 0, 0.3);
     left: 0;
     width: 100vw;
     height: 100vh;
-    background: rgba(0, 0, 0, 0.65);
+    background: rgba(0, 0, 0, 0.6);
     z-index: -1;
     pointer-events: none;
   }
@@ -52,11 +61,19 @@ $shadow: 0 8px 32px rgba(0, 0, 0, 0.3);
   padding: 40px 16px 60px;
   font-family: 'Lato', sans-serif;
   color: $text;
+
   min-height: 100vh;
   position: relative;
 }
 
-// ── Header ──────────────────────────────────────────────────────
+.loading-dati {
+  text-align: center;
+  padding: 4rem;
+  color: $muted;
+  font-size: 1.1rem;
+}
+
+// ---- Header ----
 .wizard-header {
   text-align: center;
   margin-bottom: 28px;
@@ -67,16 +84,17 @@ $shadow: 0 8px 32px rgba(0, 0, 0, 0.3);
   font-weight: 700;
   color: $text;
   margin-bottom: 6px;
-  text-shadow: 0 2px 10px rgba(0, 0, 0, 0.6);
+  text-shadow: 0 2px 10px rgba(0, 0, 0, 0.9);
 }
 .wizard-subtitle {
   font-size: 1.05rem;
   color: $muted;
   margin-bottom: 20px;
+  text-shadow: 0 1px 4px rgba(0, 0, 0, 0.6);
 }
 .progress-bar-wrap {
   height: 6px;
-  background: rgba(255, 255, 255, 0.1);
+  background: rgba(255, 255, 255, 0.15);
   border-radius: 10px;
   overflow: hidden;
   margin: 12px 0 10px;
@@ -96,7 +114,7 @@ $shadow: 0 8px 32px rgba(0, 0, 0, 0.3);
   width: 30px;
   height: 30px;
   border-radius: 50%;
-  background: rgba(255, 255, 255, 0.1);
+  background: rgba(255, 255, 255, 0.15);
   border: 1px solid $border;
   color: $muted;
   display: flex;
@@ -119,18 +137,17 @@ $shadow: 0 8px 32px rgba(0, 0, 0, 0.3);
   }
 }
 
-// ── Body glassmorphism ───────────────────────────────────────────
+// ---- Body (Glassmorphism) ----
 .wizard-body {
-  background: rgba(255, 255, 255, 0.06);
+  // MENO TRASPARENTE: Portato a 0.12 (era 0.06)
+  background: rgba(255, 255, 255, 0.12);
   backdrop-filter: blur(16px);
   -webkit-backdrop-filter: blur(16px);
-  border: 1px solid $border;
+  border: 1px solid rgba(255, 255, 255, 0.2);
   border-radius: $radius;
   box-shadow: $shadow;
   padding: 36px;
-  min-height: 380px;
-}
-.step-content {
+  min-height: 400px;
 }
 .fade-in {
   animation: fadeIn 0.3s ease;
@@ -146,95 +163,276 @@ $shadow: 0 8px 32px rgba(0, 0, 0, 0.3);
   }
 }
 .step-hint {
-  color: $muted;
+  color: #ffffff;
   font-size: 0.95rem;
   margin-bottom: 24px;
   line-height: 1.6;
+  text-shadow: 0 1px 3px rgba(0, 0, 0, 0.8);
 }
 .section-label {
   font-size: 0.82rem;
   font-weight: 700;
   text-transform: uppercase;
   letter-spacing: 0.08em;
-  color: $muted;
+  color: #ffffff;
   margin: 24px 0 12px;
+  text-shadow: 0 1px 3px rgba(0, 0, 0, 0.8);
 }
 
-// ── Form ────────────────────────────────────────────────────────
-.form-group {
-  margin-bottom: 20px;
+// ══════════════════════════════════════════════════
+//  Step 1: Template — Card con immagine reale
+// ══════════════════════════════════════════════════
+
+.template-grid {
+  display: grid;
+  grid-template-columns: repeat(3, 1fr);
+  gap: 18px;
+}
+
+.template-card {
+  // MENO TRASPARENTE: Portato a 0.40 (era 0.25) per distinguersi dallo sfondo
+  background: rgba(0, 0, 0, 0.4);
+  border: 2px solid rgba(255, 255, 255, 0.25);
+  border-radius: $radius;
+  overflow: hidden;
+  cursor: pointer;
+  transition: all 0.25s ease;
   position: relative;
+
+  &:hover {
+    border-color: rgba(255, 255, 255, 0.55);
+    transform: translateY(-4px);
+    box-shadow: 0 12px 28px rgba(0, 0, 0, 0.6);
+  }
+
+  &.selected {
+    border-color: $accent;
+    box-shadow:
+      0 0 0 3px rgba($accent, 0.35),
+      0 12px 28px rgba(0, 0, 0, 0.6);
+  }
+
+  // Zoom immagine al hover
+  &:hover .template-preview-img {
+    transform: scale(1.06);
+  }
 }
-.form-label {
-  display: block;
-  font-weight: 700;
-  font-size: 0.9rem;
-  margin-bottom: 8px;
-  color: $text;
+
+.template-preview {
+  position: relative;
+  height: 200px;
+  overflow: hidden;
+  border-radius: $radius $radius 0 0;
+  // Sfondo scuro e solido
+  background: rgba(0, 0, 0, 0.4);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+
+  .template-card.selected & {
+    &::after {
+      content: '';
+      position: absolute;
+      inset: 0;
+      border: 3px solid $accent;
+      border-bottom: none;
+      border-radius: $radius $radius 0 0;
+      pointer-events: none;
+      z-index: 2;
+    }
+  }
 }
-.form-control {
-  background: rgba(255, 255, 255, 0.08);
-  color: $text;
+
+.template-preview-img {
   width: 100%;
+  height: 100%;
+  object-fit: contain;
+  object-position: center;
+  display: block;
+  transition: transform 0.45s ease;
+}
+
+.template-info {
+  padding: 12px 14px;
+}
+
+.template-check {
+  position: absolute;
+  top: 10px;
+  right: 10px;
+  width: 26px;
+  height: 26px;
+  background: $accent;
+  color: white;
+  border-radius: 50%;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  font-size: 0.78rem;
+  z-index: 3;
+  box-shadow: 0 2px 8px rgba(0, 0, 0, 0.4);
+}
+
+// ---- Step 2: Colori ----
+.colori-grid {
+  display: grid;
+  grid-template-columns: repeat(3, 1fr);
+  gap: 12px;
+  margin-bottom: 24px;
+}
+.colore-card {
+  // MENO TRASPARENTE: Portato a 0.15 (era 0.05)
+  background: rgba(255, 255, 255, 0.15);
+  border: 2px solid rgba(255, 255, 255, 0.2);
+  border-radius: 10px;
+  padding: 10px;
+  cursor: pointer;
+  text-align: center;
+  transition: all 0.2s;
+  &:hover {
+    background: rgba(255, 255, 255, 0.25);
+    border-color: rgba(255, 255, 255, 0.5);
+  }
+  &.selected {
+    border-color: $accent;
+    background: rgba(200, 16, 46, 0.25);
+  }
+}
+.colore-swatch {
+  display: flex;
+  height: 36px;
+  border-radius: 6px;
+  overflow: hidden;
+  margin-bottom: 6px;
+  border: 1px solid rgba(255, 255, 255, 0.3);
+}
+.swatch-primary,
+.swatch-secondary {
+  flex: 1;
+}
+.colore-nome {
+  font-size: 0.78rem;
+  color: $text;
+  font-weight: 600;
+  text-shadow: 0 1px 3px rgba(0, 0, 0, 0.9);
+}
+.color-pickers {
+  display: flex;
+  gap: 24px;
+  flex-wrap: wrap;
+  margin-bottom: 24px;
+}
+.color-picker-group {
+  label {
+    display: block;
+    font-size: 0.85rem;
+    font-weight: 700;
+    margin-bottom: 8px;
+    color: #ffffff;
+    text-shadow: 0 1px 3px rgba(0, 0, 0, 0.8);
+  }
+}
+.picker-row {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+}
+.color-input {
+  width: 48px;
+  height: 48px;
+  border: none;
+  border-radius: 8px;
+  cursor: pointer;
+  padding: 2px;
+  background: transparent;
+}
+.hex-input {
+  width: 110px;
+  background: rgba(0, 0, 0, 0.3);
+  color: $text;
   border: 1.5px solid $border;
   border-radius: 8px;
-  padding: 10px 14px;
-  font-size: 0.95rem;
-  font-family: 'Lato', sans-serif;
-  box-sizing: border-box;
-  resize: vertical;
-  &::placeholder {
-    color: rgba(255, 255, 255, 0.4);
-  }
+  padding: 8px 12px;
+  font-family: monospace;
+  font-size: 0.9rem;
   &:focus {
     outline: none;
     border-color: $accent;
-    background: rgba(255, 255, 255, 0.12);
   }
 }
-.input-hint {
-  display: block;
-  font-size: 0.78rem;
-  color: #f87171;
-  margin-top: 5px;
+.anteprima-colori {
+  border: 2px solid;
+  border-radius: $radius;
+  padding: 24px;
+  text-align: center;
+  transition: all 0.3s;
+  h4 {
+    font-family: 'Playfair Display', serif;
+    font-size: 1.3rem;
+    margin: 0 0 8px;
+  }
+  p {
+    margin: 0 0 16px;
+    font-size: 0.9rem;
+  }
 }
-.char-count {
-  display: block;
-  text-align: right;
-  font-size: 0.72rem;
-  color: $muted;
-  margin-top: 4px;
+.btn-preview {
+  border: none;
+  border-radius: 8px;
+  padding: 8px 20px;
+  font-weight: 700;
+  cursor: pointer;
+  font-size: 0.85rem;
+  &:hover {
+    opacity: 0.85;
+  }
 }
 
-// ── Logo ─────────────────────────────────────────────────────────
+// ---- Step 3: Logo ----
+.logo-attuale {
+  text-align: center;
+  margin-bottom: 20px;
+  padding: 16px;
+  background: rgba(0, 0, 0, 0.2); // Più solido
+  border-radius: $radius;
+  border: 1px solid $border;
+}
+.logo-attuale-label {
+  font-size: 0.85rem;
+  font-weight: 700;
+  color: #fff;
+  margin-bottom: 10px;
+}
 .logo-upload-area {
-  background: rgba(0, 0, 0, 0.2);
-  border: 2px dashed $border;
+  background: rgba(0, 0, 0, 0.35); // Più solido per staccare dallo sfondo
+  border: 2px dashed rgba(255, 255, 255, 0.3);
   border-radius: $radius;
   padding: 48px 24px;
   text-align: center;
   transition: border-color 0.2s;
   &:hover {
-    border-color: rgba(255, 255, 255, 0.4);
+    border-color: rgba(255, 255, 255, 0.6);
   }
   &.has-logo {
     border-style: solid;
     border-color: $accent;
-    background: rgba(200, 16, 46, 0.05);
+    background: rgba(200, 16, 46, 0.15);
   }
   .upload-icon {
-    font-size: 3rem;
     margin-bottom: 12px;
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    .svg-placeholder {
+      height: 3rem; // Questa regola mantiene la grandezza fissa a quella della vecchia emoji
+      width: auto;
+      // NESSUN FILTRO, così l'immagine inserita si vede con i suoi colori!
+    }
   }
   p {
-    color: $muted;
+    color: #fff;
     margin-bottom: 16px;
   }
-}
-.upload-formats {
-  font-size: 0.75rem !important;
-  color: rgba(255, 255, 255, 0.35) !important;
-  margin-top: 8px !important;
 }
 .btn-upload {
   display: inline-block;
@@ -264,7 +462,7 @@ $shadow: 0 8px 32px rgba(0, 0, 0, 0.3);
 }
 .logo-filename {
   font-size: 0.85rem;
-  color: $muted;
+  color: #ddd;
 }
 .btn-remove {
   background: transparent;
@@ -279,7 +477,101 @@ $shadow: 0 8px 32px rgba(0, 0, 0, 0.3);
   }
 }
 
-// ── Portate ──────────────────────────────────────────────────────
+// ---- Step 4: Font ----
+.font-list {
+  display: flex;
+  flex-direction: column;
+  gap: 12px;
+}
+.font-card {
+  // MENO TRASPARENTE: Portato a 0.15 (era 0.05)
+  background: rgba(255, 255, 255, 0.15);
+  border: 2px solid rgba(255, 255, 255, 0.2);
+  border-radius: $radius;
+  padding: 16px 20px;
+  cursor: pointer;
+  display: flex;
+  align-items: center;
+  gap: 16px;
+  transition: all 0.2s;
+  position: relative;
+  &:hover {
+    border-color: rgba(255, 255, 255, 0.5);
+    background: rgba(255, 255, 255, 0.25);
+  }
+  &.selected {
+    border-color: $accent;
+    background: rgba(200, 16, 46, 0.25);
+  }
+}
+.font-preview {
+  font-size: 1.15rem;
+  flex: 1;
+  color: #ffffff;
+  text-shadow: 0 1px 4px rgba(0, 0, 0, 0.9);
+}
+.font-meta {
+  display: flex;
+  flex-direction: column;
+  align-items: flex-end;
+  gap: 3px;
+}
+.font-name {
+  font-size: 0.78rem;
+  font-weight: 700;
+  color: #ffffff;
+  text-shadow: 0 1px 3px rgba(0, 0, 0, 0.8);
+}
+.font-tag {
+  font-size: 0.7rem;
+  background: rgba(255, 255, 255, 0.2); // Più solido
+  color: #fff;
+  border-radius: 20px;
+  padding: 2px 8px;
+}
+.font-check {
+  width: 24px;
+  height: 24px;
+  background: $accent;
+  color: white;
+  border-radius: 50%;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  font-size: 0.75rem;
+}
+
+// ---- Step 5: Portate ----
+.form-group {
+  margin-bottom: 20px;
+}
+.form-label {
+  display: block;
+  font-weight: 700;
+  font-size: 0.9rem;
+  margin-bottom: 8px;
+  color: $text;
+  text-shadow: 0 1px 3px rgba(0, 0, 0, 0.8);
+}
+.form-control {
+  background: rgba(0, 0, 0, 0.35); // Più scuro e meno trasparente
+  color: $text;
+  width: 100%;
+  border: 1.5px solid rgba(255, 255, 255, 0.3);
+  border-radius: 8px;
+  padding: 10px 14px;
+  font-size: 0.95rem;
+  font-family: 'Lato', sans-serif;
+  box-sizing: border-box;
+  &::placeholder {
+    color: rgba(255, 255, 255, 0.6);
+  }
+  &:focus {
+    outline: none;
+    border-color: $accent;
+    background: rgba(0, 0, 0, 0.5);
+  }
+}
 .portate-grid {
   display: flex;
   flex-wrap: wrap;
@@ -287,18 +579,20 @@ $shadow: 0 8px 32px rgba(0, 0, 0, 0.3);
   margin-bottom: 8px;
 }
 .portata-chip {
-  background: rgba(255, 255, 255, 0.08);
+  // MENO TRASPARENTE: Portato a 0.20 (era 0.08)
+  background: rgba(255, 255, 255, 0.2);
   color: $text;
-  border: 1px solid $border;
+  border: 1px solid rgba(255, 255, 255, 0.3);
   border-radius: 30px;
   padding: 6px 18px;
   font-size: 0.85rem;
   cursor: pointer;
   transition: all 0.2s;
   user-select: none;
+  text-shadow: 0 1px 3px rgba(0, 0, 0, 0.9);
   &:hover {
-    border-color: rgba(255, 255, 255, 0.4);
-    background: rgba(255, 255, 255, 0.15);
+    border-color: rgba(255, 255, 255, 0.6);
+    background: rgba(255, 255, 255, 0.3);
   }
   &.selected {
     background: $accent;
@@ -333,22 +627,23 @@ $shadow: 0 8px 32px rgba(0, 0, 0, 0.3);
   display: flex;
   flex-wrap: wrap;
   gap: 8px;
-  margin-bottom: 12px;
 }
 .portata-custom-chip {
-  background: rgba(255, 255, 255, 0.15);
+  // MENO TRASPARENTE
+  background: rgba(255, 255, 255, 0.25);
   color: white;
-  border: 1px solid $border;
+  border: 1px solid rgba(255, 255, 255, 0.3);
   border-radius: 30px;
   padding: 6px 14px;
   font-size: 0.83rem;
   display: flex;
   align-items: center;
   gap: 8px;
+  text-shadow: 0 1px 3px rgba(0, 0, 0, 0.9);
   .chip-remove {
     background: none;
     border: none;
-    color: rgba(255, 255, 255, 0.6);
+    color: #fff;
     cursor: pointer;
     font-size: 0.75rem;
     padding: 0;
@@ -359,33 +654,7 @@ $shadow: 0 8px 32px rgba(0, 0, 0, 0.3);
   }
 }
 
-.riepilogo-box {
-  margin-top: 20px;
-  background: rgba(74, 222, 128, 0.08);
-  border: 1px solid rgba(74, 222, 128, 0.2);
-  border-radius: 8px;
-  padding: 10px 16px;
-}
-.riepilogo-label {
-  margin: 0;
-  font-size: 0.88rem;
-  color: #4ade80;
-  strong {
-    color: #fff;
-  }
-}
-
-.errore-box {
-  margin-top: 16px;
-  background: rgba(239, 68, 68, 0.12);
-  border: 1px solid rgba(239, 68, 68, 0.3);
-  border-radius: 8px;
-  padding: 12px 16px;
-  font-size: 0.9rem;
-  color: #fca5a5;
-}
-
-// ── Footer ───────────────────────────────────────────────────────
+// ---- Footer ----
 .wizard-footer {
   display: flex;
   align-items: center;
@@ -395,11 +664,12 @@ $shadow: 0 8px 32px rgba(0, 0, 0, 0.3);
 }
 .step-label {
   font-size: 0.85rem;
-  color: $muted;
+  color: #fff;
+  text-shadow: 0 1px 3px rgba(0, 0, 0, 0.8);
 }
 .btn-back {
-  background: transparent;
-  border: 1.5px solid $border;
+  background: rgba(0, 0, 0, 0.3); // Sfondo solido per il pulsante
+  border: 1.5px solid rgba(255, 255, 255, 0.4);
   color: $text;
   border-radius: 8px;
   padding: 10px 22px;
@@ -408,7 +678,7 @@ $shadow: 0 8px 32px rgba(0, 0, 0, 0.3);
   transition: all 0.2s;
   &:hover:not(:disabled) {
     border-color: white;
-    background: rgba(255, 255, 255, 0.1);
+    background: rgba(255, 255, 255, 0.15);
   }
   &:disabled {
     opacity: 0.4;
@@ -433,6 +703,7 @@ $shadow: 0 8px 32px rgba(0, 0, 0, 0.3);
     cursor: not-allowed;
   }
 }
+.btn-salva,
 .btn-genera {
   background: $accent;
   color: white;
@@ -457,31 +728,93 @@ $shadow: 0 8px 32px rgba(0, 0, 0, 0.3);
   }
 }
 
-// ── Responsive ───────────────────────────────────────────────────
+// ══════════════════════════════════════════════════
+//  RESPONSIVE MOBILE
+// ══════════════════════════════════════════════════
+
 @media (max-width: 768px) {
   .wizard-container {
-    padding: 68px 1.1rem 60px;
+    padding: 68px 1.1rem 60px; /* 68px = navbar (52px) + respiro (16px) */
+    margin: 0 auto;
   }
   .wizard-body {
     margin: 0 0.6rem;
-    padding: 20px 16px;
-    min-height: auto;
   }
   .wizard-title {
     font-size: 1.5rem;
   }
-  .form-control,
+  .wizard-subtitle {
+    font-size: 0.92rem;
+    margin-bottom: 14px;
+  }
+  .progress-bar-wrap {
+    margin: 12px 0.6rem 10px;
+  }
+  .step-dot {
+    width: 26px;
+    height: 26px;
+    font-size: 0.72rem;
+  }
+  .wizard-body {
+    padding: 20px 16px;
+    min-height: auto;
+  }
+  .template-grid {
+    grid-template-columns: 1fr;
+    gap: 14px;
+  }
+  .template-preview {
+    height: 200px;
+  }
+  .colori-grid {
+    grid-template-columns: repeat(2, 1fr);
+    gap: 10px;
+  }
+  .color-pickers {
+    flex-direction: column;
+    gap: 16px;
+  }
   .hex-input {
-    font-size: 16px;
+    width: 100%;
+    max-width: 140px;
+  }
+  .anteprima-colori {
+    padding: 16px;
+    h4 {
+      font-size: 1.1rem;
+    }
+  }
+  .logo-upload-area {
+    padding: 32px 16px;
+  }
+  .font-card {
+    padding: 12px 14px;
+    gap: 12px;
+  }
+  .font-preview {
+    font-size: 1rem;
+  }
+  .portata-chip {
+    padding: 6px 14px;
+    font-size: 0.82rem;
   }
   .wizard-footer {
     gap: 8px;
   }
   .btn-back,
   .btn-next,
+  .btn-salva,
   .btn-genera {
     padding: 12px 18px;
     font-size: 0.92rem;
+  }
+  .step-label {
+    font-size: 0.78rem;
+  }
+  /* input: font-size 16px previene zoom automatico iOS */
+  .form-control,
+  .hex-input {
+    font-size: 16px;
   }
 }
 
@@ -502,10 +835,55 @@ $shadow: 0 8px 32px rgba(0, 0, 0, 0.3);
       margin-bottom: 8px;
     }
   }
-  .btn-back,
+  .btn-back {
+    flex: 1;
+    text-align: center;
+  }
   .btn-next,
+  .btn-salva,
   .btn-genera {
     flex: 1;
     text-align: center;
   }
+}
+
+// ══════════════════════════════════════════════════
+//  Icone PNG inline (sostituiscono le emoji)
+// ══════════════════════════════════════════════════
+
+.step-icon {
+  width: 1.2em;
+  height: 1.2em;
+  vertical-align: middle;
+  display: inline-block;
+  margin-right: 6px;
+  object-fit: contain;
+  // Piccola ombra per leggibilità su sfondi scuri
+  filter: drop-shadow(0 1px 2px rgba(0, 0, 0, 0.5));
+}
+
+.font-check-icon {
+  width: 14px;
+  height: 14px;
+  object-fit: contain;
+  display: block;
+  // Icona check dentro il cerchio accent — invert per renderla bianca
+  filter: brightness(10);
+}
+
+.section-label .step-icon {
+  width: 1.1em;
+  height: 1.1em;
+  margin-bottom: 2px;
+}
+
+.form-label .step-icon {
+  width: 1.1em;
+  height: 1.1em;
+  margin-bottom: 2px;
+}
+
+.riepilogo-label .step-icon {
+  width: 1em;
+  height: 1em;
 }

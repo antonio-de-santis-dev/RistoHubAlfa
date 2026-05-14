@@ -108,8 +108,10 @@ const routes: Routes = [
     canActivate: [UserRouteAccessService],
   },
   {
+    // FIX: corretto da m.default → m.MenuViewComponent
+    // MenuViewComponent è un export nominato, non un export default
     path: 'menu-view/:id',
-    loadComponent: () => import('./menu-view/menu-view.component').then(m => m.default),
+    loadComponent: () => import('./menu-view/menu-view.component').then(m => m.MenuViewComponent),
     canActivate: [UserRouteAccessService],
   },
 

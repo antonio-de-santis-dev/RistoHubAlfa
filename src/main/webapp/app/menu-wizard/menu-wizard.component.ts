@@ -26,21 +26,41 @@ interface MenuCreato {
 })
 export class MenuWizardComponent implements OnInit {
   currentStep = 1;
-  readonly totalSteps = 3;
+  readonly totalSteps = 4;
   isLoading = false;
   erroreCreazione: string | null = null;
 
-  // ── Step 1: Informazioni ───────────────────────────────────────
-  nomeMenu = '';
-  descrizioneMenu = '';
+  // ── Step 1: Colori ────────────────────────────────────────────
+  colorePrimario = '#C8102E';
+  coloreSecondario = '#F5E6C8';
+  coloriConsigliati = [
+    { primario: '#C8102E', secondario: '#F5E6C8', nome: 'Rosso Classico' },
+    { primario: '#2C3E50', secondario: '#ECF0F1', nome: 'Blu Notte' },
+    { primario: '#27AE60', secondario: '#FDFEFE', nome: 'Verde Fresco' },
+    { primario: '#8E44AD', secondario: '#FAD7A0', nome: 'Viola Elegante' },
+    { primario: '#E67E22', secondario: '#FEF9E7', nome: 'Arancio Caldo' },
+    { primario: '#1A1A1A', secondario: '#F8F8F8', nome: 'Nero Minimalista' },
+  ];
 
-  // ── Step 2: Logo ───────────────────────────────────────────────
+  // ── Step 2: Font ──────────────────────────────────────────────
+  fontSelezionato = 'Playfair Display';
+  fontsConsigliati = [
+    { nome: 'Playfair Display', esempio: 'Antipasto della Casa', tag: 'Elegante' },
+    { nome: 'Lato', esempio: 'Antipasto della Casa', tag: 'Moderno' },
+    { nome: 'Merriweather', esempio: 'Antipasto della Casa', tag: 'Classico' },
+    { nome: 'Montserrat', esempio: 'Antipasto della Casa', tag: 'Contemporaneo' },
+    { nome: 'Cormorant Garamond', esempio: 'Antipasto della Casa', tag: 'Raffinato' },
+  ];
+
+  // ── Step 3: Logo ──────────────────────────────────────────────
   logoPreview: string | null = null;
   logoFile: File | null = null;
   logoBase64: string | null = null;
   logoContentType: string | null = null;
 
-  // ── Step 3: Portate ────────────────────────────────────────────
+  // ── Step 4: Nome, Descrizione, Portate ────────────────────────
+  nomeMenu = '';
+  descrizioneMenu = '';
   portateDefault = [
     'ANTIPASTO',
     'PRIMO',
@@ -63,7 +83,13 @@ export class MenuWizardComponent implements OnInit {
     private http: HttpClient,
   ) {}
 
-  ngOnInit(): void {}
+  ngOnInit(): void {
+    const link = document.createElement('link');
+    link.rel = 'stylesheet';
+    link.href =
+      'https://fonts.googleapis.com/css2?family=Playfair+Display:wght@400;700&family=Lato:wght@400;700&family=Merriweather:wght@400;700&family=Montserrat:wght@400;700&family=Cormorant+Garamond:wght@400;700&display=swap';
+    document.head.appendChild(link);
+  }
 
   // ── Navigazione step ──────────────────────────────────────────
 
@@ -76,9 +102,17 @@ export class MenuWizardComponent implements OnInit {
   }
 
   validaStep(): boolean {
-    if (this.currentStep === 1) return this.nomeMenu.trim().length >= 2;
-    if (this.currentStep === 3) return this.portateSelezionate.size > 0;
+    if (this.currentStep === 4) {
+      return this.nomeMenu.trim().length >= 2 && this.portateSelezionate.size > 0;
+    }
     return true;
+  }
+
+  // ── Colori ────────────────────────────────────────────────────
+
+  selezionaColori(c: { primario: string; secondario: string }): void {
+    this.colorePrimario = c.primario;
+    this.coloreSecondario = c.secondario;
   }
 
   // ── Logo ──────────────────────────────────────────────────────
@@ -87,7 +121,6 @@ export class MenuWizardComponent implements OnInit {
     const input = event.target as HTMLInputElement;
     const file = input.files?.[0];
     if (!file) return;
-
     this.logoFile = file;
     this.logoContentType = file.type;
     const reader = new FileReader();
@@ -140,10 +173,8 @@ export class MenuWizardComponent implements OnInit {
     this.erroreCreazione = null;
 
     try {
-      // 1. Legge account corrente
       const currentUser = await firstValueFrom(this.http.get<AccountInfo>('/api/account'));
 
-      // 2. Crea il menu (include logo se presente)
       const body: Record<string, unknown> = {
         nome: this.nomeMenu.trim(),
         descrizione: this.descrizioneMenu.trim() || null,
@@ -157,7 +188,6 @@ export class MenuWizardComponent implements OnInit {
 
       const menu = await firstValueFrom(this.http.post<MenuCreato>('/api/menus', body));
 
-      // 3. Crea portate default in parallelo
       const richiesteDefault = Array.from(this.portateSelezionate).map(p =>
         firstValueFrom(
           this.http.post('/api/portatas', {
@@ -168,7 +198,6 @@ export class MenuWizardComponent implements OnInit {
         ),
       );
 
-      // 4. Crea portate personalizzate in parallelo
       const richiesteCustom = this.portatePersonalizzate.map(n =>
         firstValueFrom(
           this.http.post('/api/portatas', {
@@ -181,7 +210,6 @@ export class MenuWizardComponent implements OnInit {
 
       await Promise.all([...richiesteDefault, ...richiesteCustom]);
 
-      // 5. Naviga al menu-view
       this.router.navigate(['/menu-view', menu.id]);
     } catch (err) {
       console.error('Errore creazione menu:', err);
@@ -197,11 +225,12 @@ export class MenuWizardComponent implements OnInit {
   }
 
   get titoloStep(): string {
-    const titoli: Record<number, string> = {
-      1: 'Informazioni menu',
-      2: 'Carica il logo (opzionale)',
-      3: 'Scegli le portate',
+    const t: Record<number, string> = {
+      1: 'Scegli i colori',
+      2: 'Scegli il font',
+      3: 'Carica il logo',
+      4: 'Aggiungi le portate',
     };
-    return titoli[this.currentStep] ?? '';
+    return t[this.currentStep] ?? '';
   }
 }
