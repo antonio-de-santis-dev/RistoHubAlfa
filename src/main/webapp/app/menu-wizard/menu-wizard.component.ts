@@ -1,8 +1,4 @@
 // PERCORSO: src/main/webapp/app/menu-wizard/menu-wizard.component.ts
-// Wizard CREAZIONE menu — 4 step (Colori, Logo, Font, Portate).
-// FIX: il payload POST /api/menus contiene SOLO i campi presenti nell'entity
-// Menu (nome, descrizione, attivo). Colori e font vengono salvati in
-// localStorage perché non esistono più sull'entity backend.
 
 import { Component, OnInit } from '@angular/core';
 import { Router, RouterModule } from '@angular/router';
@@ -11,9 +7,15 @@ import { CommonModule } from '@angular/common';
 import { FormsModule } from '@angular/forms';
 import { firstValueFrom } from 'rxjs';
 
-import { IMenu } from 'app/entities/menu/menu.model';
-import { NomePortataDefault } from 'app/entities/enumerations/nome-portata-default.model';
-import { TipoPortata } from 'app/entities/enumerations/tipo-portata.model';
+interface AccountInfo {
+  id: number;
+  login: string;
+}
+
+interface MenuCreato {
+  id: number;
+  nome?: string;
+}
 
 @Component({
   selector: 'jhi-menu-wizard',
@@ -24,100 +26,87 @@ import { TipoPortata } from 'app/entities/enumerations/tipo-portata.model';
 })
 export class MenuWizardComponent implements OnInit {
   currentStep = 1;
-  totalSteps = 4;
+  readonly totalSteps = 3;
   isLoading = false;
   erroreCreazione: string | null = null;
 
-  // Step 1 — Colori
-  colorePrimario = '#C8102E';
-  coloreSecondario = '#F5E6C8';
-  coloriConsigliati = [
-    { primario: '#C8102E', secondario: '#F5E6C8', nome: 'Rosso Classico' },
-    { primario: '#2C3E50', secondario: '#ECF0F1', nome: 'Blu Notte' },
-    { primario: '#27AE60', secondario: '#FDFEFE', nome: 'Verde Fresco' },
-    { primario: '#8E44AD', secondario: '#FAD7A0', nome: 'Viola Elegante' },
-    { primario: '#E67E22', secondario: '#FEF9E7', nome: 'Arancio Caldo' },
-    { primario: '#1A1A1A', secondario: '#F8F8F8', nome: 'Nero Minimalista' },
-  ];
+  // ── Step 1: Informazioni ───────────────────────────────────────
+  nomeMenu = '';
+  descrizioneMenu = '';
 
-  // Step 2 — Logo
+  // ── Step 2: Logo ───────────────────────────────────────────────
   logoPreview: string | null = null;
   logoFile: File | null = null;
+  logoBase64: string | null = null;
+  logoContentType: string | null = null;
 
-  // Step 3 — Font
-  fontSelezionato = 'Playfair Display';
-  fontsConsigliati = [
-    { nome: 'Playfair Display', esempio: 'Antipasto della Casa', tag: 'Elegante' },
-    { nome: 'Lato', esempio: 'Antipasto della Casa', tag: 'Moderno' },
-    { nome: 'Merriweather', esempio: 'Antipasto della Casa', tag: 'Classico' },
-    { nome: 'Montserrat', esempio: 'Antipasto della Casa', tag: 'Contemporaneo' },
-    { nome: 'Cormorant Garamond', esempio: 'Antipasto della Casa', tag: 'Raffinato' },
+  // ── Step 3: Portate ────────────────────────────────────────────
+  portateDefault = [
+    'ANTIPASTO',
+    'PRIMO',
+    'SECONDO',
+    'CONTORNO',
+    'BEVANDA',
+    'BIRRA',
+    'VINO_ROSSO',
+    'VINO_ROSATO',
+    'VINO_BIANCO',
+    'DOLCE',
+    'DIGESTIVO',
   ];
-
-  // Step 4 — Portate + info menu
-  portateDefault = Object.values(NomePortataDefault);
   portateSelezionate: Set<string> = new Set(['ANTIPASTO', 'PRIMO', 'SECONDO', 'DOLCE']);
   portatePersonalizzate: string[] = [];
   nuovaPortataCustom = '';
-  nomeMenu = '';
-  descrizioneMenu = '';
 
   constructor(
     private router: Router,
     private http: HttpClient,
   ) {}
 
-  ngOnInit(): void {
-    const link = document.createElement('link');
-    link.rel = 'stylesheet';
-    link.href =
-      'https://fonts.googleapis.com/css2?family=Playfair+Display:wght@400;700&family=Lato:wght@400;700&family=Merriweather:wght@400;700&family=Montserrat:wght@400;700&family=Cormorant+Garamond:wght@400;700&display=swap';
-    document.head.appendChild(link);
-  }
+  ngOnInit(): void {}
+
+  // ── Navigazione step ──────────────────────────────────────────
 
   stepSuccessivo(): void {
     if (this.validaStep()) this.currentStep++;
   }
+
   stepPrecedente(): void {
     if (this.currentStep > 1) this.currentStep--;
   }
 
   validaStep(): boolean {
-    if (this.currentStep === 4) {
-      return this.nomeMenu.trim() !== '' && this.portateSelezionate.size > 0;
-    }
+    if (this.currentStep === 1) return this.nomeMenu.trim().length >= 2;
+    if (this.currentStep === 3) return this.portateSelezionate.size > 0;
     return true;
   }
 
-  selezionaColori(c: { primario: string; secondario: string }): void {
-    this.colorePrimario = c.primario;
-    this.coloreSecondario = c.secondario;
-  }
-
-  // Evita il warning "value '' does not conform to #rrggbb" quando l'utente
-  // svuota momentaneamente l'input hex.
-  onHexChange(campo: 'primario' | 'secondario', valore: string): void {
-    const v = (valore ?? '').trim();
-    const ok = /^#[0-9A-Fa-f]{6}$/.test(v);
-    if (!ok) return;
-    if (campo === 'primario') this.colorePrimario = v;
-    else this.coloreSecondario = v;
-  }
+  // ── Logo ──────────────────────────────────────────────────────
 
   onLogoSelezionato(event: Event): void {
     const input = event.target as HTMLInputElement;
-    if (input.files?.[0]) {
-      this.logoFile = input.files[0];
-      const reader = new FileReader();
-      reader.onload = e => (this.logoPreview = e.target?.result as string);
-      reader.readAsDataURL(input.files[0]);
-    }
+    const file = input.files?.[0];
+    if (!file) return;
+
+    this.logoFile = file;
+    this.logoContentType = file.type;
+    const reader = new FileReader();
+    reader.onload = e => {
+      const result = e.target?.result as string;
+      this.logoPreview = result;
+      this.logoBase64 = result.split(',')[1] ?? null;
+    };
+    reader.readAsDataURL(file);
   }
 
   rimuoviLogo(): void {
     this.logoFile = null;
     this.logoPreview = null;
+    this.logoBase64 = null;
+    this.logoContentType = null;
   }
+
+  // ── Portate ───────────────────────────────────────────────────
 
   togglePortata(p: string): void {
     if (this.portateSelezionate.has(p)) this.portateSelezionate.delete(p);
@@ -143,89 +132,76 @@ export class MenuWizardComponent implements OnInit {
       .replace(/^\w/, c => c.toUpperCase());
   }
 
-  get progressoPercentuale(): number {
-    return (this.currentStep / this.totalSteps) * 100;
-  }
-
-  get titoloStep(): string {
-    const t: Record<number, string> = {
-      1: 'Scegli i colori',
-      2: 'Carica il logo',
-      3: 'Scegli il font',
-      4: 'Aggiungi le portate',
-    };
-    return t[this.currentStep] ?? '';
-  }
+  // ── Creazione menu ────────────────────────────────────────────
 
   async generaMenu(): Promise<void> {
     if (!this.validaStep()) return;
     this.isLoading = true;
     this.erroreCreazione = null;
+
     try {
-      // 1. Crea menu — SOLO i campi presenti nell'entity Menu del backend Alfa.
-      //    NON inviare colorePrimario / coloreSecondario / fontMenu: non
-      //    esistono più nell'entity e farebbero rispondere 400 Bad Request.
-      const menu = await firstValueFrom(
-        this.http.post<IMenu>('/api/menus', {
-          nome: this.nomeMenu.trim(),
-          descrizione: this.descrizioneMenu?.trim() || null,
-          attivo: true,
-        }),
+      // 1. Legge account corrente
+      const currentUser = await firstValueFrom(this.http.get<AccountInfo>('/api/account'));
+
+      // 2. Crea il menu (include logo se presente)
+      const body: Record<string, unknown> = {
+        nome: this.nomeMenu.trim(),
+        descrizione: this.descrizioneMenu.trim() || null,
+        attivo: true,
+        ristoratore: { id: currentUser.id, login: currentUser.login },
+      };
+      if (this.logoBase64 && this.logoContentType) {
+        body['logo'] = this.logoBase64;
+        body['logoContentType'] = this.logoContentType;
+      }
+
+      const menu = await firstValueFrom(this.http.post<MenuCreato>('/api/menus', body));
+
+      // 3. Crea portate default in parallelo
+      const richiesteDefault = Array.from(this.portateSelezionate).map(p =>
+        firstValueFrom(
+          this.http.post('/api/portatas', {
+            tipo: 'DEFAULT',
+            nomeDefault: p,
+            menu: { id: menu.id },
+          }),
+        ),
       );
 
-      if (!menu?.id) throw new Error('Risposta backend senza id menu');
-
-      // Persistiamo lo stile lato client (lo legge menu-view/menu-public).
-      try {
-        localStorage.setItem(
-          `menu-style-${menu.id}`,
-          JSON.stringify({
-            colorePrimario: this.colorePrimario,
-            coloreSecondario: this.coloreSecondario,
-            fontMenu: this.fontSelezionato,
-          }),
-        );
-      } catch {
-        /* localStorage può fallire in modalità privata: non bloccante */
-      }
-
-      // 2. Upload logo (se presente)
-      if (this.logoFile) {
-        const formData = new FormData();
-        formData.append('file', this.logoFile);
-        await firstValueFrom(this.http.post(`/api/menus/${menu.id}/logo/upload`, formData));
-      }
-
-      // 3. Crea portate
-      let ordine = 1;
-      for (const nomeDefault of this.portateSelezionate) {
-        await firstValueFrom(
+      // 4. Crea portate personalizzate in parallelo
+      const richiesteCustom = this.portatePersonalizzate.map(n =>
+        firstValueFrom(
           this.http.post('/api/portatas', {
-            tipo: TipoPortata.DEFAULT,
-            nomeDefault,
-            ordine: ordine++,
+            tipo: 'PERSONALIZZATA',
+            nomePersonalizzato: n,
             menu: { id: menu.id },
           }),
-        );
-      }
-      for (const nomePersonalizzato of this.portatePersonalizzate) {
-        await firstValueFrom(
-          this.http.post('/api/portatas', {
-            tipo: TipoPortata.PERSONALIZZATA,
-            nomePersonalizzato,
-            ordine: ordine++,
-            menu: { id: menu.id },
-          }),
-        );
-      }
+        ),
+      );
 
-      // Torna alla home dove vedrai la card del nuovo menu.
-      this.router.navigate(['/home']);
-    } catch (err: any) {
+      await Promise.all([...richiesteDefault, ...richiesteCustom]);
+
+      // 5. Naviga al menu-view
+      this.router.navigate(['/menu-view', menu.id]);
+    } catch (err) {
       console.error('Errore creazione menu:', err);
-      this.erroreCreazione = err?.error?.detail || err?.error?.title || err?.message || 'Errore durante la creazione del menu';
-    } finally {
+      this.erroreCreazione = 'Errore durante la creazione del menu. Riprova.';
       this.isLoading = false;
     }
+  }
+
+  // ── Computed ──────────────────────────────────────────────────
+
+  get progressoPercentuale(): number {
+    return (this.currentStep / this.totalSteps) * 100;
+  }
+
+  get titoloStep(): string {
+    const titoli: Record<number, string> = {
+      1: 'Informazioni menu',
+      2: 'Carica il logo (opzionale)',
+      3: 'Scegli le portate',
+    };
+    return titoli[this.currentStep] ?? '';
   }
 }
