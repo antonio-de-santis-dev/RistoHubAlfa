@@ -210,7 +210,8 @@ export class MenuWizardComponent implements OnInit {
 
       await Promise.all([...richiesteDefault, ...richiesteCustom]);
 
-      this.router.navigate(['/menu-view', menu.id]);
+      // FIX: dopo la creazione del menu torna alla home invece di restare su menu-view
+      this.router.navigate(['/']);
     } catch (err) {
       console.error('Errore creazione menu:', err);
       this.erroreCreazione = 'Errore durante la creazione del menu. Riprova.';
