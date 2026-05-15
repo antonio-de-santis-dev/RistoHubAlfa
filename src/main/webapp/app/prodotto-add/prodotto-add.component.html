@@ -1,0 +1,354 @@
+<div class="pa-page">
+  <div class="pa-inner">
+    <a *ngIf="portataPreimpostata && menuIdPerBack" class="pa-back-link" (click)="tornaAlMenu()"> ← Torna al menu </a>
+
+    <div class="pa-header">
+      <div class="pa-header-row">
+        <div>
+          <h1>🍽️ Gestione Prodotti</h1>
+          <p>Aggiungi i piatti al tuo menu</p>
+        </div>
+        <a routerLink="/import-menu" class="pa-import-link">
+          <svg
+            width="16"
+            height="16"
+            viewBox="0 0 24 24"
+            fill="none"
+            stroke="currentColor"
+            stroke-width="2.5"
+            stroke-linecap="round"
+            stroke-linejoin="round"
+          >
+            <path d="M14 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V8z" />
+            <polyline points="14 2 14 8 20 8" />
+            <line x1="12" y1="18" x2="12" y2="12" />
+            <line x1="9" y1="15" x2="15" y2="15" />
+          </svg>
+          Importa da PDF
+        </a>
+      </div>
+    </div>
+
+    <div *ngIf="isLoadingInit" class="pa-loading">
+      <div class="pa-spinner"></div>
+      <span>Caricamento...</span>
+    </div>
+
+    <div *ngIf="!isLoadingInit" class="pa-layout">
+      <div class="pa-card" [class.pa-card-edit-mode]="modalitaModifica">
+        <div *ngIf="modalitaModifica" class="pa-edit-banner">
+          <div class="pa-edit-banner-icon">
+            <svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5">
+              <path d="M11 4H4a2 2 0 0 0-2 2v14a2 2 0 0 0 2 2h14a2 2 0 0 0 2-2v-7" />
+              <path d="M18.5 2.5a2.121 2.121 0 0 1 3 3L12 15l-4 1 1-4 9.5-9.5z" />
+            </svg>
+          </div>
+          <span
+            >Stai modificando <strong>{{ prodottoInModifica?.nome }}</strong></span
+          >
+          <button class="pa-edit-banner-cancel" (click)="annullaModifica()" title="Annulla modifica">
+            <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5">
+              <line x1="18" y1="6" x2="6" y2="18" />
+              <line x1="6" y1="6" x2="18" y2="18" />
+            </svg>
+          </button>
+        </div>
+
+        <div *ngIf="!portataPreimpostata && !modalitaModifica" class="pa-section">
+          <h2 class="pa-section-title">📋 Seleziona dove aggiungere</h2>
+
+          <div class="pa-form-group">
+            <label class="pa-form-label">Menu *</label>
+            <select class="pa-form-control" [(ngModel)]="menuSelezionatoId" (ngModelChange)="onMenuSelezionato()">
+              <option [ngValue]="null">-- Scegli un menu --</option>
+              <option *ngFor="let m of menus" [value]="m.id">{{ m.nome }}</option>
+            </select>
+          </div>
+
+          <div class="pa-form-group" *ngIf="portate.length > 0">
+            <label class="pa-form-label">Portata *</label>
+            <select class="pa-form-control" [(ngModel)]="portataSelezionataId" (ngModelChange)="onPortataSelezionata()">
+              <option [ngValue]="null">-- Scegli una portata --</option>
+              <option *ngFor="let p of portate" [value]="p.id">{{ nomePortata(p) }}</option>
+            </select>
+          </div>
+        </div>
+
+        <div class="pa-section" *ngIf="portataSelezionataId && !modalitaModifica">
+          <h2 class="pa-section-title">➕ Nuovo Prodotto</h2>
+
+          <div *ngIf="successMessage" class="pa-alert pa-alert-success">{{ successMessage }}</div>
+          <div *ngIf="errorMessage" class="pa-alert pa-alert-error">{{ errorMessage }}</div>
+
+          <div class="pa-form-group">
+            <label class="pa-form-label">Nome *</label>
+            <input type="text" class="pa-form-control" [(ngModel)]="nome" placeholder="es. Spaghetti alla carbonara" maxlength="100" />
+          </div>
+          <div class="pa-form-group">
+            <label class="pa-form-label">Descrizione</label>
+            <textarea class="pa-form-control" [(ngModel)]="descrizione" rows="2" placeholder="Ingredienti, note o varianti..."></textarea>
+          </div>
+          <div class="pa-form-group">
+            <label class="pa-form-label">Prezzo (€) *</label>
+            <input type="number" class="pa-form-control" [(ngModel)]="prezzo" placeholder="0.00" min="0" step="0.50" />
+          </div>
+
+          <div class="pa-form-group" *ngIf="allergeniDisponibili.length > 0">
+            <label class="pa-form-label">Allergeni</label>
+            <p class="pa-allergeni-hint">Clicca per selezionare/deselezionare gli allergeni</p>
+            <div class="pa-allergeni-grid">
+              <div
+                *ngFor="let a of allergeniDisponibili"
+                class="pa-allergene-chip"
+                [class.selected]="allergeniSelezionati.has(a.id)"
+                [style.borderColor]="allergeniSelezionati.has(a.id) ? a.colore || '#c8102e' : ''"
+                (click)="toggleAllergene(a.id)"
+              >
+                <div class="pa-allergene-icona" [style.backgroundColor]="getAllergeneIcona(a) ? 'transparent' : a.colore || '#888'">
+                  <img
+                    *ngIf="getAllergeneIcona(a)"
+                    [src]="getAllergeneIcona(a)"
+                    [alt]="a.nome"
+                    class="pa-allergene-img"
+                    style="width: 100%; height: 100%; object-fit: contain"
+                  />
+                </div>
+                {{ a.nome }}
+              </div>
+            </div>
+            <div class="pa-custom-row">
+              <input
+                type="text"
+                class="pa-form-control"
+                [(ngModel)]="nomeAllergeneCustom"
+                placeholder="Allergene personalizzato..."
+                style="flex: 1"
+              />
+              <button class="pa-btn-custom" (click)="aggiungiAllergeneCustom()" type="button">+ Aggiungi</button>
+            </div>
+          </div>
+
+          <button class="pa-btn-aggiungi" (click)="aggiungiProdotto()" [disabled]="!formValido() || isSaving">
+            {{ isSaving ? 'Salvataggio...' : '+ Aggiungi Prodotto' }}
+          </button>
+        </div>
+
+        <div class="pa-section" *ngIf="modalitaModifica">
+          <h2 class="pa-section-title pa-section-title-edit">
+            <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5">
+              <path d="M11 4H4a2 2 0 0 0-2 2v14a2 2 0 0 0 2 2h14a2 2 0 0 0 2-2v-7" />
+              <path d="M18.5 2.5a2.121 2.121 0 0 1 3 3L12 15l-4 1 1-4 9.5-9.5z" />
+            </svg>
+            Modifica Prodotto
+          </h2>
+
+          <div *ngIf="editErrore" class="pa-alert pa-alert-error">{{ editErrore }}</div>
+
+          <div class="pa-form-group">
+            <label class="pa-form-label">Nome *</label>
+            <input type="text" class="pa-form-control" [(ngModel)]="editNome" placeholder="Nome del prodotto" maxlength="100" />
+          </div>
+          <div class="pa-form-group">
+            <label class="pa-form-label">Descrizione</label>
+            <textarea
+              class="pa-form-control"
+              [(ngModel)]="editDescrizione"
+              rows="2"
+              placeholder="Ingredienti, note o varianti..."
+            ></textarea>
+          </div>
+          <div class="pa-form-group">
+            <label class="pa-form-label">Prezzo (€) *</label>
+            <input type="number" class="pa-form-control" [(ngModel)]="editPrezzo" placeholder="0.00" min="0" step="0.50" />
+          </div>
+
+          <div class="pa-form-group" *ngIf="allergeniDisponibili.length > 0">
+            <label class="pa-form-label">Allergeni</label>
+            <p class="pa-allergeni-hint">Clicca per selezionare/deselezionare gli allergeni</p>
+            <div class="pa-allergeni-grid">
+              <div
+                *ngFor="let a of allergeniDisponibili"
+                class="pa-allergene-chip"
+                [class.selected]="editAllergeniSelezionati.has(a.id)"
+                [style.borderColor]="editAllergeniSelezionati.has(a.id) ? a.colore || '#6366f1' : ''"
+                (click)="toggleEditAllergene(a.id)"
+              >
+                <div class="pa-allergene-icona" [style.backgroundColor]="getAllergeneIcona(a) ? 'transparent' : a.colore || '#888'">
+                  <img
+                    *ngIf="getAllergeneIcona(a)"
+                    [src]="getAllergeneIcona(a)"
+                    [alt]="a.nome"
+                    class="pa-allergene-img"
+                    style="width: 100%; height: 100%; object-fit: contain"
+                  />
+                </div>
+                {{ a.nome }}
+              </div>
+            </div>
+            <div class="pa-custom-row">
+              <input
+                type="text"
+                class="pa-form-control"
+                [(ngModel)]="editNomeAllergeneCustom"
+                placeholder="Allergene personalizzato..."
+                style="flex: 1"
+                (keydown.enter)="aggiungiAllergeneCustomEdit()"
+              />
+              <button class="pa-btn-custom" (click)="aggiungiAllergeneCustomEdit()" type="button">+ Aggiungi</button>
+            </div>
+          </div>
+
+          <div class="pa-edit-actions">
+            <button class="pa-btn-annulla" (click)="annullaModifica()" [disabled]="isSavingEdit">Annulla</button>
+            <button class="pa-btn-salva-edit" (click)="salvaModifica()" [disabled]="!editFormValido() || isSavingEdit">
+              <span *ngIf="!isSavingEdit">
+                <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5">
+                  <polyline points="20 6 9 17 4 12" />
+                </svg>
+                Salva modifiche
+              </span>
+              <span *ngIf="isSavingEdit" class="pa-saving-row">
+                <span class="pa-mini-spinner"></span>
+                Salvataggio...
+              </span>
+            </button>
+          </div>
+        </div>
+      </div>
+      <div class="pa-card">
+        <div class="pa-lista-header">
+          <h2>
+            Prodotti aggiunti
+            <span class="pa-count-badge">{{ prodottiAggiunti.length }}</span>
+          </h2>
+        </div>
+
+        <div *ngIf="prodottiAggiunti.length === 0" class="pa-lista-empty">Nessun prodotto aggiunto ancora</div>
+
+        <div *ngFor="let p of prodottiAggiunti" class="pa-prodotto-item" [class.pa-prodotto-in-modifica]="prodottoInModifica?.id === p.id">
+          <div class="pa-prodotto-info">
+            <span class="pa-prodotto-nome">{{ p.nome }}</span>
+            <span class="pa-prodotto-desc" *ngIf="p.descrizione">{{ p.descrizione }}</span>
+          </div>
+          <div class="pa-prodotto-meta">
+            <span class="pa-prodotto-prezzo">{{ formatPrezzo(p.prezzo) }}</span>
+
+            <div class="pa-prodotto-allergeni" *ngIf="p.allergenis && p.allergenis.length > 0">
+              <ng-container *ngFor="let a of p.allergenis">
+                <div
+                  class="pa-lista-cerchio"
+                  [style.backgroundColor]="getAllergeneIcona(a) ? 'transparent' : a.colore || '#888'"
+                  [title]="a.nome"
+                >
+                  <img
+                    *ngIf="getAllergeneIcona(a)"
+                    [src]="getAllergeneIcona(a)"
+                    [alt]="a.nome"
+                    class="pa-lista-img"
+                    style="width: 100%; height: 100%; object-fit: contain"
+                  />
+                </div>
+              </ng-container>
+            </div>
+
+            <button
+              class="pa-btn-modifica"
+              (click)="avviaModifica(p)"
+              [class.pa-btn-modifica-attivo]="prodottoInModifica?.id === p.id"
+              title="Modifica"
+            >
+              <svg width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                <path d="M11 4H4a2 2 0 0 0-2 2v14a2 2 0 0 0 2 2h14a2 2 0 0 0 2-2v-7" />
+                <path d="M18.5 2.5a2.121 2.121 0 0 1 3 3L12 15l-4 1 1-4 9.5-9.5z" />
+              </svg>
+            </button>
+
+            <button class="pa-btn-elimina" (click)="apriConfermaEliminazione(p)" title="Elimina">
+              <svg width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                <polyline points="3 6 5 6 21 6" />
+                <path d="M19 6v14a2 2 0 0 1-2 2H7a2 2 0 0 1-2-2V6" />
+              </svg>
+            </button>
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+</div>
+
+<div *ngIf="modaleEliminazioneAperto && prodottoInEliminazione" class="pa-modal-overlay" (click)="chiudiConfermaEliminazione()">
+  <div class="pa-modal-box" (click)="$event.stopPropagation()">
+    <div class="pa-modal-header">
+      <div class="pa-modal-icon">
+        <svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+          <polyline points="3 6 5 6 21 6" />
+          <path d="M19 6v14a2 2 0 0 1-2 2H7a2 2 0 0 1-2-2V6m3 0V4a1 1 0 0 1 1-1h4a1 1 0 0 1 1 1v2" />
+          <line x1="10" y1="11" x2="10" y2="17" />
+          <line x1="14" y1="11" x2="14" y2="17" />
+        </svg>
+      </div>
+      <div>
+        <h2 class="pa-modal-title">Elimina prodotto</h2>
+        <p class="pa-modal-subtitle">Questa azione è irreversibile</p>
+      </div>
+      <button class="pa-modal-close" (click)="chiudiConfermaEliminazione()" [disabled]="isDeleting">
+        <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5">
+          <line x1="18" y1="6" x2="6" y2="18" />
+          <line x1="6" y1="6" x2="18" y2="18" />
+        </svg>
+      </button>
+    </div>
+
+    <div class="pa-modal-body">
+      <div class="pa-modal-preview">
+        <div class="pa-modal-preview-info">
+          <span class="pa-modal-preview-nome">{{ prodottoInEliminazione.nome }}</span>
+          <span class="pa-modal-preview-prezzo">{{ formatPrezzo(prodottoInEliminazione.prezzo) }}</span>
+          <span *ngIf="prodottoInEliminazione.descrizione" class="pa-modal-preview-desc">
+            {{ prodottoInEliminazione.descrizione }}
+          </span>
+        </div>
+        <div class="pa-modal-preview-allergeni" *ngIf="(prodottoInEliminazione?.allergenis?.length ?? 0) > 0">
+          <ng-container *ngFor="let a of prodottoInEliminazione.allergenis">
+            <div
+              class="pa-lista-cerchio"
+              [style.backgroundColor]="getAllergeneIcona(a) ? 'transparent' : a.colore || '#888'"
+              [title]="a.nome"
+            >
+              <img
+                *ngIf="getAllergeneIcona(a)"
+                [src]="getAllergeneIcona(a)"
+                [alt]="a.nome"
+                class="pa-lista-img"
+                style="width: 100%; height: 100%; object-fit: contain"
+              />
+            </div>
+          </ng-container>
+        </div>
+      </div>
+
+      <p class="pa-modal-avviso">
+        Stai per eliminare definitivamente
+        <strong>{{ prodottoInEliminazione.nome }}</strong>
+        dal menu. Il prodotto non sarà più visibile dai clienti.
+      </p>
+    </div>
+
+    <div class="pa-modal-footer">
+      <button class="pa-modal-btn-cancel" (click)="chiudiConfermaEliminazione()" [disabled]="isDeleting">Annulla</button>
+      <button class="pa-modal-btn-delete" (click)="confermaEliminazione()" [disabled]="isDeleting">
+        <span *ngIf="!isDeleting">
+          <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5">
+            <polyline points="3 6 5 6 21 6" />
+            <path d="M19 6v14a2 2 0 0 1-2 2H7a2 2 0 0 1-2-2V6" />
+          </svg>
+          Sì, elimina
+        </span>
+        <span *ngIf="isDeleting" class="pa-saving-row">
+          <span class="pa-mini-spinner"></span>
+          Eliminazione...
+        </span>
+      </button>
+    </div>
+  </div>
+</div>

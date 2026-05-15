@@ -2,21 +2,169 @@
 <html lang="it" xmlns:th="http://www.thymeleaf.org">
   <!--
   PERCORSO: src/main/resources/templates/mail/accountApprovedEmail.html
-  → FILE NUOVO da creare
-  Email inviata all'UTENTE quando l'admin approva il suo account.
-  Aggiungere in MailService: sendAccountApprovedEmail(User user)
-  e chiamarla da ProfiloRistoratoreResource quando l'admin attiva un profilo.
+  Email inviata all UTENTE quando l admin approva il suo account.
+  In MailService aggiungere: sendAccountApprovedEmail(User user)
 -->
   <head>
     <meta charset="UTF-8" />
-    <title>Account approvato</title>
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>Account approvato — RistoHub</title>
+    <style>
+      body {
+        margin: 0;
+        padding: 0;
+        background: #f5f4f0;
+        font-family: Georgia, 'Times New Roman', serif;
+      }
+      .wrapper {
+        max-width: 560px;
+        margin: 40px auto;
+        background: #fff;
+        border-radius: 12px;
+        overflow: hidden;
+        border: 1px solid #e8e6e0;
+      }
+      .header {
+        background: #111;
+        padding: 32px 40px;
+        text-align: center;
+      }
+      .flag {
+        width: 100%;
+        height: 5px;
+        display: block;
+        background: linear-gradient(to right, #009246 33.33%, #fff 33.33%, #fff 66.66%, #ce2b37 66.66%);
+      }
+      .body {
+        padding: 40px 40px 32px;
+      }
+      .badge {
+        display: inline-block;
+        background: #e8f5e9;
+        color: #2e7d32;
+        font-family: Arial, sans-serif;
+        font-size: 12px;
+        font-weight: 700;
+        letter-spacing: 1px;
+        padding: 6px 14px;
+        border-radius: 20px;
+        margin: 0 0 20px;
+        text-transform: uppercase;
+      }
+      .greeting {
+        font-size: 22px;
+        font-weight: 700;
+        color: #111;
+        margin: 0 0 16px;
+      }
+      .text {
+        font-size: 15px;
+        color: #444;
+        line-height: 1.75;
+        margin: 0 0 24px;
+      }
+      .feature-list {
+        padding: 0;
+        margin: 0 0 28px;
+        list-style: none;
+      }
+      .feature-list li {
+        font-family: Arial, sans-serif;
+        font-size: 14px;
+        color: #444;
+        padding: 8px 0;
+        border-bottom: 1px solid #f0f0f0;
+        display: flex;
+        align-items: center;
+        gap: 10px;
+      }
+      .feature-list li:last-child {
+        border-bottom: none;
+      }
+      .check {
+        color: #009246;
+        font-size: 18px;
+        flex-shrink: 0;
+      }
+      .btn-wrap {
+        text-align: center;
+        margin: 32px 0;
+      }
+      .btn {
+        display: inline-block;
+        background: #009246;
+        color: #fff !important;
+        text-decoration: none;
+        padding: 14px 36px;
+        border-radius: 6px;
+        font-family: Arial, sans-serif;
+        font-size: 15px;
+        font-weight: 600;
+      }
+      hr {
+        border: none;
+        border-top: 1px solid #e8e6e0;
+        margin: 24px 0;
+      }
+      .sig {
+        font-size: 14px;
+        color: #777;
+        font-style: italic;
+        margin: 0;
+      }
+      .footer {
+        background: #f5f4f0;
+        padding: 20px 40px;
+        text-align: center;
+        font-family: Arial, sans-serif;
+      }
+      .footer-logo {
+        font-size: 13px;
+        color: #555;
+        font-weight: 700;
+        letter-spacing: 2px;
+        margin: 0 0 6px;
+      }
+      .footer p {
+        font-size: 11px;
+        color: #aaa;
+        margin: 4px 0 0;
+      }
+    </style>
   </head>
   <body>
-    <p th:text="#{email.accountApproved.greeting(${user.login})}">Ciao,</p>
-    <p>Il tuo account RistoHub è stato approvato! Puoi accedere subito e iniziare a gestire il tuo menu digitale.</p>
-    <p>
-      <a th:href="@{|${baseUrl}/login|}" th:text="#{email.accountApproved.link}"> Accedi a RistoHub </a>
-    </p>
-    <p th:text="#{email.signature}">Il team di RistoHub</p>
+    <div class="wrapper">
+      <div class="header">
+        <img
+          th:src="@{|${baseUrl}/content/images/LogoBianco.png|}"
+          src="cid:logo"
+          alt="RistoHub"
+          style="height: 64px; width: auto; display: block; margin: 0 auto"
+        />
+      </div>
+      <span class="flag"></span>
+      <div class="body">
+        <span class="badge">Account approvato</span>
+        <p class="greeting" th:text="#{email.accountApproved.greeting(${user.login})}">Ottima notizia!</p>
+        <p class="text">
+          Il tuo account <strong>RistoHub</strong> e stato approvato dall amministratore. Ora hai accesso completo alla piattaforma e puoi:
+        </p>
+        <ul class="feature-list">
+          <li><span class="check">✓</span> Creare e gestire il tuo menu digitale</li>
+          <li><span class="check">✓</span> Configurare il profilo del tuo ristorante</li>
+          <li><span class="check">✓</span> Gestire allergeni e portate</li>
+          <li><span class="check">✓</span> Personalizzare il piatto del giorno</li>
+        </ul>
+        <div class="btn-wrap">
+          <a th:href="@{|${baseUrl}/login|}" th:text="#{email.accountApproved.link}" class="btn"> Accedi a RistoHub </a>
+        </div>
+        <hr />
+        <p class="sig" th:text="#{email.signature}">Il team di RistoHub</p>
+      </div>
+      <div class="footer">
+        <p class="footer-logo">RISTOHUB</p>
+        <p>Benvenuto nella famiglia RistoHub. Buon lavoro!</p>
+      </div>
+    </div>
   </body>
 </html>

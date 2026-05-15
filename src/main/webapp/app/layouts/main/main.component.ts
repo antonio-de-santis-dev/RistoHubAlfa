@@ -36,6 +36,7 @@ const ROUTES_WITH_NAVBAR = [
   '/menu-editor',
   '/piatti-giorno',
   '/contatti',
+  '/menu-wizard',
 ];
 
 // Rotte fullscreen senza wrapper (menu-public = visualizzazione QR)

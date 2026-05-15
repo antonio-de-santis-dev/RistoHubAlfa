@@ -1,20 +1,162 @@
 <!doctype html>
-<html xmlns:th="http://www.thymeleaf.org" th:lang="${#locale.language}" lang="en">
+<html xmlns:th="http://www.thymeleaf.org" th:lang="${#locale.language}" lang="it">
   <head>
-    <title th:text="#{email.activation.title}">JHipster creation</title>
     <meta http-equiv="Content-Type" content="text/html; charset=UTF-8" />
-    <link rel="icon" th:href="@{|${baseUrl}/favicon.ico|}" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>Benvenuto su RistoHub</title>
+    <style>
+      body {
+        margin: 0;
+        padding: 0;
+        background: #f5f4f0;
+        font-family: Georgia, 'Times New Roman', serif;
+      }
+      .wrapper {
+        max-width: 560px;
+        margin: 40px auto;
+        background: #fff;
+        border-radius: 12px;
+        overflow: hidden;
+        border: 1px solid #e8e6e0;
+      }
+      .header {
+        background: #111;
+        padding: 32px 40px;
+        text-align: center;
+      }
+      .flag {
+        width: 100%;
+        height: 5px;
+        display: block;
+        background: linear-gradient(to right, #009246 33.33%, #fff 33.33%, #fff 66.66%, #ce2b37 66.66%);
+      }
+      .body {
+        padding: 40px 40px 32px;
+      }
+      .greeting {
+        font-size: 22px;
+        font-weight: 700;
+        color: #111;
+        margin: 0 0 16px;
+      }
+      .text {
+        font-size: 15px;
+        color: #444;
+        line-height: 1.75;
+        margin: 0 0 24px;
+      }
+      .credentials-box {
+        background: #f9f8f5;
+        border-radius: 8px;
+        border: 1px solid #e8e6e0;
+        padding: 20px 24px;
+        margin: 0 0 28px;
+        font-family: Arial, sans-serif;
+      }
+      .cred-row {
+        display: flex;
+        justify-content: space-between;
+        padding: 6px 0;
+        border-bottom: 1px solid #eeece8;
+        font-size: 14px;
+      }
+      .cred-row:last-child {
+        border-bottom: none;
+      }
+      .cred-label {
+        color: #888;
+        font-size: 13px;
+      }
+      .cred-value {
+        color: #222;
+        font-weight: 600;
+      }
+      .btn-wrap {
+        text-align: center;
+        margin: 32px 0;
+      }
+      .btn {
+        display: inline-block;
+        background: #111;
+        color: #fff !important;
+        text-decoration: none;
+        padding: 14px 36px;
+        border-radius: 6px;
+        font-family: Arial, sans-serif;
+        font-size: 15px;
+        font-weight: 600;
+      }
+      hr {
+        border: none;
+        border-top: 1px solid #e8e6e0;
+        margin: 24px 0;
+      }
+      .sig {
+        font-size: 14px;
+        color: #777;
+        font-style: italic;
+        margin: 0;
+      }
+      .footer {
+        background: #f5f4f0;
+        padding: 20px 40px;
+        text-align: center;
+        font-family: Arial, sans-serif;
+      }
+      .footer-logo {
+        font-size: 13px;
+        color: #555;
+        font-weight: 700;
+        letter-spacing: 2px;
+        margin: 0 0 6px;
+      }
+      .footer p {
+        font-size: 11px;
+        color: #aaa;
+        margin: 4px 0 0;
+      }
+    </style>
   </head>
   <body>
-    <p th:text="#{email.activation.greeting(${user.login})}">Dear</p>
-    <p th:text="#{email.creation.text1}">Your JHipster account has been created, please click on the URL below to access it:</p>
-    <p>
-      <a th:with="url=(@{|${baseUrl}/account/reset/finish?key=${user.resetKey}|})" th:href="${url}" th:text="${url}">Login link</a>
-    </p>
-    <p>
-      <span th:text="#{email.activation.text2}">Regards, </span>
-      <br />
-      <em th:text="#{email.signature}">JHipster.</em>
-    </p>
+    <div class="wrapper">
+      <div class="header">
+        <img
+          th:src="@{|${baseUrl}/content/images/LogoBianco.png|}"
+          src="cid:logo"
+          alt="RistoHub"
+          style="height: 64px; width: auto; display: block; margin: 0 auto"
+        />
+      </div>
+      <span class="flag"></span>
+      <div class="body">
+        <p class="greeting">Benvenuto su RistoHub!</p>
+        <p class="text">Un account e stato creato per te su <strong>RistoHub</strong>. Di seguito trovi le tue credenziali di accesso.</p>
+
+        <div class="credentials-box">
+          <div class="cred-row">
+            <span class="cred-label">Username</span>
+            <span class="cred-value" th:text="${user.login}">nomeutente</span>
+          </div>
+          <div class="cred-row">
+            <span class="cred-label">Password temporanea</span>
+            <span class="cred-value" th:text="${user.resetKey}">password-temp</span>
+          </div>
+        </div>
+
+        <p class="text" style="font-size: 14px; color: #666">
+          Ti consigliamo di cambiare la password al primo accesso dalla sezione <em>Account &rarr; Password</em>.
+        </p>
+
+        <div class="btn-wrap">
+          <a th:href="@{|${baseUrl}/login|}" class="btn">Accedi a RistoHub</a>
+        </div>
+        <hr />
+        <p class="sig" th:text="#{email.signature}">Il team di RistoHub</p>
+      </div>
+      <div class="footer">
+        <p class="footer-logo">RISTOHUB</p>
+        <p>Hai ricevuto questa email perche un account e stato creato per te su RistoHub.</p>
+      </div>
+    </div>
   </body>
 </html>

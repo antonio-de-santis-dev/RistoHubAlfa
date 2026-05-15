@@ -1,8 +1,3 @@
-// PERCORSO: src/main/webapp/app/app.routes.ts
-// Sostituisce il file esistente di Alfa.
-// Cambiamento principale: la route '' ora carica LandingComponent
-// invece di HomeComponent. Home è spostata a '/home'.
-
 import { Routes } from '@angular/router';
 
 import { Authority } from 'app/config/authority.constants';
@@ -11,8 +6,6 @@ import { errorRoute } from './layouts/error/error.route';
 
 const routes: Routes = [
   // ── LANDING (root) ────────────────────────────────────────────────────
-  // La landing è la pagina radice: card con animazione → login.
-  // Non richiede autenticazione.
   {
     path: '',
     loadComponent: () => import('./landing/landing.component').then(m => m.LandingComponent),
@@ -49,7 +42,7 @@ const routes: Routes = [
     title: 'Editor Menu',
   },
 
-  // ── MENU WIZARD EDIT (modifica stile, colori, logo, font, portate) ────
+  // ── MENU WIZARD EDIT ──────────────────────────────────────────────────
   {
     path: 'menu-wizard-edit/:id',
     loadComponent: () => import('./menu-wizard-edit/menu-wizard-edit.component').then(m => m.MenuWizardEditComponent),
@@ -65,10 +58,24 @@ const routes: Routes = [
     title: 'Menu',
   },
 
+  // ── MENU WIZARD ───────────────────────────────────────────────────────
+  {
+    path: 'menu-wizard',
+    loadComponent: () => import('./menu-wizard/menu-wizard.component').then(m => m.MenuWizardComponent),
+    canActivate: [UserRouteAccessService],
+  },
+
+  // ── MENU VIEW ─────────────────────────────────────────────────────────
+  {
+    path: 'menu-view/:id',
+    loadComponent: () => import('./menu-view/menu-view.component').then(m => m.MenuViewComponent),
+    canActivate: [UserRouteAccessService],
+  },
+
   // ── PIATTI DEL GIORNO ────────────────────────────────────────────────
   {
     path: 'piatti-giorno',
-    loadComponent: () => import('./piatti-giorno/piatti-giorno-gestione.component').then(m => m.PiattiGiornoGestioneComponent),
+    loadComponent: () => import('./piatti-giorno-gestione/piatti-giorno-gestione.component').then(m => m.PiattiGiornoGestioneComponent),
     canActivate: [UserRouteAccessService],
     data: { authorities: [Authority.USER] },
     title: 'Piatti del Giorno',
@@ -81,6 +88,22 @@ const routes: Routes = [
     canActivate: [UserRouteAccessService],
     data: { authorities: [Authority.USER] },
     title: 'Contatti',
+  },
+
+  // ── PRODOTTO ADD (con e senza portataId) ──────────────────────────────
+  {
+    path: 'prodotto-add',
+    loadComponent: () => import('./prodotto-add/prodotto-add.component').then(m => m.ProdottoAddComponent),
+    canActivate: [UserRouteAccessService],
+    data: { authorities: [Authority.USER] },
+    title: 'Gestione Prodotti',
+  },
+  {
+    path: 'prodotto-add/:portataId',
+    loadComponent: () => import('./prodotto-add/prodotto-add.component').then(m => m.ProdottoAddComponent),
+    canActivate: [UserRouteAccessService],
+    data: { authorities: [Authority.USER] },
+    title: 'Gestione Prodotti',
   },
 
   // ── ADMIN ─────────────────────────────────────────────────────────────
@@ -101,18 +124,6 @@ const routes: Routes = [
   {
     path: '',
     loadChildren: () => import('./entities/entity.routes'),
-  },
-  {
-    path: 'menu-wizard',
-    loadComponent: () => import('./menu-wizard/menu-wizard.component').then(m => m.MenuWizardComponent),
-    canActivate: [UserRouteAccessService],
-  },
-  {
-    // FIX: corretto da m.default → m.MenuViewComponent
-    // MenuViewComponent è un export nominato, non un export default
-    path: 'menu-view/:id',
-    loadComponent: () => import('./menu-view/menu-view.component').then(m => m.MenuViewComponent),
-    canActivate: [UserRouteAccessService],
   },
 
   // ── ERRORI ────────────────────────────────────────────────────────────
