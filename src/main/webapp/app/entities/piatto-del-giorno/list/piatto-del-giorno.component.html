@@ -1,11 +1,11 @@
 <div>
   <h2 id="page-heading" data-cy="PiattoDelGiornoHeading">
-    <span jhiTranslate="ristoHubAlfaApp.piattoDelGiorno.home.title">PiattoDelGiornos</span>
+    <span jhiTranslate="ristoHubApp.piattoDelGiorno.home.title">PiattoDelGiornos</span>
 
     <div class="d-flex justify-content-end">
       <button class="btn btn-info me-2" (click)="load()" [disabled]="isLoading">
         <fa-icon icon="sync" [animation]="isLoading ? 'spin' : undefined"></fa-icon>
-        <span jhiTranslate="ristoHubAlfaApp.piattoDelGiorno.home.refreshListLabel">Refresh list</span>
+        <span jhiTranslate="ristoHubApp.piattoDelGiorno.home.refreshListLabel">Refresh list</span>
       </button>
 
       <button
@@ -15,7 +15,7 @@
         [routerLink]="['/piatto-del-giorno/new']"
       >
         <fa-icon icon="plus"></fa-icon>
-        <span jhiTranslate="ristoHubAlfaApp.piattoDelGiorno.home.createLabel">Genera un nuovo Piatto Del Giorno</span>
+        <span jhiTranslate="ristoHubApp.piattoDelGiorno.home.createLabel">Genera un nuovo Piatto Del Giorno</span>
       </button>
     </div>
   </h2>
@@ -26,7 +26,7 @@
 
   @if (piattoDelGiornos().length === 0) {
     <div class="alert alert-warning" id="no-result">
-      <span jhiTranslate="ristoHubAlfaApp.piattoDelGiorno.home.notFound">No Piatto Del Giornos found</span>
+      <span jhiTranslate="ristoHubApp.piattoDelGiorno.home.notFound">No Piatto Del Giornos found</span>
     </div>
   } @else {
     <div class="table-responsive table-entities" id="entities">
@@ -35,48 +35,49 @@
           <tr jhiSort [(sortState)]="sortState" (sortChange)="navigateToWithComponentValues($event)">
             <th scope="col" jhiSortBy="id">
               <div class="d-flex">
-                <span jhiTranslate="global.field.id">ID</span>
+                <span jhiTranslate="ristoHubApp.piattoDelGiorno.id">Id</span>
+
+                <fa-icon class="p-1" icon="sort"></fa-icon>
+              </div>
+            </th>
+            <th scope="col" jhiSortBy="data">
+              <div class="d-flex">
+                <span jhiTranslate="ristoHubApp.piattoDelGiorno.data">Data</span>
 
                 <fa-icon class="p-1" icon="sort"></fa-icon>
               </div>
             </th>
             <th scope="col" jhiSortBy="attivo">
               <div class="d-flex">
-                <span jhiTranslate="ristoHubAlfaApp.piattoDelGiorno.attivo">Attivo</span>
+                <span jhiTranslate="ristoHubApp.piattoDelGiorno.attivo">Attivo</span>
 
                 <fa-icon class="p-1" icon="sort"></fa-icon>
               </div>
             </th>
             <th scope="col" jhiSortBy="nome">
               <div class="d-flex">
-                <span jhiTranslate="ristoHubAlfaApp.piattoDelGiorno.nome">Nome</span>
+                <span jhiTranslate="ristoHubApp.piattoDelGiorno.nome">Nome</span>
 
                 <fa-icon class="p-1" icon="sort"></fa-icon>
               </div>
             </th>
             <th scope="col" jhiSortBy="descrizione">
               <div class="d-flex">
-                <span jhiTranslate="ristoHubAlfaApp.piattoDelGiorno.descrizione">Descrizione</span>
+                <span jhiTranslate="ristoHubApp.piattoDelGiorno.descrizione">Descrizione</span>
 
                 <fa-icon class="p-1" icon="sort"></fa-icon>
               </div>
             </th>
             <th scope="col" jhiSortBy="prezzo">
               <div class="d-flex">
-                <span jhiTranslate="ristoHubAlfaApp.piattoDelGiorno.prezzo">Prezzo</span>
+                <span jhiTranslate="ristoHubApp.piattoDelGiorno.prezzo">Prezzo</span>
 
-                <fa-icon class="p-1" icon="sort"></fa-icon>
-              </div>
-            </th>
-            <th scope="col" jhiSortBy="menu.id">
-              <div class="d-flex">
-                <span jhiTranslate="ristoHubAlfaApp.piattoDelGiorno.menu">Menu</span>
                 <fa-icon class="p-1" icon="sort"></fa-icon>
               </div>
             </th>
             <th scope="col" jhiSortBy="prodotto.id">
               <div class="d-flex">
-                <span jhiTranslate="ristoHubAlfaApp.piattoDelGiorno.prodotto">Prodotto</span>
+                <span jhiTranslate="ristoHubApp.piattoDelGiorno.prodotto">Prodotto</span>
                 <fa-icon class="p-1" icon="sort"></fa-icon>
               </div>
             </th>
@@ -89,17 +90,11 @@
               <td>
                 <a [routerLink]="['/piatto-del-giorno', piattoDelGiorno.id, 'view']">{{ piattoDelGiorno.id }}</a>
               </td>
+              <td>{{ piattoDelGiorno.data | formatMediumDate }}</td>
               <td>{{ piattoDelGiorno.attivo }}</td>
               <td>{{ piattoDelGiorno.nome }}</td>
               <td>{{ piattoDelGiorno.descrizione }}</td>
               <td>{{ piattoDelGiorno.prezzo }}</td>
-              <td>
-                @if (piattoDelGiorno.menu) {
-                  <div>
-                    <a [routerLink]="['/menu', piattoDelGiorno.menu.id, 'view']">{{ piattoDelGiorno.menu.id }}</a>
-                  </div>
-                }
-              </td>
               <td>
                 @if (piattoDelGiorno.prodotto) {
                   <div>

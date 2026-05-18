@@ -2,7 +2,7 @@
   <div class="col-8">
     @if (prodotto(); as prodottoRef) {
       <div>
-        <h2 data-cy="prodottoDetailsHeading"><span jhiTranslate="ristoHubAlfaApp.prodotto.detail.title">Prodotto</span></h2>
+        <h2 data-cy="prodottoDetailsHeading"><span jhiTranslate="ristoHubApp.prodotto.detail.title">Prodotto</span></h2>
 
         <hr />
 
@@ -11,27 +11,23 @@
         <jhi-alert />
 
         <dl class="row-md jh-entity-details">
-          <dt><span jhiTranslate="global.field.id">ID</span></dt>
+          <dt><span jhiTranslate="ristoHubApp.prodotto.id">Id</span></dt>
           <dd>
             <span>{{ prodottoRef.id }}</span>
           </dd>
-          <dt><span jhiTranslate="ristoHubAlfaApp.prodotto.nome">Nome</span></dt>
+          <dt><span jhiTranslate="ristoHubApp.prodotto.nome">Nome</span></dt>
           <dd>
             <span>{{ prodottoRef.nome }}</span>
           </dd>
-          <dt><span jhiTranslate="ristoHubAlfaApp.prodotto.descrizione">Descrizione</span></dt>
+          <dt><span jhiTranslate="ristoHubApp.prodotto.descrizione">Descrizione</span></dt>
           <dd>
             <span>{{ prodottoRef.descrizione }}</span>
           </dd>
-          <dt><span jhiTranslate="ristoHubAlfaApp.prodotto.prezzo">Prezzo</span></dt>
+          <dt><span jhiTranslate="ristoHubApp.prodotto.prezzo">Prezzo</span></dt>
           <dd>
             <span>{{ prodottoRef.prezzo }}</span>
           </dd>
-          <dt><span jhiTranslate="ristoHubAlfaApp.prodotto.visibile">Visibile</span></dt>
-          <dd>
-            <span>{{ prodottoRef.visibile }}</span>
-          </dd>
-          <dt><span jhiTranslate="ristoHubAlfaApp.prodotto.allergeni">Allergeni</span></dt>
+          <dt><span jhiTranslate="ristoHubApp.prodotto.allergeni">Allergeni</span></dt>
           <dd>
             @for (allergeni of prodottoRef.allergenis; track $index; let last = $last) {
               <span>
@@ -40,7 +36,7 @@
               </span>
             }
           </dd>
-          <dt><span jhiTranslate="ristoHubAlfaApp.prodotto.portata">Portata</span></dt>
+          <dt><span jhiTranslate="ristoHubApp.prodotto.portata">Portata</span></dt>
           <dd>
             @if (prodotto()!.portata) {
               <div>

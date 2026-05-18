@@ -1,11 +1,11 @@
 <div>
   <h2 id="page-heading" data-cy="PortataHeading">
-    <span jhiTranslate="ristoHubAlfaApp.portata.home.title">Portatas</span>
+    <span jhiTranslate="ristoHubApp.portata.home.title">Portatas</span>
 
     <div class="d-flex justify-content-end">
       <button class="btn btn-info me-2" (click)="load()" [disabled]="isLoading">
         <fa-icon icon="sync" [animation]="isLoading ? 'spin' : undefined"></fa-icon>
-        <span jhiTranslate="ristoHubAlfaApp.portata.home.refreshListLabel">Refresh list</span>
+        <span jhiTranslate="ristoHubApp.portata.home.refreshListLabel">Refresh list</span>
       </button>
 
       <button
@@ -15,7 +15,7 @@
         [routerLink]="['/portata/new']"
       >
         <fa-icon icon="plus"></fa-icon>
-        <span jhiTranslate="ristoHubAlfaApp.portata.home.createLabel">Genera un nuovo Portata</span>
+        <span jhiTranslate="ristoHubApp.portata.home.createLabel">Genera un nuovo Portata</span>
       </button>
     </div>
   </h2>
@@ -26,7 +26,7 @@
 
   @if (portatas().length === 0) {
     <div class="alert alert-warning" id="no-result">
-      <span jhiTranslate="ristoHubAlfaApp.portata.home.notFound">No Portatas found</span>
+      <span jhiTranslate="ristoHubApp.portata.home.notFound">No Portatas found</span>
     </div>
   } @else {
     <div class="table-responsive table-entities" id="entities">
@@ -35,42 +35,35 @@
           <tr jhiSort [(sortState)]="sortState" (sortChange)="navigateToWithComponentValues($event)">
             <th scope="col" jhiSortBy="id">
               <div class="d-flex">
-                <span jhiTranslate="global.field.id">ID</span>
+                <span jhiTranslate="ristoHubApp.portata.id">Id</span>
 
                 <fa-icon class="p-1" icon="sort"></fa-icon>
               </div>
             </th>
             <th scope="col" jhiSortBy="tipo">
               <div class="d-flex">
-                <span jhiTranslate="ristoHubAlfaApp.portata.tipo">Tipo</span>
+                <span jhiTranslate="ristoHubApp.portata.tipo">Tipo</span>
 
                 <fa-icon class="p-1" icon="sort"></fa-icon>
               </div>
             </th>
             <th scope="col" jhiSortBy="nomeDefault">
               <div class="d-flex">
-                <span jhiTranslate="ristoHubAlfaApp.portata.nomeDefault">Nome Default</span>
+                <span jhiTranslate="ristoHubApp.portata.nomeDefault">Nome Default</span>
 
                 <fa-icon class="p-1" icon="sort"></fa-icon>
               </div>
             </th>
             <th scope="col" jhiSortBy="nomePersonalizzato">
               <div class="d-flex">
-                <span jhiTranslate="ristoHubAlfaApp.portata.nomePersonalizzato">Nome Personalizzato</span>
-
-                <fa-icon class="p-1" icon="sort"></fa-icon>
-              </div>
-            </th>
-            <th scope="col" jhiSortBy="ordine">
-              <div class="d-flex">
-                <span jhiTranslate="ristoHubAlfaApp.portata.ordine">Ordine</span>
+                <span jhiTranslate="ristoHubApp.portata.nomePersonalizzato">Nome Personalizzato</span>
 
                 <fa-icon class="p-1" icon="sort"></fa-icon>
               </div>
             </th>
             <th scope="col" jhiSortBy="menu.id">
               <div class="d-flex">
-                <span jhiTranslate="ristoHubAlfaApp.portata.menu">Menu</span>
+                <span jhiTranslate="ristoHubApp.portata.menu">Menu</span>
                 <fa-icon class="p-1" icon="sort"></fa-icon>
               </div>
             </th>
@@ -83,10 +76,10 @@
               <td>
                 <a [routerLink]="['/portata', portata.id, 'view']">{{ portata.id }}</a>
               </td>
-              <td [jhiTranslate]="'ristoHubAlfaApp.TipoPortata.' + (portata.tipo ?? 'null')">
+              <td [jhiTranslate]="'ristoHubApp.TipoPortata.' + (portata.tipo ?? 'null')">
                 {{ { null: '', DEFAULT: 'DEFAULT', PERSONALIZZATA: 'PERSONALIZZATA' }[portata.tipo ?? 'null'] }}
               </td>
-              <td [jhiTranslate]="'ristoHubAlfaApp.NomePortataDefault.' + (portata.nomeDefault ?? 'null')">
+              <td [jhiTranslate]="'ristoHubApp.NomePortataDefault.' + (portata.nomeDefault ?? 'null')">
                 {{
                   {
                     null: '',
@@ -100,12 +93,10 @@
                     VINO_BIANCO: 'VINO_BIANCO',
                     VINO_ROSATO: 'VINO_ROSATO',
                     BIRRA: 'BIRRA',
-                    DIGESTIVO: 'DIGESTIVO',
                   }[portata.nomeDefault ?? 'null']
                 }}
               </td>
               <td>{{ portata.nomePersonalizzato }}</td>
-              <td>{{ portata.ordine }}</td>
               <td>
                 @if (portata.menu) {
                   <div>

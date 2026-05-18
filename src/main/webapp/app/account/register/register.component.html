@@ -1,14 +1,7 @@
-<!-- ═══════════════════════════════════════════════════════════════════ -->
-<!-- PERCORSO: src/main/webapp/app/account/register/register.component.html -->
-<!-- ISTRUZIONE: Sostituisce integralmente il file esistente.              -->
-<!--                                                                       -->
-<!-- Modifiche rispetto alla versione Alfa:                                -->
-<!--   1. Aggiunti campi Nome e Cognome (firstName / lastName) affiancati  -->
-<!--   2. Link "Accedi" corretto: punta a "/" (landing) non a "/login"     -->
-<!-- ═══════════════════════════════════════════════════════════════════ -->
-
 <div class="split-page">
-  <!-- ══ PANNELLO SINISTRO — logo card su sfondo food (solo desktop) ══ -->
+  <!-- ══════════════════════════════════════════════════════════
+       PANNELLO SINISTRO — Sfondo + logo card (solo desktop)
+  ══════════════════════════════════════════════════════════ -->
   <div class="split-right" aria-hidden="true">
     <div class="right-card">
       <img
@@ -21,10 +14,12 @@
     </div>
   </div>
 
-  <!-- ══ PANNELLO DESTRO / CARD MOBILE — Form registrazione ══ -->
+  <!-- ══════════════════════════════════════════════════════════
+       PANNELLO DESTRO / CARD MOBILE — Form registrazione
+  ══════════════════════════════════════════════════════════ -->
   <div class="split-left">
     <div class="form-wrapper">
-      <!-- Logo mobile -->
+      <!-- Logo centrato -->
       <div class="form-logo">
         <img src="content/images/LogoNero.png" alt="RistoHub" onerror="this.style.display='none'" />
       </div>
@@ -32,7 +27,7 @@
       <h1 class="form-title">Crea account</h1>
       <p class="form-subtitle">Unisciti a RistoHub e gestisci il tuo menu digitale</p>
 
-      <!-- ══ SUCCESSO ══ -->
+      <!-- Messaggio successo — in attesa di approvazione admin -->
       @if (success()) {
         <div class="alert-success" role="status">
           <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" style="flex-shrink: 0">
@@ -47,7 +42,7 @@
         </div>
       }
 
-      <!-- ══ ERRORI ══ -->
+      <!-- Errori -->
       @if (error()) {
         <div class="alert-error" role="alert">
           <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
@@ -89,7 +84,7 @@
         </div>
       }
 
-      <!-- ══ FORM ══ -->
+      <!-- Form -->
       @if (!success()) {
         <form class="register-form" (ngSubmit)="register()" [formGroup]="registerForm" autocomplete="on">
           <!-- Username -->
@@ -131,7 +126,7 @@
             }
           </div>
 
-          <!-- ══ NOME e COGNOME affiancati ══ -->
+          <!-- Nome e Cognome — riga affiancata -->
           <div class="field-row">
             <!-- Nome -->
             <div class="field-group">
@@ -255,7 +250,7 @@
                 data-cy="firstPassword"
               />
             </div>
-            <jhi-password-strength-bar [passwordToCheck]="registerForm.get('password')!.value" />
+            <jhi-password-strength-bar [passwordToCheck]="registerForm.get('password')!.value"></jhi-password-strength-bar>
             @let passwordRef = registerForm.get('password')!;
             @if (passwordRef.invalid && (passwordRef.dirty || passwordRef.touched)) {
               <span class="field-error">
@@ -317,12 +312,10 @@
         </form>
       }
 
-      <!-- ══ LINK ACCEDI ══                                              -->
-      <!-- MODIFICA: routerLink="/" invece di "/login"                   -->
-      <!-- La landing gestisce il login — il link porta alla pagina root  -->
+      <!-- Link login -->
       <div class="login-row">
         <span>Hai già un account?</span>
-        <a class="link-login" routerLink="/">Accedi</a>
+        <a class="link-login" routerLink="/login">Accedi</a>
       </div>
     </div>
   </div>

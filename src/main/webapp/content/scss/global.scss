@@ -1,10 +1,15 @@
+@use 'sass:color';
 @import 'bootstrap-variables';
 @import 'bootstrap/scss/functions';
 @import 'bootstrap/scss/variables';
 
-/* ==============================================================
-Bootstrap tweaks
-===============================================================*/
+html,
+body {
+  margin: 0;
+  padding: 0 !important;
+  overflow-x: hidden;
+  width: 100%;
+}
 
 body,
 h1,
@@ -14,35 +19,21 @@ h4 {
   font-weight: 300;
 }
 
-/* FIX: impedisce lo scroll orizzontale della pagina + azzera margini */
-html,
-body {
-  overflow-x: hidden;
-  max-width: 100vw;
-  margin: 0;
-  padding: 0;
-  height: 100%;
-}
-
-/* Increase contrast of links to get 100% on Lighthouse Accessibility Audit. Override this color if you want to change the link color, or use a Bootswatch theme */
 a {
   color: #533f03;
   font-weight: bold;
 }
 
-/* override hover color for dropdown-item forced by bootstrap to all a:not([href]):not([tabindex]) elements in _reboot.scss */
 a:not([href]):not([tabindex]):hover.dropdown-item {
   color: $dropdown-link-hover-color;
 }
 
-/* override .dropdown-item.active background-color on hover */
 .dropdown-item.active:hover {
-  background-color: mix($dropdown-link-hover-bg, $dropdown-link-active-bg, 50%);
+  background-color: color.mix($dropdown-link-hover-bg, $dropdown-link-active-bg, 50%);
 }
 
 a:hover {
   color: #533f03;
-  /* make sure browsers use the pointer cursor for anchors, even with no href */
   cursor: pointer;
 }
 
@@ -50,9 +41,6 @@ a:hover {
   color: $dropdown-link-hover-color;
 }
 
-/* ==========================================================================
-Browser Upgrade Prompt
-========================================================================== */
 .browserupgrade {
   margin: 0.2em 0;
   background: #ccc;
@@ -60,11 +48,6 @@ Browser Upgrade Prompt
   padding: 0.2em 0;
 }
 
-/* ==========================================================================
-Generic styles
-========================================================================== */
-
-/* Error highlight on input fields */
 .ng-valid[required],
 .ng-valid.required {
   border-left: 5px solid green;
@@ -74,47 +57,32 @@ Generic styles
   border-left: 5px solid red;
 }
 
-/* other generic styles */
-
 .jh-card {
   padding: 1.5%;
   margin-top: 20px;
   border: none;
 }
 
-/* FIX home: azzera padding e margin del wrapper quando contiene la home */
-.jh-card:has(jhi-home),
-.jh-card:has(app-home) {
-  padding: 0 !important;
-  margin-top: 0 !important;
-}
-
 .error {
   color: white;
   background-color: red;
 }
-
 .pad {
   padding: 10px;
 }
-
 .w-40 {
   width: 40% !important;
 }
-
 .w-60 {
   width: 60% !important;
 }
-
 .break {
   white-space: normal;
   word-break: break-all;
 }
-
 .form-control {
   background-color: #fff;
 }
-
 .readonly {
   background-color: #eee;
   opacity: 1;
@@ -122,6 +90,19 @@ Generic styles
 
 .footer {
   border-top: 1px solid rgba(0, 0, 0, 0.125);
+  width: 100%;
+  box-sizing: border-box;
+  margin-left: 0 !important;
+  margin-right: 0 !important;
+  padding-left: 0 !important;
+  padding-right: 0 !important;
+}
+
+.rh-main-wrapper {
+  width: 100%;
+  padding: 0;
+  margin: 0;
+  min-height: calc(100vh - 52px); /* 52px = altezza navbar — impedisce al footer di risalire */
 }
 
 .hand,
@@ -129,9 +110,6 @@ Generic styles
   cursor: pointer;
 }
 
-/* ==========================================================================
-Custom alerts for notification
-========================================================================== */
 .alerts {
   .alert {
     text-overflow: ellipsis;
@@ -171,17 +149,10 @@ Custom alerts for notification
   }
 }
 
-/* ==========================================================================
-entity list page css
-========================================================================== */
-
 .table-entities thead th .d-flex > * {
   margin: auto 0;
 }
 
-/* ==========================================================================
-entity detail page css
-========================================================================== */
 .row-md.jh-entity-details {
   display: grid;
   grid-template-columns: auto 1fr;
@@ -208,9 +179,6 @@ entity detail page css
   }
 }
 
-/* ==========================================================================
-ui bootstrap tweaks
-========================================================================== */
 .nav,
 .pagination,
 .carousel,
@@ -229,10 +197,6 @@ ui bootstrap tweaks
   padding-left: 0;
 }
 
-/* ==========================================================================
-angular-cli removes postcss-rtl processed inline css, processed rules must be added here instead
-========================================================================== */
-/* page-ribbon.component.scss */
 .ribbon {
   left: -3.5em;
   -moz-transform: rotate(-45deg);
@@ -240,9 +204,9 @@ angular-cli removes postcss-rtl processed inline css, processed rules must be ad
   -o-transform: rotate(-45deg);
   -webkit-transform: rotate(-45deg);
   transform: rotate(-45deg);
+  display: none !important;
 }
 
-/* navbar.component.scss */
 .navbar {
   ul.navbar-nav {
     .nav-item {
@@ -251,3 +215,93 @@ angular-cli removes postcss-rtl processed inline css, processed rules must be ad
   }
 }
 /* jhipster-needle-scss-add-main JHipster will add new css style */
+
+/* ==========================================================================
+   HOME PAGE — rimuovi padding/bordi del .jh-card wrapper
+========================================================================== */
+.card.jh-card:has(jhi-home),
+.card.jh-card:has(jhi-menu-list),
+.card.jh-card:has(jhi-menu-wizard),
+.card.jh-card:has(jhi-menu-wizard-edit),
+.card.jh-card:has(jhi-piatti-giorno-gestione),
+.card.jh-card:has(jhi-prodotto-add),
+.card.jh-card:has(jhi-settings),
+.card.jh-card:has(jhi-password),
+.card.jh-card:has(jhi-menu-cover-editor),
+.card.jh-card:has(jhi-contatti-gestione),
+.card.jh-card:has(jhi-menu-view) {
+  padding: 0 !important;
+  margin-top: 0 !important;
+  border: none !important;
+  background: transparent !important;
+  box-shadow: none !important;
+  border-radius: 0 !important;
+}
+
+jhi-home {
+  display: block;
+}
+
+/* ==========================================================================
+   NAVBAR FIXED — contenuto parte sotto la topbar (52px)
+========================================================================== */
+$rh-topbar-h: 52px;
+
+@media (max-width: 992px) {
+  jhi-home .rh-hero,
+  jhi-menu-wizard .wiz-inner,
+  jhi-menu-wizard-edit .wiz-inner,
+  jhi-piatti-giorno-gestione .pg-inner,
+  jhi-contatti-gestione .cg-header,
+  jhi-prodotto-add .pa-inner,
+  jhi-menu-cover-editor .ce-inner {
+    padding-top: $rh-topbar-h;
+  }
+  jhi-import-menu .im-inner {
+    padding-top: $rh-topbar-h;
+  }
+}
+
+/* ==========================================================================
+   MENU PUBLIC — vista fullscreen QR-code, nessun wrapper, nessun margin.
+   Il router-outlet viene renderizzato direttamente nel body (vedi main.component.html).
+   Questi reset garantiscono che jhi-menu-public non erediti spazi da Bootstrap.
+========================================================================== */
+jhi-menu-public {
+  display: block;
+  width: 100%;
+  margin: 0;
+  padding: 0;
+}
+
+/* ==========================================================================
+   FOOTER — nascosto senza rimozione dal DOM (no @if → no reflow/salto).
+   height: 0 + visibility: hidden = zero spazio, zero visibilità,
+   zero interazione — il layout non cambia mai dimensione.
+========================================================================== */
+jhi-footer.rh-footer-hidden {
+  display: block;
+  visibility: hidden;
+  overflow: hidden;
+  height: 0 !important;
+  min-height: 0 !important;
+  margin: 0 !important;
+  padding: 0 !important;
+  border: none !important;
+  pointer-events: none;
+}
+
+/* ==========================================================================
+   TUTORIAL — .rh-tut-highlight non più necessaria (buco SVG evenodd).
+========================================================================== */
+.rh-tut-highlight {
+  /* non più usata — il buco SVG sostituisce questa tecnica */
+}
+.card.jh-card:has(jhi-import-menu) {
+  padding: 0 !important;
+  margin-top: 0 !important;
+  border: none !important;
+  background: transparent !important;
+  box-shadow: none !important;
+  border-radius: 0 !important;
+}

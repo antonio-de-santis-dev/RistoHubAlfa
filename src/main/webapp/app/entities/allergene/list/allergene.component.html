@@ -1,11 +1,11 @@
 <div>
   <h2 id="page-heading" data-cy="AllergeneHeading">
-    <span jhiTranslate="ristoHubAlfaApp.allergene.home.title">Allergenes</span>
+    <span jhiTranslate="ristoHubApp.allergene.home.title">Allergenes</span>
 
     <div class="d-flex justify-content-end">
       <button class="btn btn-info me-2" (click)="load()" [disabled]="isLoading">
         <fa-icon icon="sync" [animation]="isLoading ? 'spin' : undefined"></fa-icon>
-        <span jhiTranslate="ristoHubAlfaApp.allergene.home.refreshListLabel">Refresh list</span>
+        <span jhiTranslate="ristoHubApp.allergene.home.refreshListLabel">Refresh list</span>
       </button>
 
       <button
@@ -15,7 +15,7 @@
         [routerLink]="['/allergene/new']"
       >
         <fa-icon icon="plus"></fa-icon>
-        <span jhiTranslate="ristoHubAlfaApp.allergene.home.createLabel">Genera un nuovo Allergene</span>
+        <span jhiTranslate="ristoHubApp.allergene.home.createLabel">Genera un nuovo Allergene</span>
       </button>
     </div>
   </h2>
@@ -26,7 +26,7 @@
 
   @if (allergenes().length === 0) {
     <div class="alert alert-warning" id="no-result">
-      <span jhiTranslate="ristoHubAlfaApp.allergene.home.notFound">No Allergenes found</span>
+      <span jhiTranslate="ristoHubApp.allergene.home.notFound">No Allergenes found</span>
     </div>
   } @else {
     <div class="table-responsive table-entities" id="entities">
@@ -35,35 +35,28 @@
           <tr jhiSort [(sortState)]="sortState" (sortChange)="navigateToWithComponentValues($event)">
             <th scope="col" jhiSortBy="id">
               <div class="d-flex">
-                <span jhiTranslate="global.field.id">ID</span>
+                <span jhiTranslate="ristoHubApp.allergene.id">Id</span>
 
                 <fa-icon class="p-1" icon="sort"></fa-icon>
               </div>
             </th>
             <th scope="col" jhiSortBy="nome">
               <div class="d-flex">
-                <span jhiTranslate="ristoHubAlfaApp.allergene.nome">Nome</span>
+                <span jhiTranslate="ristoHubApp.allergene.nome">Nome</span>
 
                 <fa-icon class="p-1" icon="sort"></fa-icon>
               </div>
             </th>
-            <th scope="col" jhiSortBy="tipo">
+            <th scope="col" jhiSortBy="simbolo">
               <div class="d-flex">
-                <span jhiTranslate="ristoHubAlfaApp.allergene.tipo">Tipo</span>
+                <span jhiTranslate="ristoHubApp.allergene.simbolo">Simbolo</span>
 
                 <fa-icon class="p-1" icon="sort"></fa-icon>
               </div>
             </th>
-            <th scope="col" jhiSortBy="nomeDefault">
+            <th scope="col" jhiSortBy="prodotto.id">
               <div class="d-flex">
-                <span jhiTranslate="ristoHubAlfaApp.allergene.nomeDefault">Nome Default</span>
-
-                <fa-icon class="p-1" icon="sort"></fa-icon>
-              </div>
-            </th>
-            <th scope="col" jhiSortBy="prodotti.id">
-              <div class="d-flex">
-                <span jhiTranslate="ristoHubAlfaApp.allergene.prodotti">Prodotti</span>
+                <span jhiTranslate="ristoHubApp.allergene.prodotto">Prodotto</span>
                 <fa-icon class="p-1" icon="sort"></fa-icon>
               </div>
             </th>
@@ -77,34 +70,11 @@
                 <a [routerLink]="['/allergene', allergene.id, 'view']">{{ allergene.id }}</a>
               </td>
               <td>{{ allergene.nome }}</td>
-              <td [jhiTranslate]="'ristoHubAlfaApp.TipoAllergene.' + (allergene.tipo ?? 'null')">
-                {{ { null: '', DEFAULT: 'DEFAULT', PERSONALIZZATO: 'PERSONALIZZATO' }[allergene.tipo ?? 'null'] }}
-              </td>
-              <td [jhiTranslate]="'ristoHubAlfaApp.NomeAllergeneDefault.' + (allergene.nomeDefault ?? 'null')">
-                {{
-                  {
-                    null: '',
-                    GLUTINE: 'GLUTINE',
-                    UOVO: 'UOVO',
-                    LATTE: 'LATTE',
-                    ARACHIDI: 'ARACHIDI',
-                    FRUTTA_A_GUSCIO: 'FRUTTA_A_GUSCIO',
-                    PESCE: 'PESCE',
-                    MOLLUSCHI: 'MOLLUSCHI',
-                    CROSTACEI: 'CROSTACEI',
-                    SOIA: 'SOIA',
-                    SESAMO: 'SESAMO',
-                    SEDANO: 'SEDANO',
-                    SENAPE: 'SENAPE',
-                    SOLFITI: 'SOLFITI',
-                    LUPINI: 'LUPINI',
-                  }[allergene.nomeDefault ?? 'null']
-                }}
-              </td>
+              <td>{{ allergene.simbolo }}</td>
               <td>
-                @for (prodotti of allergene.prodottis; track $index; let last = $last) {
+                @for (prodotto of allergene.prodottos; track $index; let last = $last) {
                   <span>
-                    <a class="form-control-static" [routerLink]="['/prodotto', prodotti.id, 'view']">{{ prodotti.id }}</a
+                    <a class="form-control-static" [routerLink]="['/prodotto', prodotto.id, 'view']">{{ prodotto.id }}</a
                     >{{ last ? '' : ', ' }}
                   </span>
                 }

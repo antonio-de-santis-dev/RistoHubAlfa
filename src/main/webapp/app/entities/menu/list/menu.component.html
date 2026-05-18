@@ -1,11 +1,11 @@
 <div>
   <h2 id="page-heading" data-cy="MenuHeading">
-    <span jhiTranslate="ristoHubAlfaApp.menu.home.title">Menus</span>
+    <span jhiTranslate="ristoHubApp.menu.home.title">Menus</span>
 
     <div class="d-flex justify-content-end">
       <button class="btn btn-info me-2" (click)="load()" [disabled]="isLoading">
         <fa-icon icon="sync" [animation]="isLoading ? 'spin' : undefined"></fa-icon>
-        <span jhiTranslate="ristoHubAlfaApp.menu.home.refreshListLabel">Refresh list</span>
+        <span jhiTranslate="ristoHubApp.menu.home.refreshListLabel">Refresh list</span>
       </button>
 
       <button
@@ -15,7 +15,7 @@
         [routerLink]="['/menu/new']"
       >
         <fa-icon icon="plus"></fa-icon>
-        <span jhiTranslate="ristoHubAlfaApp.menu.home.createLabel">Genera un nuovo Menu</span>
+        <span jhiTranslate="ristoHubApp.menu.home.createLabel">Genera un nuovo Menu</span>
       </button>
     </div>
   </h2>
@@ -26,7 +26,7 @@
 
   @if (menus().length === 0) {
     <div class="alert alert-warning" id="no-result">
-      <span jhiTranslate="ristoHubAlfaApp.menu.home.notFound">No Menus found</span>
+      <span jhiTranslate="ristoHubApp.menu.home.notFound">No Menus found</span>
     </div>
   } @else {
     <div class="table-responsive table-entities" id="entities">
@@ -35,55 +35,63 @@
           <tr jhiSort [(sortState)]="sortState" (sortChange)="navigateToWithComponentValues($event)">
             <th scope="col" jhiSortBy="id">
               <div class="d-flex">
-                <span jhiTranslate="global.field.id">ID</span>
+                <span jhiTranslate="ristoHubApp.menu.id">Id</span>
 
                 <fa-icon class="p-1" icon="sort"></fa-icon>
               </div>
             </th>
             <th scope="col" jhiSortBy="nome">
               <div class="d-flex">
-                <span jhiTranslate="ristoHubAlfaApp.menu.nome">Nome</span>
+                <span jhiTranslate="ristoHubApp.menu.nome">Nome</span>
 
                 <fa-icon class="p-1" icon="sort"></fa-icon>
               </div>
             </th>
             <th scope="col" jhiSortBy="descrizione">
               <div class="d-flex">
-                <span jhiTranslate="ristoHubAlfaApp.menu.descrizione">Descrizione</span>
+                <span jhiTranslate="ristoHubApp.menu.descrizione">Descrizione</span>
 
                 <fa-icon class="p-1" icon="sort"></fa-icon>
               </div>
             </th>
             <th scope="col" jhiSortBy="attivo">
               <div class="d-flex">
-                <span jhiTranslate="ristoHubAlfaApp.menu.attivo">Attivo</span>
+                <span jhiTranslate="ristoHubApp.menu.attivo">Attivo</span>
 
                 <fa-icon class="p-1" icon="sort"></fa-icon>
               </div>
             </th>
-            <th scope="col" jhiSortBy="logo">
+            <th scope="col" jhiSortBy="templateStyle">
               <div class="d-flex">
-                <span jhiTranslate="ristoHubAlfaApp.menu.logo">Logo</span>
+                <span jhiTranslate="ristoHubApp.menu.templateStyle">Template Style</span>
 
                 <fa-icon class="p-1" icon="sort"></fa-icon>
               </div>
             </th>
-            <th scope="col" jhiSortBy="logoNome">
+            <th scope="col" jhiSortBy="colorePrimario">
               <div class="d-flex">
-                <span jhiTranslate="ristoHubAlfaApp.menu.logoNome">Logo Nome</span>
+                <span jhiTranslate="ristoHubApp.menu.colorePrimario">Colore Primario</span>
 
                 <fa-icon class="p-1" icon="sort"></fa-icon>
               </div>
             </th>
-            <th scope="col" jhiSortBy="contatti.id">
+            <th scope="col" jhiSortBy="coloreSecondario">
               <div class="d-flex">
-                <span jhiTranslate="ristoHubAlfaApp.menu.contatti">Contatti</span>
+                <span jhiTranslate="ristoHubApp.menu.coloreSecondario">Colore Secondario</span>
+
+                <fa-icon class="p-1" icon="sort"></fa-icon>
+              </div>
+            </th>
+            <th scope="col" jhiSortBy="fontMenu">
+              <div class="d-flex">
+                <span jhiTranslate="ristoHubApp.menu.fontMenu">Font Menu</span>
+
                 <fa-icon class="p-1" icon="sort"></fa-icon>
               </div>
             </th>
             <th scope="col" jhiSortBy="ristoratore.login">
               <div class="d-flex">
-                <span jhiTranslate="ristoHubAlfaApp.menu.ristoratore">Ristoratore</span>
+                <span jhiTranslate="ristoHubApp.menu.ristoratore">Ristoratore</span>
                 <fa-icon class="p-1" icon="sort"></fa-icon>
               </div>
             </th>
@@ -99,22 +107,10 @@
               <td>{{ menu.nome }}</td>
               <td>{{ menu.descrizione }}</td>
               <td>{{ menu.attivo }}</td>
-              <td>
-                @if (menu.logo) {
-                  <a (click)="openFile(menu.logo, menu.logoContentType)">
-                    <img [src]="'data:' + menu.logoContentType + ';base64,' + menu.logo" style="max-height: 30px" alt="menu" />
-                  </a>
-                  <span>{{ menu.logoContentType }}, {{ byteSize(menu.logo) }}</span>
-                }
-              </td>
-              <td>{{ menu.logoNome }}</td>
-              <td>
-                @if (menu.contatti) {
-                  <div>
-                    <a [routerLink]="['/lista-contatti', menu.contatti.id, 'view']">{{ menu.contatti.id }}</a>
-                  </div>
-                }
-              </td>
+              <td>{{ menu.templateStyle }}</td>
+              <td>{{ menu.colorePrimario }}</td>
+              <td>{{ menu.coloreSecondario }}</td>
+              <td>{{ menu.fontMenu }}</td>
               <td>
                 {{ menu.ristoratore?.login }}
               </td>

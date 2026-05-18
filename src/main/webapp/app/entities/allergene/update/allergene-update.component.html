@@ -1,7 +1,7 @@
 <div class="d-flex justify-content-center">
   <div class="col-8">
     <form name="editForm" novalidate (ngSubmit)="save()" [formGroup]="editForm">
-      <h2 id="jhi-allergene-heading" data-cy="AllergeneCreateUpdateHeading" jhiTranslate="ristoHubAlfaApp.allergene.home.createOrEditLabel">
+      <h2 id="jhi-allergene-heading" data-cy="AllergeneCreateUpdateHeading" jhiTranslate="ristoHubApp.allergene.home.createOrEditLabel">
         Genera o modifica un Allergene
       </h2>
 
@@ -10,14 +10,14 @@
 
         @if (editForm.controls.id.value !== null) {
           <div class="mb-3">
-            <label class="form-label" for="field_id" jhiTranslate="ristoHubAlfaApp.allergene.id">ID</label>
-            <input type="number" class="form-control" name="id" id="field_id" data-cy="id" formControlName="id" [readonly]="true" />
+            <label class="form-label" for="field_id" jhiTranslate="ristoHubApp.allergene.id">Id</label>
+            <input type="text" class="form-control" name="id" id="field_id" data-cy="id" formControlName="id" [readonly]="true" />
           </div>
         }
 
         @let nomeRef = editForm.get('nome')!;
         <div class="mb-3">
-          <label class="form-label" for="field_nome" jhiTranslate="ristoHubAlfaApp.allergene.nome">Nome</label>
+          <label class="form-label" for="field_nome" jhiTranslate="ristoHubApp.allergene.nome">Nome</label>
           <input type="text" class="form-control" name="nome" id="field_nome" data-cy="nome" formControlName="nome" />
           @if (nomeRef.invalid && (nomeRef.dirty || nomeRef.touched)) {
             <div>
@@ -28,45 +28,20 @@
           }
         </div>
 
-        @let tipoRef = editForm.get('tipo')!;
         <div class="mb-3">
-          <label class="form-label" for="field_tipo" jhiTranslate="ristoHubAlfaApp.allergene.tipo">Tipo</label>
-          <select class="form-control" name="tipo" formControlName="tipo" id="field_tipo" data-cy="tipo">
-            <option [ngValue]="null">{{ 'ristoHubAlfaApp.TipoAllergene.null' | translate }}</option>
-            @for (tipoAllergene of tipoAllergeneValues; track $index) {
-              <option [value]="tipoAllergene">{{ 'ristoHubAlfaApp.TipoAllergene.' + tipoAllergene | translate }}</option>
-            }
-          </select>
-          @if (tipoRef.invalid && (tipoRef.dirty || tipoRef.touched)) {
-            <div>
-              @if (editForm.get('tipo')?.errors?.required) {
-                <small class="form-text text-danger" jhiTranslate="entity.validation.required">Questo campo è obbligatorio.</small>
-              }
-            </div>
-          }
+          <label class="form-label" for="field_simbolo" jhiTranslate="ristoHubApp.allergene.simbolo">Simbolo</label>
+          <input type="text" class="form-control" name="simbolo" id="field_simbolo" data-cy="simbolo" formControlName="simbolo" />
         </div>
 
         <div class="mb-3">
-          <label class="form-label" for="field_nomeDefault" jhiTranslate="ristoHubAlfaApp.allergene.nomeDefault">Nome Default</label>
-          <select class="form-control" name="nomeDefault" formControlName="nomeDefault" id="field_nomeDefault" data-cy="nomeDefault">
-            <option [ngValue]="null">{{ 'ristoHubAlfaApp.NomeAllergeneDefault.null' | translate }}</option>
-            @for (nomeAllergeneDefault of nomeAllergeneDefaultValues; track $index) {
-              <option [value]="nomeAllergeneDefault">
-                {{ 'ristoHubAlfaApp.NomeAllergeneDefault.' + nomeAllergeneDefault | translate }}
-              </option>
-            }
-          </select>
-        </div>
-
-        <div class="mb-3">
-          <label for="field_prodottis" jhiTranslate="ristoHubAlfaApp.allergene.prodotti">Prodotti</label>
+          <label for="field_prodottos" jhiTranslate="ristoHubApp.allergene.prodotto">Prodotto</label>
           <select
             class="form-control"
-            id="field_prodottis"
-            data-cy="prodotti"
+            id="field_prodottos"
+            data-cy="prodotto"
             multiple
-            name="prodottis"
-            formControlName="prodottis"
+            name="prodottos"
+            formControlName="prodottos"
             [compareWith]="compareProdotto"
           >
             @for (prodottoOption of prodottosSharedCollection; track $index) {

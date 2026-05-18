@@ -1,6 +1,3 @@
-<!-- PERCORSO: src/main/webapp/app/layouts/main/main.component.html -->
-<!-- Sostituisce il file generato da JHipster. -->
-
 <jhi-page-ribbon />
 
 @if (showNavbar()) {
@@ -10,18 +7,25 @@
 }
 
 @if (isFullscreen()) {
-  <!-- Rotte fullscreen (menu-public): nessun wrapper, occupa tutto il viewport -->
-  <router-outlet />
+  <!-- Rotte fullscreen (es. menu-public): nessun wrapper, nessun padding,
+       occupa tutto il viewport da 0,0 senza spazio per navbar o footer. -->
+  <router-outlet #outlet="outlet" />
 } @else {
   <div class="rh-main-wrapper">
     <div class="card jh-card">
-      <router-outlet />
+      <div [@routeAnimations]="getRouteAnimationData(outlet)" style="position: relative; min-height: calc(100vh - 52px)">
+        <router-outlet #outlet="outlet" />
+      </div>
     </div>
   </div>
 }
 
-<!-- Footer: visibile solo sulle rotte in allowlist -->
+<!--
+  Footer SEMPRE nel DOM — mai rimosso con @if.
+  La classe "rh-footer-hidden" lo rende invisibile e senza altezza,
+  così non causa mai reflow o "salti" durante la navigazione o il loader.
+-->
 <jhi-footer [class.rh-footer-hidden]="!showFooter()" />
 
-<!-- Loader globale: appendito al <body> via JS in LoaderComponent.ngOnInit() -->
+<!-- Loader globale: appendito al <body> via JS -->
 <rh-loader />

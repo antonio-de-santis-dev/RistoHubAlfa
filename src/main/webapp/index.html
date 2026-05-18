@@ -1,26 +1,26 @@
 <!doctype html>
-<!-- PERCORSO: src/main/webapp/index.html -->
-<!-- Sostituisce il file JHipster di default. -->
-<!-- Cambiamenti: splash loader RistoHub, favicon, titolo, theme-color. -->
 <html class="no-js" lang="it" dir="ltr">
   <head>
     <meta charset="utf-8" />
     <meta http-equiv="X-UA-Compatible" content="IE=edge" />
     <title>RistoHub</title>
-    <meta name="description" content="RistoHub – Il tuo menu digitale professionale" />
+    <meta name="description" content="RistoHub – Gestisci il tuo menu digitale" />
     <meta name="google" content="notranslate" />
     <meta name="viewport" content="width=device-width, initial-scale=1, shrink-to-fit=no" />
     <meta name="theme-color" content="#1a1a1a" />
     <base href="/" />
 
-    <!-- Favicon RistoHub -->
+    <!--
+  FAVICON — file generati dal logo RistoHub (LogoBianco.png ritagliato quadrato).
+  Tutti i file devono essere presenti in src/main/webapp/ e src/main/webapp/content/images/
+  Il ?v=2 forza il browser a ricaricare l'icona svuotando la cache.
+-->
     <link rel="icon" type="image/x-icon" href="favicon.ico?v=2" />
     <link rel="icon" type="image/png" sizes="32x32" href="content/images/favicon-32x32.png?v=2" />
     <link rel="icon" type="image/png" sizes="16x16" href="content/images/favicon-16x16.png?v=2" />
     <link rel="apple-touch-icon" sizes="180x180" href="content/images/apple-touch-icon.png?v=2" />
 
     <link rel="manifest" href="manifest.webapp" />
-    <!-- Splash screen CSS (caricato prima di Angular) -->
     <link rel="stylesheet" href="content/css/loading.css" />
     <!-- jhipster-needle-add-resources-to-root - JHipster will add new resources here -->
   </head>
@@ -31,22 +31,13 @@
         your experience.
       </p>
     <![endif]-->
-
     <jhi-app>
-      <!-- Splash screen RistoHub — visibile finché Angular non fa il bootstrap.
-       Sostituisce il pac-man di JHipster. Richiede loading.css. -->
       <div class="app-loading">
         <div class="rh-splash-icon">
-          <!-- Logo bianco su sfondo scuro -->
           <img src="content/images/LogoBianco.png" alt="RistoHub" />
-
-          <!-- Piatto animato + posate -->
           <svg viewBox="0 0 200 200" xmlns="http://www.w3.org/2000/svg">
-            <!-- Anello esterno oro -->
             <circle class="rh-plate-outer" cx="100" cy="108" r="62" fill="none" stroke="#FFD200" stroke-width="8" stroke-linecap="round" />
-            <!-- Anello interno turchese -->
             <circle class="rh-plate-inner" cx="100" cy="108" r="40" fill="none" stroke="#3DD6C8" stroke-width="8" stroke-linecap="round" />
-            <!-- Forchetta (sinistra) -->
             <g class="rh-fork" style="transform-origin: 58px 92px">
               <path
                 d="M14 75 L14 130 Q14 136 20 136 Q26 136 26 130 L26 75"
@@ -69,7 +60,6 @@
               <line x1="54" y1="66" x2="54" y2="102" stroke="#FFFFFF" stroke-width="6" stroke-linecap="round" />
               <line x1="64" y1="70" x2="64" y2="102" stroke="#FFFFFF" stroke-width="6" stroke-linecap="round" />
             </g>
-            <!-- Coltello (destra) -->
             <g class="rh-knife" style="transform-origin: 159px 92px">
               <path
                 d="M13 80 L13 130 Q13 136 19 136 Q25 136 25 130 L25 80"
@@ -91,21 +81,13 @@
               />
             </g>
           </svg>
-
           <div class="rh-splash-text">Caricamento</div>
           <div class="rh-splash-dots"><span></span><span></span><span></span></div>
         </div>
       </div>
-
-      <!-- Errore di caricamento (mostrato dopo 4s se Angular non parte) -->
-      <div id="jhipster-error" style="display: none; padding: 2rem; font-family: sans-serif">
-        <h2>Errore di caricamento</h2>
-        <p>L'applicazione non si è avviata. Assicurati che il server sia in esecuzione.</p>
-      </div>
     </jhi-app>
-
     <noscript>
-      <h1>JavaScript è necessario per utilizzare questa applicazione.</h1>
+      <h1>You must enable JavaScript to view this page.</h1>
     </noscript>
     <script type="text/javascript">
       window.onload = function () {

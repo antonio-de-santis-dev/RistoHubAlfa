@@ -2,7 +2,7 @@
   <div class="col-8">
     @if (menu(); as menuRef) {
       <div>
-        <h2 data-cy="menuDetailsHeading"><span jhiTranslate="ristoHubAlfaApp.menu.detail.title">Menu</span></h2>
+        <h2 data-cy="menuDetailsHeading"><span jhiTranslate="ristoHubApp.menu.detail.title">Menu</span></h2>
 
         <hr />
 
@@ -11,46 +11,39 @@
         <jhi-alert />
 
         <dl class="row-md jh-entity-details">
-          <dt><span jhiTranslate="global.field.id">ID</span></dt>
+          <dt><span jhiTranslate="ristoHubApp.menu.id">Id</span></dt>
           <dd>
             <span>{{ menuRef.id }}</span>
           </dd>
-          <dt><span jhiTranslate="ristoHubAlfaApp.menu.nome">Nome</span></dt>
+          <dt><span jhiTranslate="ristoHubApp.menu.nome">Nome</span></dt>
           <dd>
             <span>{{ menuRef.nome }}</span>
           </dd>
-          <dt><span jhiTranslate="ristoHubAlfaApp.menu.descrizione">Descrizione</span></dt>
+          <dt><span jhiTranslate="ristoHubApp.menu.descrizione">Descrizione</span></dt>
           <dd>
             <span>{{ menuRef.descrizione }}</span>
           </dd>
-          <dt><span jhiTranslate="ristoHubAlfaApp.menu.attivo">Attivo</span></dt>
+          <dt><span jhiTranslate="ristoHubApp.menu.attivo">Attivo</span></dt>
           <dd>
             <span>{{ menuRef.attivo }}</span>
           </dd>
-          <dt><span jhiTranslate="ristoHubAlfaApp.menu.logo">Logo</span></dt>
+          <dt><span jhiTranslate="ristoHubApp.menu.templateStyle">Template Style</span></dt>
           <dd>
-            @if (menuRef.logo) {
-              <div>
-                <a (click)="openFile(menuRef.logo ?? '', menuRef.logoContentType)">
-                  <img [src]="'data:' + menuRef.logoContentType + ';base64,' + menuRef.logo" style="max-width: 100%" alt="menu" />
-                </a>
-                {{ menuRef.logoContentType }}, {{ byteSize(menuRef.logo ?? '') }}
-              </div>
-            }
+            <span>{{ menuRef.templateStyle }}</span>
           </dd>
-          <dt><span jhiTranslate="ristoHubAlfaApp.menu.logoNome">Logo Nome</span></dt>
+          <dt><span jhiTranslate="ristoHubApp.menu.colorePrimario">Colore Primario</span></dt>
           <dd>
-            <span>{{ menuRef.logoNome }}</span>
+            <span>{{ menuRef.colorePrimario }}</span>
           </dd>
-          <dt><span jhiTranslate="ristoHubAlfaApp.menu.contatti">Contatti</span></dt>
+          <dt><span jhiTranslate="ristoHubApp.menu.coloreSecondario">Colore Secondario</span></dt>
           <dd>
-            @if (menu()!.contatti) {
-              <div>
-                <a [routerLink]="['/lista-contatti', menu()!.contatti?.id, 'view']">{{ menuRef.contatti?.id }}</a>
-              </div>
-            }
+            <span>{{ menuRef.coloreSecondario }}</span>
           </dd>
-          <dt><span jhiTranslate="ristoHubAlfaApp.menu.ristoratore">Ristoratore</span></dt>
+          <dt><span jhiTranslate="ristoHubApp.menu.fontMenu">Font Menu</span></dt>
+          <dd>
+            <span>{{ menuRef.fontMenu }}</span>
+          </dd>
+          <dt><span jhiTranslate="ristoHubApp.menu.ristoratore">Ristoratore</span></dt>
           <dd>
             <span>{{ menuRef.ristoratore?.login }}</span>
           </dd>
