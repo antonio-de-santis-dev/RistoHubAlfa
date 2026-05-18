@@ -1,0 +1,33 @@
+<?xml version="1.0" encoding="utf-8"?>
+<databaseChangeLog
+    xmlns="http://www.liquibase.org/xml/ns/dbchangelog"
+    xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+    xsi:schemaLocation="http://www.liquibase.org/xml/ns/dbchangelog
+                        http://www.liquibase.org/xml/ns/dbchangelog/dbchangelog-latest.xsd">
+
+    <!--
+        Aggiunge i campi stile al menu:
+          colore_primario   — colore principale (es. #C8102E)
+          colore_secondario — colore di sfondo/testo secondario (es. #F5E6C8)
+          font_menu         — font Google Fonts (es. "Playfair Display")
+        Questi vengono impostati dal menu-wizard e menu-wizard-edit.
+    -->
+    <changeSet id="20260515130000-1" author="ristohub">
+        <addColumn tableName="menu">
+            <column name="colore_primario" type="varchar(20)">
+                <constraints nullable="true"/>
+            </column>
+        </addColumn>
+        <addColumn tableName="menu">
+            <column name="colore_secondario" type="varchar(20)">
+                <constraints nullable="true"/>
+            </column>
+        </addColumn>
+        <addColumn tableName="menu">
+            <column name="font_menu" type="varchar(60)">
+                <constraints nullable="true"/>
+            </column>
+        </addColumn>
+    </changeSet>
+
+</databaseChangeLog>

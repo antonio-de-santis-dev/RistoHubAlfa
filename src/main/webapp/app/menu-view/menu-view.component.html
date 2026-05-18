@@ -1,4 +1,5 @@
 <!-- PERCORSO: src/main/webapp/app/menu-view/menu-view.component.html -->
+<!-- Template CLASSICO con colori e font dinamici dal wizard -->
 
 <!-- LOADING -->
 <div *ngIf="isLoading" class="mv-loading">
@@ -13,29 +14,43 @@
   <button class="mv-btn mv-btn-back" (click)="tornaHome()">← Torna alla home</button>
 </div>
 
-<!-- CONTENUTO -->
-<div *ngIf="!isLoading && !errore && menu" class="mv-page">
-  <!-- ── Topbar ──────────────────────────────────────────────── -->
-  <header class="mv-topbar">
-    <button class="mv-back-btn" type="button" (click)="tornaHome()" title="Torna alla home">
+<!-- ══════════════════════════════════════════════════════════════ -->
+<!--  CONTENUTO — Template Classico con colori dal wizard          -->
+<!-- ══════════════════════════════════════════════════════════════ -->
+<div *ngIf="!isLoading && !errore && menu" class="cl-page" [style.fontFamily]="fontMenu" [style.backgroundColor]="coloreSecondario">
+  <!-- ── HEADER ──────────────────────────────────────────────── -->
+  <header class="cl-header" [style.backgroundColor]="colorePrimario">
+    <button class="cl-btn-back" [style.color]="coloreSecondario" (click)="tornaHome()">
       <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round">
         <polyline points="15 18 9 12 15 6" />
       </svg>
     </button>
 
-    <div class="mv-topbar-info">
-      <img *ngIf="logoUrl" [src]="logoUrl" class="mv-logo" alt="Logo ristorante" />
-      <div>
-        <h1 class="mv-menu-nome">{{ menu.nome }}</h1>
-        <p class="mv-menu-desc" *ngIf="menu.descrizione">{{ menu.descrizione }}</p>
-      </div>
+    <!-- Logo o nome -->
+    <div class="cl-header-center">
+      <img *ngIf="logoUrl" [src]="logoUrl" class="cl-logo-img" alt="Logo ristorante" />
+      <div *ngIf="!logoUrl" class="cl-logo-text" [style.color]="coloreSecondario">{{ menu.nome }}</div>
     </div>
 
-    <div class="mv-topbar-actions">
-      <span class="mv-badge" [class.mv-badge-attivo]="menu.attivo" [class.mv-badge-inattivo]="!menu.attivo">
+    <!-- Azioni topbar -->
+    <div class="cl-header-actions">
+      <span
+        class="cl-badge"
+        [class.cl-badge-attivo]="menu.attivo"
+        [class.cl-badge-inattivo]="!menu.attivo"
+        [style.backgroundColor]="coloreSecondario"
+        [style.color]="colorePrimario"
+      >
         {{ menu.attivo ? 'Attivo' : 'Inattivo' }}
       </span>
-      <button class="mv-btn mv-btn-qr" type="button" (click)="mostraQr()" title="Mostra QR Code">
+      <button
+        class="cl-btn-qr"
+        type="button"
+        (click)="mostraQr()"
+        title="Mostra QR Code"
+        [style.backgroundColor]="coloreSecondario + '33'"
+        [style.color]="coloreSecondario"
+      >
         <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
           <rect x="3" y="3" width="5" height="5" />
           <rect x="16" y="3" width="5" height="5" />
@@ -48,208 +63,213 @@
     </div>
   </header>
 
-  <div class="mv-inner">
+  <!-- ── BODY ──────────────────────────────────────────────────── -->
+  <div class="cl-body">
     <!-- ── Piatti del Giorno ──────────────────────────────────── -->
-    <div class="mv-section mv-section-piatti" *ngIf="piattiDelGiorno.length > 0">
-      <button class="mv-accordion-trigger mv-piatti-trigger" type="button" (click)="togglePiattiGiorno()">
-        <span class="mv-trigger-left">
-          <span class="mv-trigger-icon">⭐</span>
-          <span class="mv-trigger-label">Piatti del Giorno</span>
-          <span class="mv-trigger-count">{{ piattiDelGiorno.length }}</span>
+    <div class="cl-accordion-wrap" *ngIf="piattiDelGiorno.length > 0" [style.backgroundColor]="colorePrimario">
+      <div class="cl-accordion-header" (click)="togglePiattiGiorno()">
+        <span class="cl-acc-title" [style.color]="coloreSecondario">⭐ Piatti del Giorno</span>
+        <span class="cl-acc-count" [style.color]="coloreSecondario">{{ piattiDelGiorno.length }}</span>
+        <span class="cl-acc-chevron" [class.open]="piattiGiornoAperti">
+          <svg viewBox="0 0 24 24" [style.stroke]="coloreSecondario"><polyline points="9 18 15 12 9 6" /></svg>
         </span>
-        <svg
-          class="mv-chevron"
-          [class.mv-chevron-open]="piattiGiornoAperti"
-          width="16"
-          height="16"
-          viewBox="0 0 24 24"
-          fill="none"
-          stroke="currentColor"
-          stroke-width="2.5"
-          stroke-linecap="round"
+      </div>
+      <div class="cl-accordion-body" [class.open]="piattiGiornoAperti">
+        <div
+          *ngFor="let piatto of piattiDelGiorno; let i = index; let last = last"
+          class="cl-menu-row"
+          [class.cl-menu-row--last]="last"
+          [style.backgroundColor]="i % 2 === 0 ? coloreSecondario : colorePrimario"
         >
-          <polyline points="6 9 12 15 18 9" />
-        </svg>
-      </button>
-
-      <div class="mv-accordion-content" [class.mv-accordion-open]="piattiGiornoAperti">
-        <div class="mv-prodotti-lista">
-          <div *ngFor="let piatto of piattiDelGiorno" class="mv-prodotto-row mv-prodotto-row-piatto">
-            <div class="mv-prodotto-info">
-              <span class="mv-prodotto-nome">
-                {{ piatto.prodotto?.nome ?? piatto.nome }}
-              </span>
-              <span class="mv-prodotto-desc" *ngIf="piatto.prodotto?.descrizione ?? piatto.descrizione">
-                {{ piatto.prodotto?.descrizione ?? piatto.descrizione }}
-              </span>
-              <div class="mv-allergeni-inline" *ngIf="(piatto.prodotto?.allergenis ?? piatto.allergenis ?? []).length > 0">
-                <img
-                  *ngFor="let a of piatto.prodotto?.allergenis ?? piatto.allergenis ?? []"
-                  [src]="getAllergeneIconPath(a) ?? ''"
-                  [title]="a.nome ?? ''"
-                  class="mv-allergene-icona"
-                  [style.background]="!getAllergeneIconPath(a) ? (a.colore ?? '#888') : ''"
-                />
-              </div>
-            </div>
-            <span class="mv-prodotto-prezzo">
+          <div class="cl-row-main">
+            <span class="cl-item-name" [style.color]="i % 2 === 0 ? colorePrimario : coloreSecondario">
+              {{ piatto.prodotto?.nome ?? piatto.nome }}
+            </span>
+            <span class="cl-item-price" [style.color]="i % 2 === 0 ? colorePrimario : coloreSecondario">
               {{ formatPrezzo(piatto.prodotto?.prezzo ?? piatto.prezzo) }}
             </span>
           </div>
+          <div
+            class="cl-row-sub"
+            *ngIf="
+              (piatto.prodotto?.descrizione ?? piatto.descrizione) || (piatto.prodotto?.allergenis ?? piatto.allergenis ?? []).length > 0
+            "
+          >
+            <span
+              class="cl-item-desc"
+              *ngIf="piatto.prodotto?.descrizione ?? piatto.descrizione"
+              [style.color]="i % 2 === 0 ? colorePrimario : coloreSecondario"
+            >
+              {{ piatto.prodotto?.descrizione ?? piatto.descrizione }}
+            </span>
+            <div class="cl-allergen-row" *ngIf="(piatto.prodotto?.allergenis ?? piatto.allergenis ?? []).length > 0">
+              <ng-container *ngFor="let a of piatto.prodotto?.allergenis ?? piatto.allergenis ?? []">
+                <img *ngIf="getAllergeneIconPath(a)" [src]="getAllergeneIconPath(a)!" [title]="a.nome ?? ''" class="cl-allergen-icon-img" />
+                <span *ngIf="!getAllergeneIconPath(a)" class="cl-allergen-icon" [style.backgroundColor]="a.colore ?? '#888'">!</span>
+                <span class="cl-allergen-label" [style.color]="i % 2 === 0 ? colorePrimario : coloreSecondario">{{ a.nome }}</span>
+              </ng-container>
+            </div>
+          </div>
         </div>
       </div>
     </div>
 
-    <!-- ── Portate (accordion classico) ─────────────────────── -->
-    <div class="mv-portate">
-      <div *ngFor="let portata of portate" class="mv-section">
-        <button class="mv-accordion-trigger" type="button" (click)="togglePortata(portata)">
-          <span class="mv-trigger-left">
-            <span class="mv-trigger-label">{{ nomePortata(portata) }}</span>
-            <span class="mv-trigger-count">{{ (portata.prodotti ?? []).length }}</span>
-          </span>
-          <svg
-            class="mv-chevron"
-            [class.mv-chevron-open]="portata.aperta"
-            width="16"
-            height="16"
-            viewBox="0 0 24 24"
-            fill="none"
-            stroke="currentColor"
-            stroke-width="2.5"
-            stroke-linecap="round"
-          >
-            <polyline points="6 9 12 15 18 9" />
-          </svg>
-        </button>
+    <!-- ── Portate (accordion classico con colori wizard) ─────── -->
+    <div *ngFor="let portata of portate" class="cl-accordion-wrap" [style.backgroundColor]="colorePrimario">
+      <div class="cl-accordion-header" (click)="togglePortata(portata)">
+        <span class="cl-acc-title" [style.color]="coloreSecondario">{{ nomePortata(portata) }}</span>
+        <span class="cl-acc-count" [style.color]="coloreSecondario">{{ (portata.prodotti ?? []).length }}</span>
+        <span class="cl-acc-chevron" [class.open]="portata.aperta">
+          <svg viewBox="0 0 24 24" [style.stroke]="coloreSecondario"><polyline points="9 18 15 12 9 6" /></svg>
+        </span>
+      </div>
 
-        <div class="mv-accordion-content" [class.mv-accordion-open]="portata.aperta">
-          <!-- Lista prodotti -->
-          <div class="mv-prodotti-lista" *ngIf="(portata.prodotti ?? []).length > 0">
-            <div *ngFor="let prodotto of portata.prodotti" class="mv-prodotto-row" [class.mv-prodotto-nascosto]="!prodotto.visibile">
-              <div class="mv-prodotto-info">
-                <div class="mv-prodotto-header">
-                  <span class="mv-prodotto-nome">{{ prodotto.nome }}</span>
-                  <span *ngIf="!prodotto.visibile" class="mv-nascosto-badge">🔒 Nascosto</span>
-                </div>
-                <span class="mv-prodotto-desc" *ngIf="prodotto.descrizione">{{ prodotto.descrizione }}</span>
-                <div class="mv-allergeni-inline" *ngIf="(prodotto.allergenis ?? []).length > 0">
-                  <span *ngFor="let a of prodotto.allergenis" class="mv-allergene-chip" [title]="a.nome ?? ''">
-                    <img *ngIf="getAllergeneIconPath(a)" [src]="getAllergeneIconPath(a)!" class="mv-allergene-icona" />
-                    <span *ngIf="!getAllergeneIconPath(a)" class="mv-allergene-dot" [style.background]="a.colore ?? '#888'"></span>
-                    <span class="mv-allergene-nome">{{ a.nome }}</span>
-                  </span>
-                </div>
-              </div>
-
-              <div class="mv-prodotto-right">
-                <span class="mv-prodotto-prezzo">{{ formatPrezzo(prodotto.prezzo) }}</span>
-                <div class="mv-prodotto-azioni">
-                  <!-- Toggle visibilità -->
-                  <button
-                    class="mv-azione-btn"
-                    [class.mv-azione-hide]="prodotto.visibile"
-                    [class.mv-azione-show]="!prodotto.visibile"
-                    type="button"
-                    (click)="toggleVisibile(prodotto, portata)"
-                    [title]="prodotto.visibile ? 'Nascondi' : 'Mostra'"
-                  >
-                    <svg
-                      *ngIf="prodotto.visibile"
-                      width="14"
-                      height="14"
-                      viewBox="0 0 24 24"
-                      fill="none"
-                      stroke="currentColor"
-                      stroke-width="2"
-                    >
-                      <path d="M17.94 17.94A10.07 10.07 0 0 1 12 20c-7 0-11-8-11-8a18.45 18.45 0 0 1 5.06-5.94" />
-                      <path d="M9.9 4.24A9.12 9.12 0 0 1 12 4c7 0 11 8 11 8a18.5 18.5 0 0 1-2.16 3.19" />
-                      <line x1="1" y1="1" x2="23" y2="23" />
-                    </svg>
-                    <svg
-                      *ngIf="!prodotto.visibile"
-                      width="14"
-                      height="14"
-                      viewBox="0 0 24 24"
-                      fill="none"
-                      stroke="currentColor"
-                      stroke-width="2"
-                    >
-                      <path d="M1 12s4-8 11-8 11 8 11 8-4 8-11 8-11-8-11-8z" />
-                      <circle cx="12" cy="12" r="3" />
-                    </svg>
-                  </button>
-                  <!-- Modifica -->
-                  <button class="mv-azione-btn mv-azione-edit" type="button" (click)="apriModifica(prodotto)" title="Modifica">
-                    <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
-                      <path d="M11 4H4a2 2 0 0 0-2 2v14a2 2 0 0 0 2 2h14a2 2 0 0 0 2-2v-7" />
-                      <path d="M18.5 2.5a2.121 2.121 0 0 1 3 3L12 15l-4 1 1-4 9.5-9.5z" />
-                    </svg>
-                  </button>
-                  <!-- Elimina -->
-                  <button class="mv-azione-btn mv-azione-delete" type="button" (click)="apriConfermaEliminazione(prodotto)" title="Elimina">
-                    <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
-                      <polyline points="3 6 5 6 21 6" />
-                      <path d="M19 6v14a2 2 0 0 1-2 2H7a2 2 0 0 1-2-2V6m3 0V4a1 1 0 0 1 1-1h4a1 1 0 0 1 1 1v2" />
-                    </svg>
-                  </button>
-                </div>
-              </div>
+      <div class="cl-accordion-body" [class.open]="portata.aperta">
+        <!-- Lista prodotti -->
+        <div
+          *ngFor="let prodotto of portata.prodotti; let i = index; let last = last"
+          class="cl-menu-row"
+          [class.cl-menu-row--last]="last && (portata.prodotti ?? []).length > 0"
+          [class.cl-prodotto-nascosto]="!prodotto.visibile"
+          [style.backgroundColor]="i % 2 === 0 ? coloreSecondario : colorePrimario"
+        >
+          <div class="cl-row-main">
+            <div class="cl-item-nome-wrap">
+              <span class="cl-item-name" [style.color]="i % 2 === 0 ? colorePrimario : coloreSecondario">
+                {{ prodotto.nome }}
+              </span>
+              <span *ngIf="!prodotto.visibile" class="cl-nascosto-badge">🔒</span>
+            </div>
+            <div class="cl-prodotto-azioni">
+              <span class="cl-item-price" [style.color]="i % 2 === 0 ? colorePrimario : coloreSecondario">
+                {{ formatPrezzo(prodotto.prezzo) }}
+              </span>
+              <!-- Toggle visibilità -->
+              <button
+                class="cl-btn-vis"
+                [style.backgroundColor]="i % 2 === 0 ? colorePrimario : coloreSecondario"
+                [style.color]="i % 2 === 0 ? coloreSecondario : colorePrimario"
+                (click)="toggleVisibile(prodotto, portata)"
+                [title]="prodotto.visibile ? 'Nascondi' : 'Mostra'"
+              >
+                <svg
+                  *ngIf="prodotto.visibile"
+                  width="14"
+                  height="14"
+                  viewBox="0 0 24 24"
+                  fill="none"
+                  stroke="currentColor"
+                  stroke-width="2"
+                >
+                  <path d="M17.94 17.94A10.07 10.07 0 0 1 12 20c-7 0-11-8-11-8a18.45 18.45 0 0 1 5.06-5.94" />
+                  <path d="M9.9 4.24A9.12 9.12 0 0 1 12 4c7 0 11 8 11 8a18.5 18.5 0 0 1-2.16 3.19" />
+                  <line x1="1" y1="1" x2="23" y2="23" />
+                </svg>
+                <svg
+                  *ngIf="!prodotto.visibile"
+                  width="14"
+                  height="14"
+                  viewBox="0 0 24 24"
+                  fill="none"
+                  stroke="currentColor"
+                  stroke-width="2"
+                >
+                  <path d="M1 12s4-8 11-8 11 8 11 8-4 8-11 8-11-8-11-8z" />
+                  <circle cx="12" cy="12" r="3" />
+                </svg>
+              </button>
+              <!-- Modifica -->
+              <button
+                class="cl-btn-modifica"
+                [style.backgroundColor]="i % 2 === 0 ? colorePrimario : coloreSecondario"
+                [style.color]="i % 2 === 0 ? coloreSecondario : colorePrimario"
+                (click)="apriModifica(prodotto)"
+                title="Modifica"
+              >
+                <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                  <path d="M11 4H4a2 2 0 0 0-2 2v14a2 2 0 0 0 2 2h14a2 2 0 0 0 2-2v-7" />
+                  <path d="M18.5 2.5a2.121 2.121 0 0 1 3 3L12 15l-4 1 1-4 9.5-9.5z" />
+                </svg>
+                <span class="cl-btn-label">Modifica</span>
+              </button>
+              <!-- Elimina -->
+              <button class="cl-btn-elimina" (click)="apriConfermaEliminazione(prodotto)" title="Elimina">
+                <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                  <polyline points="3 6 5 6 21 6" />
+                  <path d="M19 6v14a2 2 0 0 1-2 2H7a2 2 0 0 1-2-2V6m3 0V4a1 1 0 0 1 1-1h4a1 1 0 0 1 1 1v2" />
+                </svg>
+                <span class="cl-btn-label">Elimina</span>
+              </button>
             </div>
           </div>
 
-          <!-- Nessun prodotto -->
-          <div class="mv-prodotti-vuoti" *ngIf="(portata.prodotti ?? []).length === 0">
-            <span>Nessun prodotto in questa portata.</span>
+          <div class="cl-row-sub" *ngIf="prodotto.descrizione || (prodotto.allergenis ?? []).length > 0">
+            <span class="cl-item-desc" *ngIf="prodotto.descrizione" [style.color]="i % 2 === 0 ? colorePrimario : coloreSecondario">
+              {{ prodotto.descrizione }}
+            </span>
+            <div class="cl-allergen-row" *ngIf="(prodotto.allergenis ?? []).length > 0">
+              <ng-container *ngFor="let a of prodotto.allergenis ?? []">
+                <img *ngIf="getAllergeneIconPath(a)" [src]="getAllergeneIconPath(a)!" [title]="a.nome ?? ''" class="cl-allergen-icon-img" />
+                <span *ngIf="!getAllergeneIconPath(a)" class="cl-allergen-icon" [style.backgroundColor]="a.colore ?? '#888'">!</span>
+                <span class="cl-allergen-label" [style.color]="i % 2 === 0 ? colorePrimario : coloreSecondario">{{ a.nome }}</span>
+              </ng-container>
+            </div>
           </div>
         </div>
+
+        <!-- Nessun prodotto -->
+        <div class="cl-empty-row" *ngIf="(portata.prodotti ?? []).length === 0">
+          <span>Nessun prodotto in questa portata.</span>
+        </div>
+
+        <!-- Aggiungi prodotto -->
+        <button
+          class="cl-btn-add-prodotto"
+          [style.color]="coloreSecondario"
+          [style.borderColor]="coloreSecondario"
+          (click)="vaiAdAggiungiProdotto(portata.id)"
+        >
+          <svg width="22" height="22" viewBox="0 0 44 44" fill="none">
+            <path
+              d="M22 14V30M14 22H30M42 22C42 33.0457 33.0457 42 22 42C10.9543 42 2 33.0457 2 22C2 10.9543 10.9543 2 22 2C33.0457 2 42 10.9543 42 22Z"
+              stroke="currentColor"
+              stroke-width="4"
+              stroke-linecap="round"
+              stroke-linejoin="round"
+            />
+          </svg>
+          Aggiungi piatto
+        </button>
       </div>
     </div>
-    <!-- /mv-portate -->
 
-    <!-- ── Card Allergeni del menu ─────────────────────────────── -->
-    <div class="mv-section mv-section-allergeni" *ngIf="tuttiAllergeniMenu.length > 0">
-      <button class="mv-accordion-trigger mv-allergeni-trigger" type="button" (click)="toggleAllergeniMenu()">
-        <span class="mv-trigger-left">
-          <span class="mv-trigger-icon">⚠️</span>
-          <span class="mv-trigger-label">Allergeni presenti nel menu</span>
+    <!-- ── Allergeni presenti nel menu ────────────────────────── -->
+    <div class="cl-allergen-section" *ngIf="tuttiAllergeniMenu.length > 0">
+      <button class="cl-allergen-section-header" (click)="toggleAllergeniMenu()">
+        <span [style.color]="colorePrimario">⚠️ Allergeni presenti nel menu</span>
+        <span class="cl-acc-chevron" [class.open]="allergeniMenuAperti">
+          <svg viewBox="0 0 24 24" [style.stroke]="colorePrimario"><polyline points="9 18 15 12 9 6" /></svg>
         </span>
-        <svg
-          class="mv-chevron"
-          [class.mv-chevron-open]="allergeniMenuAperti"
-          width="16"
-          height="16"
-          viewBox="0 0 24 24"
-          fill="none"
-          stroke="currentColor"
-          stroke-width="2.5"
-          stroke-linecap="round"
-        >
-          <polyline points="6 9 12 15 18 9" />
-        </svg>
       </button>
-      <div class="mv-accordion-content" [class.mv-accordion-open]="allergeniMenuAperti">
-        <div class="mv-allergeni-grid">
-          <div *ngFor="let a of tuttiAllergeniMenu" class="mv-allergene-card">
-            <img *ngIf="getAllergeneIconPath(a)" [src]="getAllergeneIconPath(a)!" [title]="a.nome ?? ''" class="mv-allergene-card-icona" />
-            <div *ngIf="!getAllergeneIconPath(a)" class="mv-allergene-card-dot" [style.background]="a.colore ?? '#888'"></div>
-            <span class="mv-allergene-card-nome">{{ a.nome }}</span>
-          </div>
+      <div class="cl-allergen-grid" *ngIf="allergeniMenuAperti">
+        <div *ngFor="let a of tuttiAllergeniMenu" class="cl-ag-item">
+          <img *ngIf="getAllergeneIconPath(a)" [src]="getAllergeneIconPath(a)!" [alt]="a.nome ?? ''" class="cl-ag-icon-img" />
+          <span *ngIf="!getAllergeneIconPath(a)" class="cl-ag-icon" [style.backgroundColor]="a.colore ?? '#888'">!</span>
+          <span class="cl-ag-nome" [style.color]="colorePrimario">{{ a.nome }}</span>
         </div>
       </div>
     </div>
   </div>
-  <!-- /mv-inner -->
+  <!-- /cl-body -->
 </div>
-<!-- /mv-page -->
+<!-- /cl-page -->
 
 <!-- ══════════════════════════════════════════════════════════════ -->
 <!--  MODAL: Modifica prodotto                                     -->
 <!-- ══════════════════════════════════════════════════════════════ -->
 <div *ngIf="prodottoInModifica" class="mv-modal-overlay" (click)="chiudiModifica()">
   <div class="mv-modal-box" (click)="$event.stopPropagation()">
-    <div class="mv-modal-header">
+    <div class="mv-modal-header" [style.backgroundColor]="colorePrimario">
       <h3>✏️ Modifica prodotto</h3>
       <button class="mv-modal-close" type="button" (click)="chiudiModifica()">✕</button>
     </div>
@@ -285,12 +305,14 @@
             *ngFor="let a of allergeniDisponibili"
             class="mv-allergene-pick"
             [class.mv-allergene-pick-sel]="editAllergeniSelezionati.has(a.id)"
+            [style.borderColor]="editAllergeniSelezionati.has(a.id) ? colorePrimario : '#e5e7eb'"
+            [style.backgroundColor]="editAllergeniSelezionati.has(a.id) ? colorePrimario + '18' : 'white'"
             (click)="toggleEditAllergene(a.id)"
           >
             <img *ngIf="getAllergeneIconPath(a)" [src]="getAllergeneIconPath(a)!" class="mv-pick-icona" [title]="a.nome ?? ''" />
             <span *ngIf="!getAllergeneIconPath(a)" class="mv-pick-dot" [style.background]="a.colore ?? '#888'"></span>
             <span class="mv-pick-nome">{{ a.nome }}</span>
-            <span *ngIf="editAllergeniSelezionati.has(a.id)" class="mv-pick-check">✓</span>
+            <span *ngIf="editAllergeniSelezionati.has(a.id)" class="mv-pick-check" [style.color]="colorePrimario">✓</span>
           </div>
         </div>
       </div>
@@ -298,7 +320,13 @@
     </div>
     <div class="mv-modal-footer">
       <button class="mv-btn mv-btn-annulla" type="button" (click)="chiudiModifica()">Annulla</button>
-      <button class="mv-btn mv-btn-salva" type="button" (click)="salvaModifica()" [disabled]="isSavingEdit">
+      <button
+        class="mv-btn mv-btn-salva"
+        type="button"
+        (click)="salvaModifica()"
+        [disabled]="isSavingEdit"
+        [style.backgroundColor]="colorePrimario"
+      >
         {{ isSavingEdit ? 'Salvataggio...' : '💾 Salva' }}
       </button>
     </div>
@@ -326,7 +354,7 @@
 </div>
 
 <!-- ══════════════════════════════════════════════════════════════ -->
-<!--  MODAL: QR Code                                              -->
+<!--  MODAL: QR Code                                               -->
 <!-- ══════════════════════════════════════════════════════════════ -->
 <div *ngIf="qrVisible" class="mv-modal-overlay" (click)="chiudiQr()">
   <div class="mv-modal-box mv-modal-qr" (click)="$event.stopPropagation()">

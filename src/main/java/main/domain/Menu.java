@@ -11,8 +11,7 @@ import org.hibernate.annotations.CacheConcurrencyStrategy;
 
 /**
  * Menu digitale del ristorante.
- * Unico stile visivo: classico a tendina (accordion Bootstrap).
- * Nessuna scelta di template, colori o font.
+ * Stile visivo configurabile tramite menu-wizard (colori, font).
  */
 @Entity
 @Table(name = "menu")
@@ -48,6 +47,18 @@ public class Menu implements Serializable {
 
     @Column(name = "logo_nome")
     private String logoNome;
+
+    /** Colore primario hex (es. #C8102E) — impostato dal wizard */
+    @Column(name = "colore_primario", length = 20)
+    private String colorePrimario;
+
+    /** Colore secondario hex (es. #F5E6C8) — impostato dal wizard */
+    @Column(name = "colore_secondario", length = 20)
+    private String coloreSecondario;
+
+    /** Nome font Google Fonts (es. "Playfair Display") — impostato dal wizard */
+    @Column(name = "font_menu", length = 60)
+    private String fontMenu;
 
     @JsonIgnoreProperties(value = { "contattis", "menu" }, allowSetters = true)
     @OneToOne(fetch = FetchType.LAZY)
@@ -161,6 +172,45 @@ public class Menu implements Serializable {
         this.logoNome = logoNome;
     }
 
+    public String getColorePrimario() {
+        return this.colorePrimario;
+    }
+
+    public Menu colorePrimario(String colorePrimario) {
+        this.setColorePrimario(colorePrimario);
+        return this;
+    }
+
+    public void setColorePrimario(String colorePrimario) {
+        this.colorePrimario = colorePrimario;
+    }
+
+    public String getColoreSecondario() {
+        return this.coloreSecondario;
+    }
+
+    public Menu coloreSecondario(String coloreSecondario) {
+        this.setColoreSecondario(coloreSecondario);
+        return this;
+    }
+
+    public void setColoreSecondario(String coloreSecondario) {
+        this.coloreSecondario = coloreSecondario;
+    }
+
+    public String getFontMenu() {
+        return this.fontMenu;
+    }
+
+    public Menu fontMenu(String fontMenu) {
+        this.setFontMenu(fontMenu);
+        return this;
+    }
+
+    public void setFontMenu(String fontMenu) {
+        this.fontMenu = fontMenu;
+    }
+
     public ListaContatti getContatti() {
         return this.contatti;
     }
@@ -179,12 +229,8 @@ public class Menu implements Serializable {
     }
 
     public void setPortates(Set<Portata> portatas) {
-        if (this.portates != null) {
-            this.portates.forEach(i -> i.setMenu(null));
-        }
-        if (portatas != null) {
-            portatas.forEach(i -> i.setMenu(this));
-        }
+        if (this.portates != null) this.portates.forEach(i -> i.setMenu(null));
+        if (portatas != null) portatas.forEach(i -> i.setMenu(this));
         this.portates = portatas;
     }
 
@@ -210,12 +256,8 @@ public class Menu implements Serializable {
     }
 
     public void setTraduzionis(Set<TraduzioneMenu> traduzioneMenus) {
-        if (this.traduzionis != null) {
-            this.traduzionis.forEach(i -> i.setMenu(null));
-        }
-        if (traduzioneMenus != null) {
-            traduzioneMenus.forEach(i -> i.setMenu(this));
-        }
+        if (this.traduzionis != null) this.traduzionis.forEach(i -> i.setMenu(null));
+        if (traduzioneMenus != null) traduzioneMenus.forEach(i -> i.setMenu(this));
         this.traduzionis = traduzioneMenus;
     }
 
@@ -224,15 +266,15 @@ public class Menu implements Serializable {
         return this;
     }
 
-    public Menu addTraduzioni(TraduzioneMenu traduzioneMenu) {
-        this.traduzionis.add(traduzioneMenu);
-        traduzioneMenu.setMenu(this);
+    public Menu addTraduzioni(TraduzioneMenu t) {
+        this.traduzionis.add(t);
+        t.setMenu(this);
         return this;
     }
 
-    public Menu removeTraduzioni(TraduzioneMenu traduzioneMenu) {
-        this.traduzionis.remove(traduzioneMenu);
-        traduzioneMenu.setMenu(null);
+    public Menu removeTraduzioni(TraduzioneMenu t) {
+        this.traduzionis.remove(t);
+        t.setMenu(null);
         return this;
     }
 
@@ -253,32 +295,38 @@ public class Menu implements Serializable {
 
     @Override
     public boolean equals(Object o) {
-        if (this == o) {
-            return true;
-        }
-        if (!(o instanceof Menu)) {
-            return false;
-        }
+        if (this == o) return true;
+        if (!(o instanceof Menu)) return false;
         return getId() != null && getId().equals(((Menu) o).getId());
     }
 
     @Override
     public int hashCode() {
-        // see https://vladmihalcea.com/how-to-implement-equals-and-hashcode-using-the-jpa-entity-identifier/
         return getClass().hashCode();
     }
 
-    // prettier-ignore
     @Override
     public String toString() {
-        return "Menu{" +
-            "id=" + getId() +
-            ", nome='" + getNome() + "'" +
-            ", descrizione='" + getDescrizione() + "'" +
-            ", attivo='" + getAttivo() + "'" +
-            ", logo='" + getLogo() + "'" +
-            ", logoContentType='" + getLogoContentType() + "'" +
-            ", logoNome='" + getLogoNome() + "'" +
-            "}";
+        return (
+            "Menu{" +
+            "id=" +
+            getId() +
+            ", nome='" +
+            getNome() +
+            "'" +
+            ", attivo='" +
+            getAttivo() +
+            "'" +
+            ", colorePrimario='" +
+            getColorePrimario() +
+            "'" +
+            ", coloreSecondario='" +
+            getColoreSecondario() +
+            "'" +
+            ", fontMenu='" +
+            getFontMenu() +
+            "'" +
+            "}"
+        );
     }
 }

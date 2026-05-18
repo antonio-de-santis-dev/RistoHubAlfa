@@ -180,7 +180,12 @@ export class MenuWizardComponent implements OnInit {
         descrizione: this.descrizioneMenu.trim() || null,
         attivo: true,
         ristoratore: { id: currentUser.id, login: currentUser.login },
+        // ── NUOVO: salva i campi stile scelti nel wizard ──
+        colorePrimario: this.colorePrimario,
+        coloreSecondario: this.coloreSecondario,
+        fontMenu: this.fontSelezionato,
       };
+
       if (this.logoBase64 && this.logoContentType) {
         body['logo'] = this.logoBase64;
         body['logoContentType'] = this.logoContentType;
@@ -189,29 +194,16 @@ export class MenuWizardComponent implements OnInit {
       const menu = await firstValueFrom(this.http.post<MenuCreato>('/api/menus', body));
 
       const richiesteDefault = Array.from(this.portateSelezionate).map(p =>
-        firstValueFrom(
-          this.http.post('/api/portatas', {
-            tipo: 'DEFAULT',
-            nomeDefault: p,
-            menu: { id: menu.id },
-          }),
-        ),
+        firstValueFrom(this.http.post('/api/portatas', { tipo: 'DEFAULT', nomeDefault: p, menu: { id: menu.id } })),
       );
 
       const richiesteCustom = this.portatePersonalizzate.map(n =>
-        firstValueFrom(
-          this.http.post('/api/portatas', {
-            tipo: 'PERSONALIZZATA',
-            nomePersonalizzato: n,
-            menu: { id: menu.id },
-          }),
-        ),
+        firstValueFrom(this.http.post('/api/portatas', { tipo: 'PERSONALIZZATA', nomePersonalizzato: n, menu: { id: menu.id } })),
       );
 
       await Promise.all([...richiesteDefault, ...richiesteCustom]);
 
-      // FIX: dopo la creazione del menu torna alla home invece di restare su menu-view
-      this.router.navigate(['/']);
+      this.router.navigate(['/menu-view', menu.id]);
     } catch (err) {
       console.error('Errore creazione menu:', err);
       this.erroreCreazione = 'Errore durante la creazione del menu. Riprova.';

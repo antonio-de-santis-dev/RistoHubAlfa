@@ -8,10 +8,10 @@ import java.util.Objects;
 
 /**
  * A DTO for the {@link main.domain.Menu} entity.
+ * Include i campi stile (colorePrimario, coloreSecondario, fontMenu)
+ * impostati dal menu-wizard e menu-wizard-edit.
  */
-@Schema(
-    description = "Menu digitale del ristorante.\nUnico stile visivo: classico a tendina (accordion Bootstrap).\nNessuna scelta di template, colori o font."
-)
+@Schema(description = "Menu digitale del ristorante con stile visivo configurabile.")
 @SuppressWarnings("common-java:DuplicatedBlocks")
 public class MenuDTO implements Serializable {
 
@@ -31,6 +31,15 @@ public class MenuDTO implements Serializable {
     private String logoContentType;
 
     private String logoNome;
+
+    /** Colore principale hex (es. #C8102E) */
+    private String colorePrimario;
+
+    /** Colore secondario hex (es. #F5E6C8) */
+    private String coloreSecondario;
+
+    /** Nome font Google Fonts (es. "Playfair Display") */
+    private String fontMenu;
 
     private ListaContattiDTO contatti;
 
@@ -93,6 +102,30 @@ public class MenuDTO implements Serializable {
         this.logoNome = logoNome;
     }
 
+    public String getColorePrimario() {
+        return colorePrimario;
+    }
+
+    public void setColorePrimario(String colorePrimario) {
+        this.colorePrimario = colorePrimario;
+    }
+
+    public String getColoreSecondario() {
+        return coloreSecondario;
+    }
+
+    public void setColoreSecondario(String coloreSecondario) {
+        this.coloreSecondario = coloreSecondario;
+    }
+
+    public String getFontMenu() {
+        return fontMenu;
+    }
+
+    public void setFontMenu(String fontMenu) {
+        this.fontMenu = fontMenu;
+    }
+
     public ListaContattiDTO getContatti() {
         return contatti;
     }
@@ -111,17 +144,10 @@ public class MenuDTO implements Serializable {
 
     @Override
     public boolean equals(Object o) {
-        if (this == o) {
-            return true;
-        }
-        if (!(o instanceof MenuDTO)) {
-            return false;
-        }
-
+        if (this == o) return true;
+        if (!(o instanceof MenuDTO)) return false;
         MenuDTO menuDTO = (MenuDTO) o;
-        if (this.id == null) {
-            return false;
-        }
+        if (this.id == null) return false;
         return Objects.equals(this.id, menuDTO.id);
     }
 
@@ -130,18 +156,32 @@ public class MenuDTO implements Serializable {
         return Objects.hash(this.id);
     }
 
-    // prettier-ignore
     @Override
     public String toString() {
-        return "MenuDTO{" +
-            "id=" + getId() +
-            ", nome='" + getNome() + "'" +
-            ", descrizione='" + getDescrizione() + "'" +
-            ", attivo='" + getAttivo() + "'" +
-            ", logo='" + getLogo() + "'" +
-            ", logoNome='" + getLogoNome() + "'" +
-            ", contatti=" + getContatti() +
-            ", ristoratore=" + getRistoratore() +
-            "}";
+        return (
+            "MenuDTO{" +
+            "id=" +
+            getId() +
+            ", nome='" +
+            getNome() +
+            "'" +
+            ", attivo='" +
+            getAttivo() +
+            "'" +
+            ", colorePrimario='" +
+            getColorePrimario() +
+            "'" +
+            ", coloreSecondario='" +
+            getColoreSecondario() +
+            "'" +
+            ", fontMenu='" +
+            getFontMenu() +
+            "'" +
+            ", contatti=" +
+            getContatti() +
+            ", ristoratore=" +
+            getRistoratore() +
+            "}"
+        );
     }
 }

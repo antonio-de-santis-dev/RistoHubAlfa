@@ -1,6 +1,5 @@
 // PERCORSO: src/main/webapp/app/menu-view/menu-view.component.ts
-// Visualizzazione menu in stile CLASSICO (accordion a tendina) per il ristoratore.
-// Permette di vedere, modificare ed eliminare prodotti.
+// Visualizzazione menu in stile CLASSICO con colori e font dal wizard.
 
 import { Component, OnInit, ChangeDetectionStrategy, ChangeDetectorRef } from '@angular/core';
 import { ActivatedRoute, Router, RouterModule } from '@angular/router';
@@ -10,8 +9,6 @@ import { FormsModule } from '@angular/forms';
 import { DomSanitizer, SafeUrl } from '@angular/platform-browser';
 import { firstValueFrom } from 'rxjs';
 
-// ── Interfacce locali (allineate agli endpoint JHipster di Alfa) ──
-
 export interface MenuView {
   id: number;
   nome?: string | null;
@@ -19,6 +16,10 @@ export interface MenuView {
   attivo?: boolean | null;
   logo?: string | null;
   logoContentType?: string | null;
+  // ── NUOVO: campi stile dal wizard ──
+  colorePrimario?: string | null;
+  coloreSecondario?: string | null;
+  fontMenu?: string | null;
 }
 
 export interface AllergeneView {
@@ -47,7 +48,6 @@ export interface PortataView {
   nomePersonalizzato?: string | null;
   ordine?: number | null;
   menu?: { id: number } | null;
-  // proprietà locali di UI
   prodotti?: ProdottoView[];
   aperta?: boolean;
 }
@@ -62,7 +62,6 @@ export interface PiattoDelGiornoView {
   allergenis?: AllergeneView[] | null;
 }
 
-// Mappa nomi portate default → italiano
 const NOMI_IT: Record<string, string> = {
   ANTIPASTO: '🥗 Antipasto',
   PRIMO: '🍝 Primo',
@@ -90,6 +89,11 @@ const ORDINE_PORTATE: Record<string, number> = {
   DOLCE: 10,
   DIGESTIVO: 11,
 };
+
+// Colori e font di default se il menu non ne ha (menu creati prima del wizard)
+const DEFAULT_COLORE_PRIMARIO = '#C8102E';
+const DEFAULT_COLORE_SECONDARIO = '#F5E6C8';
+const DEFAULT_FONT = 'Playfair Display';
 
 @Component({
   selector: 'jhi-menu-view',
@@ -130,6 +134,9 @@ export class MenuViewComponent implements OnInit {
   toastTipo: 'success' | 'error' = 'success';
   private toastTimer: ReturnType<typeof setTimeout> | null = null;
 
+  // ── QR ────────────────────────────────────────────────────────
+  qrVisible = false;
+
   constructor(
     private route: ActivatedRoute,
     private router: Router,
@@ -148,11 +155,24 @@ export class MenuViewComponent implements OnInit {
     this.caricaDati(id);
   }
 
+  // ── Getter stile dinamico (usati nel template) ─────────────────
+
+  get colorePrimario(): string {
+    return this.menu?.colorePrimario || DEFAULT_COLORE_PRIMARIO;
+  }
+
+  get coloreSecondario(): string {
+    return this.menu?.coloreSecondario || DEFAULT_COLORE_SECONDARIO;
+  }
+
+  get fontMenu(): string {
+    return this.menu?.fontMenu || DEFAULT_FONT;
+  }
+
   // ── Caricamento dati ──────────────────────────────────────────
 
   async caricaDati(id: string): Promise<void> {
     try {
-      // Carica menu, portate, allergeni e piatti del giorno in parallelo
       const [menu, portateRaw, allergeni, piattiRaw] = await Promise.all([
         firstValueFrom(this.http.get<MenuView>(`/api/menus/${id}`)),
         firstValueFrom(this.http.get<PortataView[]>(`/api/portatas?menuId.equals=${id}&size=100`)),
@@ -163,6 +183,13 @@ export class MenuViewComponent implements OnInit {
       this.menu = menu;
       this.allergeniDisponibili = allergeni ?? [];
       this.piattiDelGiorno = piattiRaw ?? [];
+
+      // ── Font personalizzato dal wizard ──
+      const fontName = this.fontMenu.replace(/ /g, '+');
+      const link = document.createElement('link');
+      link.rel = 'stylesheet';
+      link.href = `https://fonts.googleapis.com/css2?family=${fontName}:wght@400;700&display=swap`;
+      document.head.appendChild(link);
 
       // Logo
       if (menu?.logo && menu?.logoContentType) {
@@ -188,13 +215,10 @@ export class MenuViewComponent implements OnInit {
     }
   }
 
-  // ── Ordinamento portate ───────────────────────────────────────
-
   private ordinaPortate(portate: PortataView[]): PortataView[] {
     return [...portate].sort((a, b) => {
-      if (a.tipo === 'DEFAULT' && b.tipo === 'DEFAULT') {
+      if (a.tipo === 'DEFAULT' && b.tipo === 'DEFAULT')
         return (ORDINE_PORTATE[a.nomeDefault ?? ''] ?? 99) - (ORDINE_PORTATE[b.nomeDefault ?? ''] ?? 99);
-      }
       if (a.tipo === 'DEFAULT') return -1;
       if (b.tipo === 'DEFAULT') return 1;
       return (a.ordine ?? 99) - (b.ordine ?? 99);
@@ -213,7 +237,6 @@ export class MenuViewComponent implements OnInit {
     return `€ ${p.toFixed(2).replace('.', ',')}`;
   }
 
-  // Allergene: SVG incorporato o colore
   getAllergeneIconPath(a: AllergeneView): string | null {
     if (a.nomeDefault && a.nomeDefault !== 'PERSONALIZZATO') {
       return `/content/images/allergeni/${a.nomeDefault.toLowerCase()}.svg`;
@@ -223,11 +246,11 @@ export class MenuViewComponent implements OnInit {
 
   get tuttiAllergeniMenu(): AllergeneView[] {
     const map = new Map<number, AllergeneView>();
-    this.portate.forEach(portata => (portata.prodotti ?? []).forEach(prod => (prod.allergenis ?? []).forEach(a => map.set(a.id, a))));
+    this.portate.forEach(p => (p.prodotti ?? []).forEach(prod => (prod.allergenis ?? []).forEach(a => map.set(a.id, a))));
     return Array.from(map.values());
   }
 
-  // ── Toggle portata accordion ──────────────────────────────────
+  // ── Toggle accordion ──────────────────────────────────────────
 
   togglePortata(portata: PortataView): void {
     portata.aperta = !portata.aperta;
@@ -244,18 +267,18 @@ export class MenuViewComponent implements OnInit {
     this.cdr.markForCheck();
   }
 
-  // ── Visibilità prodotto (toggle rapido) ───────────────────────
+  // ── Visibilità prodotto ───────────────────────────────────────
 
-  async toggleVisibile(prodotto: ProdottoView, portata: PortataView): Promise<void> {
+  async toggleVisibile(prodotto: ProdottoView, _portata: PortataView): Promise<void> {
     const nuovoStato = !prodotto.visibile;
     const vecchio = prodotto.visibile;
-    prodotto.visibile = nuovoStato; // ottimistico
+    prodotto.visibile = nuovoStato;
     this.cdr.markForCheck();
     try {
       await firstValueFrom(this.http.patch(`/api/prodottos/${prodotto.id}`, { id: prodotto.id, visibile: nuovoStato }));
       this.mostraToast(nuovoStato ? '✅ Prodotto reso visibile' : '🔒 Prodotto nascosto', 'success');
     } catch {
-      prodotto.visibile = vecchio; // rollback
+      prodotto.visibile = vecchio;
       this.cdr.markForCheck();
       this.mostraToast('❌ Errore aggiornamento visibilità', 'error');
     }
@@ -300,7 +323,6 @@ export class MenuViewComponent implements OnInit {
 
     this.isSavingEdit = true;
     this.editErrore = null;
-
     try {
       const allergenis = Array.from(this.editAllergeniSelezionati).map(id => ({ id }));
       const body = {
@@ -313,18 +335,13 @@ export class MenuViewComponent implements OnInit {
         allergenis,
       };
       const aggiornato = await firstValueFrom(this.http.put<ProdottoView>(`/api/prodottos/${this.prodottoInModifica.id}`, body));
-
-      // Arricchisce con gli oggetti allergeni completi
       aggiornato.allergenis = allergenis
         .map(a => this.allergeniDisponibili.find(al => al.id === a.id))
         .filter((a): a is AllergeneView => !!a);
-
-      // Aggiorna la lista prodotti nella portata corretta
       this.portate = this.portate.map(portata => ({
         ...portata,
         prodotti: (portata.prodotti ?? []).map(p => (p.id === aggiornato.id ? { ...aggiornato } : p)),
       }));
-
       this.chiudiModifica();
       this.mostraToast('✅ Prodotto aggiornato', 'success');
     } catch (err) {
@@ -379,6 +396,23 @@ export class MenuViewComponent implements OnInit {
     this.router.navigate(['/prodotto/new'], { queryParams: { portataId } });
   }
 
+  // ── QR ────────────────────────────────────────────────────────
+
+  get qrUrl(): string {
+    return `${window.location.origin}/menu-public/${this.menu?.id}`;
+  }
+  get qrImageUrl(): string {
+    return `https://api.qrserver.com/v1/create-qr-code/?size=220x220&data=${encodeURIComponent(this.qrUrl)}`;
+  }
+  mostraQr(): void {
+    this.qrVisible = true;
+    this.cdr.markForCheck();
+  }
+  chiudiQr(): void {
+    this.qrVisible = false;
+    this.cdr.markForCheck();
+  }
+
   // ── Toast ─────────────────────────────────────────────────────
 
   private mostraToast(msg: string, tipo: 'success' | 'error'): void {
@@ -390,23 +424,5 @@ export class MenuViewComponent implements OnInit {
       this.toastMsg = null;
       this.cdr.markForCheck();
     }, 3200);
-  }
-
-  get qrUrl(): string {
-    return `${window.location.origin}/menu-public/${this.menu?.id}`;
-  }
-
-  get qrImageUrl(): string {
-    return `https://api.qrserver.com/v1/create-qr-code/?size=220x220&data=${encodeURIComponent(this.qrUrl)}`;
-  }
-
-  qrVisible = false;
-  mostraQr(): void {
-    this.qrVisible = true;
-    this.cdr.markForCheck();
-  }
-  chiudiQr(): void {
-    this.qrVisible = false;
-    this.cdr.markForCheck();
   }
 }

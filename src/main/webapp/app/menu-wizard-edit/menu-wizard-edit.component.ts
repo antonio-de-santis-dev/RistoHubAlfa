@@ -1,6 +1,4 @@
 // PERCORSO: src/main/webapp/app/menu-wizard-edit/menu-wizard-edit.component.ts
-// Wizard modifica menu — portato da RistoHub (riferimento) a RistoHubAlfa.
-// DIFFERENZA: rimosso Step 1 (scelta template). Steps: 1=Colori, 2=Logo, 3=Font, 4=Portate.
 
 import { Component, OnInit } from '@angular/core';
 import { ActivatedRoute, Router, RouterModule } from '@angular/router';
@@ -73,7 +71,6 @@ export class MenuWizardEditComponent implements OnInit {
   ) {}
 
   ngOnInit(): void {
-    // Carica Google Fonts per i font del wizard
     const link = document.createElement('link');
     link.rel = 'stylesheet';
     link.href =
@@ -92,7 +89,12 @@ export class MenuWizardEditComponent implements OnInit {
       this.nomeMenu = menu.nome ?? '';
       this.descrizioneMenu = menu.descrizione ?? '';
 
-      // Logo esistente (da campo blob diretto sul menu)
+      // ── NUOVO: pre-carica colori e font salvati nel DB ──
+      if (menu.colorePrimario) this.colorePrimario = menu.colorePrimario;
+      if (menu.coloreSecondario) this.coloreSecondario = menu.coloreSecondario;
+      if (menu.fontMenu) this.fontSelezionato = menu.fontMenu;
+
+      // Logo esistente
       if (menu.logo && menu.logoContentType) {
         this.logoEsistenteUrl = `data:${menu.logoContentType};base64,${menu.logo}`;
         this.logoPreview = this.logoEsistenteUrl;
@@ -123,7 +125,6 @@ export class MenuWizardEditComponent implements OnInit {
   stepSuccessivo(): void {
     if (this.validaStep()) this.currentStep++;
   }
-
   stepPrecedente(): void {
     if (this.currentStep > 1) this.currentStep--;
   }
@@ -159,11 +160,8 @@ export class MenuWizardEditComponent implements OnInit {
   }
 
   togglePortata(p: string): void {
-    if (this.portateSelezionate.has(p)) {
-      this.portateSelezionate.delete(p);
-    } else {
-      this.portateSelezionate.add(p);
-    }
+    if (this.portateSelezionate.has(p)) this.portateSelezionate.delete(p);
+    else this.portateSelezionate.add(p);
   }
 
   aggiungiPortataCustom(): void {
@@ -203,15 +201,19 @@ export class MenuWizardEditComponent implements OnInit {
     if (!this.validaStep() || !this.menuId) return;
     this.isLoading = true;
     try {
-      // 1. Aggiorna il menu via PATCH
+      // 1. Aggiorna menu con tutti i campi stile
       const menuPayload = {
         id: Number(this.menuId),
         nome: this.nomeMenu,
         descrizione: this.descrizioneMenu,
+        // ── NUOVO: salva colori e font ──
+        colorePrimario: this.colorePrimario,
+        coloreSecondario: this.coloreSecondario,
+        fontMenu: this.fontSelezionato,
       };
       await firstValueFrom(this.http.patch(`/api/menus/${this.menuId}`, menuPayload));
 
-      // 2. Upload logo se l'utente ne ha selezionato uno nuovo
+      // 2. Upload logo se selezionato un file nuovo
       if (this.logoFile) {
         const formData = new FormData();
         formData.append('file', this.logoFile);
@@ -220,13 +222,11 @@ export class MenuWizardEditComponent implements OnInit {
 
       // 3. Sincronizza portate DEFAULT
       const portateAttualiDefault = this.portateEsistentiIds.filter(p => p.tipo === TipoPortata.DEFAULT);
-      // Rimuovi portate deselezionate
       for (const p of portateAttualiDefault) {
         if (!this.portateSelezionate.has(p.nomeDefault ?? '')) {
           await firstValueFrom(this.http.delete(`/api/portatas/${p.id}`));
         }
       }
-      // Aggiungi nuove portate selezionate
       const portateGiaPresenti = new Set(portateAttualiDefault.map(p => p.nomeDefault));
       let ordine = portateAttualiDefault.length + 1;
       for (const nomeDefault of this.portateSelezionate) {
@@ -259,8 +259,7 @@ export class MenuWizardEditComponent implements OnInit {
         }
       }
 
-      // Torna alla home dopo il salvataggio
-      this.router.navigate(['/home']);
+      this.router.navigate(['/menu-view', this.menuId]);
     } catch (err) {
       console.error('Errore durante il salvataggio:', err);
     } finally {
