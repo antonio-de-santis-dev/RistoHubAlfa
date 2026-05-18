@@ -40,13 +40,6 @@
                 <fa-icon class="p-1" icon="sort"></fa-icon>
               </div>
             </th>
-            <th scope="col" jhiSortBy="data">
-              <div class="d-flex">
-                <span jhiTranslate="ristoHubApp.piattoDelGiorno.data">Data</span>
-
-                <fa-icon class="p-1" icon="sort"></fa-icon>
-              </div>
-            </th>
             <th scope="col" jhiSortBy="attivo">
               <div class="d-flex">
                 <span jhiTranslate="ristoHubApp.piattoDelGiorno.attivo">Attivo</span>
@@ -90,7 +83,6 @@
               <td>
                 <a [routerLink]="['/piatto-del-giorno', piattoDelGiorno.id, 'view']">{{ piattoDelGiorno.id }}</a>
               </td>
-              <td>{{ piattoDelGiorno.data | formatMediumDate }}</td>
               <td>{{ piattoDelGiorno.attivo }}</td>
               <td>{{ piattoDelGiorno.nome }}</td>
               <td>{{ piattoDelGiorno.descrizione }}</td>

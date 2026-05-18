@@ -9,6 +9,8 @@ export interface IMenu {
   logo?: string | null;
   logoContentType?: string | null;
   logoNome?: string | null;
+  /** Stile template del menu (CLASSICO, MODERNO, RUSTICO) */
+  templateStyle?: string | null;
   /** Colore principale hex — impostato dal wizard (es. #C8102E) */
   colorePrimario?: string | null;
   /** Colore secondario hex — impostato dal wizard (es. #F5E6C8) */

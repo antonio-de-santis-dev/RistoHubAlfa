@@ -5,6 +5,7 @@ import { NomeAllergeneDefault } from 'app/entities/enumerations/nome-allergene-d
 export interface IAllergene {
   id: number;
   nome?: string | null;
+  simbolo?: string | null;
   tipo?: keyof typeof TipoAllergene | null;
   nomeDefault?: keyof typeof NomeAllergeneDefault | null;
   prodottis?: Pick<IProdotto, 'id'>[] | null;

@@ -42,6 +42,10 @@ export default class UserManagementComponent implements OnInit {
     this.userService.update({ ...user, activated: isActivated }).subscribe(() => this.loadAll());
   }
 
+  approveUser(user: User): void {
+    this.userService.update({ ...user, activated: true }).subscribe(() => this.loadAll());
+  }
+
   trackIdentity(item: User): number {
     return item.id!;
   }
@@ -49,7 +53,6 @@ export default class UserManagementComponent implements OnInit {
   deleteUser(user: User): void {
     const modalRef = this.modalService.open(UserManagementDeleteDialogComponent, { size: 'lg', backdrop: 'static' });
     modalRef.componentInstance.user = user;
-    // unsubscribe not needed because closed completes on modal close
     modalRef.closed.subscribe(reason => {
       if (reason === 'deleted') {
         this.loadAll();

@@ -197,8 +197,8 @@
           >
             <span
               class="cl-contact-icon"
-              *ngIf="item.tipo === 'SOCIAL' && item.reteSociale !== 'ALTRO' && getSocialIconSvg(item.reteSociale)"
-              [innerHTML]="getSafeSocialSvg(item.reteSociale)"
+              *ngIf="item.tipo === 'SOCIAL' && item.reteSociale !== 'ALTRO' && getSocialIconSvg(item.reteSociale!)"
+              [innerHTML]="getSafeSocialSvg(item.reteSociale!)"
               [style.color]="coloreSecondario"
             ></span>
             <span class="cl-contact-icon" *ngIf="item.tipo === 'TELEFONO'">
@@ -243,7 +243,7 @@
             </span>
             <span
               class="cl-contact-icon"
-              *ngIf="item.tipo === 'SOCIAL' && (item.reteSociale === 'ALTRO' || !getSocialIconSvg(item.reteSociale))"
+              *ngIf="item.tipo === 'SOCIAL' && (item.reteSociale === 'ALTRO' || !getSocialIconSvg(item.reteSociale!))"
             >
               <svg
                 viewBox="0 0 24 24"
@@ -541,8 +541,8 @@
           >
             <span
               class="contatto-icona"
-              *ngIf="item.tipo === 'SOCIAL' && item.reteSociale !== 'ALTRO' && getSocialIconSvg(item.reteSociale)"
-              [innerHTML]="getSafeSocialSvg(item.reteSociale)"
+              *ngIf="item.tipo === 'SOCIAL' && item.reteSociale !== 'ALTRO' && getSocialIconSvg(item.reteSociale!)"
+              [innerHTML]="getSafeSocialSvg(item.reteSociale!)"
               [style.color]="coloreSecondario"
             ></span>
             <span class="contatto-icona" *ngIf="item.tipo === 'TELEFONO'">
@@ -566,7 +566,7 @@
             </span>
             <span
               class="contatto-icona"
-              *ngIf="item.tipo === 'SOCIAL' && (item.reteSociale === 'ALTRO' || !getSocialIconSvg(item.reteSociale))"
+              *ngIf="item.tipo === 'SOCIAL' && (item.reteSociale === 'ALTRO' || !getSocialIconSvg(item.reteSociale!))"
             >
               <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
                 <circle cx="18" cy="5" r="3" />
@@ -920,8 +920,8 @@
           >
             <span
               class="contatto-icona"
-              *ngIf="item.tipo === 'SOCIAL' && item.reteSociale !== 'ALTRO' && getSocialIconSvg(item.reteSociale)"
-              [innerHTML]="getSafeSocialSvg(item.reteSociale)"
+              *ngIf="item.tipo === 'SOCIAL' && item.reteSociale !== 'ALTRO' && getSocialIconSvg(item.reteSociale!)"
+              [innerHTML]="getSafeSocialSvg(item.reteSociale!)"
               [style.color]="coloreSecondario"
             ></span>
             <span class="contatto-icona" *ngIf="item.tipo === 'TELEFONO'" [style.color]="coloreSecondario">
@@ -945,7 +945,7 @@
             </span>
             <span
               class="contatto-icona"
-              *ngIf="item.tipo === 'SOCIAL' && (item.reteSociale === 'ALTRO' || !getSocialIconSvg(item.reteSociale))"
+              *ngIf="item.tipo === 'SOCIAL' && (item.reteSociale === 'ALTRO' || !getSocialIconSvg(item.reteSociale!))"
               [style.color]="coloreSecondario"
             >
               <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">

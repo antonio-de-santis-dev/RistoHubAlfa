@@ -72,7 +72,7 @@
               <td>{{ allergene.nome }}</td>
               <td>{{ allergene.simbolo }}</td>
               <td>
-                @for (prodotto of allergene.prodottos; track $index; let last = $last) {
+                @for (prodotto of allergene.prodottis; track $index; let last = $last) {
                   <span>
                     <a class="form-control-static" [routerLink]="['/prodotto', prodotto.id, 'view']">{{ prodotto.id }}</a
                     >{{ last ? '' : ', ' }}

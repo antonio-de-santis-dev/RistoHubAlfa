@@ -25,7 +25,7 @@
           </dd>
           <dt><span jhiTranslate="ristoHubApp.allergene.prodotto">Prodotto</span></dt>
           <dd>
-            @for (prodotto of allergeneRef.prodottos; track $index; let last = $last) {
+            @for (prodotto of allergeneRef.prodottis; track $index; let last = $last) {
               <span>
                 <a [routerLink]="['/prodotto', prodotto.id, 'view']">{{ prodotto?.id }}</a
                 >{{ last ? '' : ', ' }}

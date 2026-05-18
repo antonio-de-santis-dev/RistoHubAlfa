@@ -341,7 +341,7 @@
         <p class="cl-contatti-lista-nome" *ngIf="listeContatti.length > 1" [style.color]="coloreSecondario">{{ lista.nome }}</p>
         <div class="cl-contatti-items">
           <a
-            *ngFor="let item of lista.items"
+            *ngFor="let item of lista.contatti"
             [attr.href]="getContattoLink(item)"
             [attr.target]="item.tipo === 'SOCIAL' || item.tipo === 'INDIRIZZO' ? '_blank' : null"
             [attr.rel]="item.tipo === 'SOCIAL' || item.tipo === 'INDIRIZZO' ? 'noopener noreferrer' : null"
@@ -617,7 +617,7 @@
       <button class="moderno-back-btn" [style.color]="colorePrimario" (click)="modernoTornaHome()">{{ getUI('TORNA_HOME') }}</button>
       <div class="moderno-lista-header" [style.borderBottomColor]="colorePrimario">
         <span class="moderno-lista-nome" [style.color]="colorePrimario" [style.fontFamily]="fontTesto">{{ nomePortata(portata) }}</span>
-        <span class="moderno-lista-count">{{ portata.prodotti.length }} {{ getUI('PIATTI_PAROLA') }}</span>
+        <span class="moderno-lista-count">{{ (portata.prodotti || []).length }} {{ getUI('PIATTI_PAROLA') }}</span>
       </div>
       <div class="moderno-prodotti">
         <div *ngIf="portata.prodotti && portata.prodotti.length === 0" class="moderno-empty">
@@ -729,7 +729,7 @@
               class="allergene-footer-icona"
               style="width: 100%; height: 100%; object-fit: contain"
             />
-            <span *ngIf="!getAllergeneIcona(a)" class="allergene-footer-iniziale">{{ a.nome.charAt(0) }}</span>
+            <span *ngIf="!getAllergeneIcona(a)" class="allergene-footer-iniziale">{{ (a.nome || '').charAt(0) }}</span>
           </div>
           <span class="allergene-footer-nome">{{ a.nome }}</span>
         </div>
@@ -764,7 +764,7 @@
         <p class="contatti-lista-nome" *ngIf="listeContatti.length > 1">{{ lista.nome }}</p>
         <div class="contatti-items">
           <a
-            *ngFor="let item of lista.items"
+            *ngFor="let item of lista.contatti"
             [attr.href]="getContattoLink(item)"
             [attr.target]="item.tipo === 'SOCIAL' || item.tipo === 'INDIRIZZO' ? '_blank' : null"
             [attr.rel]="item.tipo === 'SOCIAL' || item.tipo === 'INDIRIZZO' ? 'noopener noreferrer' : null"
@@ -1074,12 +1074,12 @@
               nomePortata(rusticoPortataAttiva)
             }}</span>
             <span class="rustico-lista-count" [style.color]="colorePrimario + '88'"
-              >{{ rusticoPortataAttiva.prodotti.length }} {{ getUI('PIATTI_PAROLA') }}</span
+              >{{ (rusticoPortataAttiva?.prodotti || []).length }} {{ getUI('PIATTI_PAROLA') }}</span
             >
           </div>
           <div class="rustico-scroll-area">
             <div class="rustico-prodotti">
-              <div *ngIf="rusticoPortataAttiva.prodotti && rusticoPortataAttiva.prodotti.length === 0" class="rustico-empty">
+              <div *ngIf="rusticoPortataAttiva.prodotti && (rusticoPortataAttiva?.prodotti || []).length === 0" class="rustico-empty">
                 <p>{{ getUI('NESSUN_PIATTO') }}</p>
               </div>
               <div
@@ -1208,7 +1208,7 @@
             style="width: 100%; height: 100%; object-fit: contain"
           />
           <span *ngIf="!getAllergeneIcona(a)" class="allergene-footer-iniziale" [style.color]="coloreSecondario">{{
-            a.nome.charAt(0)
+            (a.nome || '').charAt(0)
           }}</span>
         </div>
         <span class="allergene-footer-nome" [style.color]="colorePrimario + 'CC'">{{ a.nome }}</span>
@@ -1240,7 +1240,7 @@
         <p class="contatti-lista-nome" *ngIf="listeContatti.length > 1" [style.color]="coloreSecondario">{{ lista.nome }}</p>
         <div class="contatti-items">
           <a
-            *ngFor="let item of lista.items"
+            *ngFor="let item of lista.contatti"
             [attr.href]="getContattoLink(item)"
             [attr.target]="item.tipo === 'SOCIAL' || item.tipo === 'INDIRIZZO' ? '_blank' : null"
             class="contatto-item"

@@ -17,6 +17,7 @@ const initialAccount: Account = {} as Account;
 export default class SettingsComponent implements OnInit {
   success = signal(false);
   languages = LANGUAGES;
+  account = signal<import('app/core/auth/account.model').Account | null>(null);
 
   settingsForm = new FormGroup({
     firstName: new FormControl(initialAccount.firstName, {
@@ -45,6 +46,7 @@ export default class SettingsComponent implements OnInit {
   ngOnInit(): void {
     this.accountService.identity().subscribe(account => {
       if (account) {
+        this.account.set(account);
         this.settingsForm.patchValue(account);
       }
     });

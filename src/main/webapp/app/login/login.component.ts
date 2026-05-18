@@ -1,6 +1,7 @@
 import { AfterViewInit, Component, ElementRef, OnInit, inject, signal, viewChild } from '@angular/core';
 import { FormControl, FormGroup, FormsModule, ReactiveFormsModule, Validators } from '@angular/forms';
 import { Router, RouterModule } from '@angular/router';
+import { HttpClient } from '@angular/common/http';
 
 import SharedModule from 'app/shared/shared.module';
 import { LoginService } from 'app/login/login.service';
@@ -15,6 +16,8 @@ export default class LoginComponent implements OnInit, AfterViewInit {
   username = viewChild.required<ElementRef>('username');
 
   authenticationError = signal(false);
+  mostraModalRecupero = signal(false);
+  recuperoSuccess = signal(false);
 
   loginForm = new FormGroup({
     username: new FormControl('', { nonNullable: true, validators: [Validators.required] }),
@@ -22,12 +25,19 @@ export default class LoginComponent implements OnInit, AfterViewInit {
     rememberMe: new FormControl(false, { nonNullable: true, validators: [Validators.required] }),
   });
 
+  resetRequestForm = new FormGroup({
+    email: new FormControl('', {
+      nonNullable: true,
+      validators: [Validators.required, Validators.email, Validators.minLength(5), Validators.maxLength(254)],
+    }),
+  });
+
   private readonly accountService = inject(AccountService);
   private readonly loginService = inject(LoginService);
   private readonly router = inject(Router);
+  private readonly http = inject(HttpClient);
 
   ngOnInit(): void {
-    // if already authenticated then navigate to home page
     this.accountService.identity().subscribe(() => {
       if (this.accountService.isAuthenticated()) {
         this.router.navigate(['']);
@@ -44,11 +54,39 @@ export default class LoginComponent implements OnInit, AfterViewInit {
       next: () => {
         this.authenticationError.set(false);
         if (!this.router.getCurrentNavigation()) {
-          // There were no routing during login (eg from navigationToStoredUrl)
           this.router.navigate(['']);
         }
       },
       error: () => this.authenticationError.set(true),
+    });
+  }
+
+  apriRecuperoPassword(): void {
+    this.mostraModalRecupero.set(true);
+    this.recuperoSuccess.set(false);
+    this.resetRequestForm.reset();
+  }
+
+  chiudiRecuperoPassword(): void {
+    this.mostraModalRecupero.set(false);
+    this.recuperoSuccess.set(false);
+  }
+
+  chiudiSuOverlay(event: MouseEvent): void {
+    if ((event.target as HTMLElement).classList.contains('modal-overlay')) {
+      this.chiudiRecuperoPassword();
+    }
+  }
+
+  requestReset(): void {
+    const email = this.resetRequestForm.get('email')!.value;
+    this.http.post('api/account/reset-password/init', email, { responseType: 'text' }).subscribe({
+      next: () => {
+        this.recuperoSuccess.set(true);
+      },
+      error: () => {
+        this.recuperoSuccess.set(true);
+      },
     });
   }
 }

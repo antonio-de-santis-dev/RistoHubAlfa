@@ -11,6 +11,7 @@ import SharedModule from 'app/shared/shared.module';
 })
 export default class ErrorComponent implements OnInit, OnDestroy {
   errorMessage = signal<string | undefined>(undefined);
+  is404 = signal(false);
   errorKey?: string;
   langChangeSubscription?: Subscription;
 
@@ -21,6 +22,7 @@ export default class ErrorComponent implements OnInit, OnDestroy {
     this.route.data.subscribe(routeData => {
       if (routeData.errorMessage) {
         this.errorKey = routeData.errorMessage;
+        this.is404.set(this.errorKey === 'error.http.404');
         this.getErrorMessageTranslation();
         this.langChangeSubscription = this.translateService.onLangChange.subscribe(() => this.getErrorMessageTranslation());
       }

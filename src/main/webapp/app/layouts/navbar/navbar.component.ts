@@ -1,7 +1,7 @@
 // PERCORSO: src/main/webapp/app/layouts/navbar/navbar.component.ts
 // Navbar a drawer laterale — portata dal vecchio RistoHub al nuovo RistoHubAlfa
 
-import { Component, OnInit, inject, signal, HostListener } from '@angular/core';
+import { Component, OnInit, inject, signal, HostListener, CUSTOM_ELEMENTS_SCHEMA } from '@angular/core';
 import { Router, RouterLink, RouterLinkActive, RouterModule } from '@angular/router';
 import { TranslateService } from '@ngx-translate/core';
 
@@ -20,19 +20,13 @@ import NavbarItem from './navbar-item.model';
   selector: 'jhi-navbar',
   templateUrl: './navbar.component.html',
   styleUrl: './navbar.component.scss',
-  // FIX: RouterLink e RouterLinkActive aggiunti esplicitamente.
-  // In Angular 17+ i componenti standalone devono importare ogni direttiva
-  // singolarmente; RouterModule da solo non è sufficiente per far riconoscere
-  // [routerLinkActiveOptions] come proprietà nota di <a routerLinkActive>.
+  schemas: [CUSTOM_ELEMENTS_SCHEMA],
   imports: [RouterLink, RouterLinkActive, RouterModule, SharedModule, HasAnyAuthorityDirective],
 })
 export default class NavbarComponent implements OnInit {
   inProduction?: boolean;
-  // isNavbarCollapsed kept for compatibility — not used in drawer mode
   isNavbarCollapsed = signal(true);
-  // Stato del drawer laterale
   isSidebarOpen = signal(false);
-  // Sotto-menu espansi nel drawer
   adminExpanded = signal(false);
   gestioneExpanded = signal(false);
 
@@ -63,7 +57,6 @@ export default class NavbarComponent implements OnInit {
     });
   }
 
-  // Chiude sidebar se si preme ESC
   @HostListener('document:keydown.escape')
   onEscape(): void {
     this.closeSidebar();
@@ -110,5 +103,10 @@ export default class NavbarComponent implements OnInit {
 
   toggleNavbar(): void {
     this.toggleSidebar();
+  }
+
+  riavviaTutorial(): void {
+    // Stub: tutorial non ancora implementato
+    console.log('Tutorial riavviato');
   }
 }
