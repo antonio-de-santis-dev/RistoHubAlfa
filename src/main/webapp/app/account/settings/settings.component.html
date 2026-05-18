@@ -2,11 +2,7 @@
   <div class="ua-bg-overlay"></div>
 
   <div class="ua-inner">
-    <!-- ══════════════════════════════════════════════
-         SEZIONE: OVERVIEW (pagina principale)
-    ══════════════════════════════════════════════ -->
     @if (activeSection() === 'overview') {
-      <!-- Hero card utente -->
       <div class="ua-hero-card">
         <div class="ua-avatar">
           <svg width="38" height="38" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.4">
@@ -52,7 +48,6 @@
         </div>
       </div>
 
-      <!-- Griglia 2 pulsanti di navigazione -->
       <div class="ua-nav-grid">
         <button class="ua-nav-card" (click)="goTo('edit')">
           <div class="ua-nav-icon ua-nav-icon-edit">
@@ -88,9 +83,6 @@
       </div>
     }
 
-    <!-- ══════════════════════════════════════════════
-         SEZIONE: MODIFICA PROFILO
-    ══════════════════════════════════════════════ -->
     @if (activeSection() === 'edit') {
       <button class="ua-back-btn" (click)="goTo('overview')">
         <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5">
@@ -244,9 +236,6 @@
       </div>
     }
 
-    <!-- ══════════════════════════════════════════════
-         SEZIONE: CAMBIA PASSWORD
-    ══════════════════════════════════════════════ -->
     @if (activeSection() === 'password') {
       <button class="ua-back-btn" (click)="goTo('overview')">
         <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5">
@@ -265,7 +254,7 @@
           </div>
           <div>
             <h2>Cambia Password</h2>
-            @if (account && account()?.login) {
+            @if (account() && account()?.login) {
               <p>
                 Account: <strong>{{ account()?.login }}</strong>
               </p>
@@ -407,5 +396,4 @@
       </div>
     }
   </div>
-  <!-- fine ua-inner -->
 </div>
