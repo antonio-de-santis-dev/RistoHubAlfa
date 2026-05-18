@@ -25,7 +25,6 @@ public class PortataDTO implements Serializable {
 
     private String nomePersonalizzato;
 
-    @NotNull
     @Min(value = 0)
     private Integer ordine;
 

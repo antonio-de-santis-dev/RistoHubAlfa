@@ -69,7 +69,7 @@ export default class HomeComponent implements OnInit, OnDestroy {
   }
 
   visualizza(menuId: number): void {
-    this.router.navigate(['/menu-public', menuId]);
+    this.router.navigate(['/menu-view', menuId]);
   }
 
   modifica(menuId: number): void {

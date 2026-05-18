@@ -129,6 +129,16 @@ export class MenuViewComponent implements OnInit {
   prodottoInEliminazione: ProdottoView | null = null;
   isDeleting = false;
 
+  // ── Aggiungi prodotto inline ──────────────────────────────────
+  portataPerAggiunta: PortataView | null = null;
+  addNome = '';
+  addDescrizione = '';
+  addPrezzo: number | null = null;
+  addVisibile = true;
+  addAllergeniSelezionati: Set<number> = new Set();
+  addErrore: string | null = null;
+  isSavingAdd = false;
+
   // ── Toast ──────────────────────────────────────────────────────
   toastMsg: string | null = null;
   toastTipo: 'success' | 'error' = 'success';
@@ -177,7 +187,7 @@ export class MenuViewComponent implements OnInit {
         firstValueFrom(this.http.get<MenuView>(`/api/menus/${id}`)),
         firstValueFrom(this.http.get<PortataView[]>(`/api/portatas?menuId.equals=${id}&size=100`)),
         firstValueFrom(this.http.get<AllergeneView[]>('/api/allergenes?size=200')),
-        firstValueFrom(this.http.get<PiattoDelGiornoView[]>(`/api/piatto-del-gionos?menuId.equals=${id}&attivo.equals=true&size=50`)),
+        firstValueFrom(this.http.get<PiattoDelGiornoView[]>(`/api/piatto-del-giornos?menuId.equals=${id}&attivo.equals=true&size=50`)),
       ]);
 
       this.menu = menu;
@@ -382,6 +392,77 @@ export class MenuViewComponent implements OnInit {
       this.mostraToast('❌ Errore eliminazione', 'error');
     } finally {
       this.isDeleting = false;
+      this.cdr.markForCheck();
+    }
+  }
+
+  // ── Aggiungi prodotto inline ──────────────────────────────────
+
+  apriAggiuntaProdotto(portata: PortataView): void {
+    this.portataPerAggiunta = portata;
+    this.addNome = '';
+    this.addDescrizione = '';
+    this.addPrezzo = null;
+    this.addVisibile = true;
+    this.addAllergeniSelezionati = new Set();
+    this.addErrore = null;
+    this.cdr.markForCheck();
+  }
+
+  chiudiAggiuntaProdotto(): void {
+    this.portataPerAggiunta = null;
+    this.addErrore = null;
+    this.cdr.markForCheck();
+  }
+
+  toggleAddAllergene(id: number): void {
+    if (this.addAllergeniSelezionati.has(id)) this.addAllergeniSelezionati.delete(id);
+    else this.addAllergeniSelezionati.add(id);
+    this.addAllergeniSelezionati = new Set(this.addAllergeniSelezionati);
+    this.cdr.markForCheck();
+  }
+
+  async salvaNuovoProdotto(): Promise<void> {
+    if (!this.portataPerAggiunta) return;
+    this.addErrore = null;
+    if (!this.addNome.trim()) {
+      this.addErrore = 'Il nome è obbligatorio.';
+      return;
+    }
+    if (!this.addPrezzo || this.addPrezzo <= 0) {
+      this.addErrore = 'Inserisci un prezzo valido.';
+      return;
+    }
+    this.isSavingAdd = true;
+    try {
+      const allergenis = Array.from(this.addAllergeniSelezionati).map(id => ({ id }));
+      const body = {
+        nome: this.addNome.trim(),
+        descrizione: this.addDescrizione.trim() || null,
+        prezzo: this.addPrezzo,
+        visibile: this.addVisibile,
+        portata: { id: this.portataPerAggiunta.id },
+        allergenis,
+      };
+      const creato = await firstValueFrom(this.http.post<ProdottoView>('/api/prodottos', body));
+      // Aggiorna lista locale
+      const prodottoConAllergeni: ProdottoView = {
+        ...creato,
+        allergenis: allergenis.map(a => this.allergeniDisponibili.find(al => al.id === a.id)).filter((a): a is AllergeneView => !!a),
+      };
+      this.portate = this.portate.map(p => {
+        if (p.id === this.portataPerAggiunta!.id) {
+          return { ...p, prodotti: [...(p.prodotti ?? []), prodottoConAllergeni] };
+        }
+        return p;
+      });
+      this.chiudiAggiuntaProdotto();
+      this.mostraToast('✅ Piatto aggiunto con successo', 'success');
+    } catch (err) {
+      console.error('Errore aggiunta prodotto:', err);
+      this.addErrore = 'Errore durante il salvataggio. Riprova.';
+    } finally {
+      this.isSavingAdd = false;
       this.cdr.markForCheck();
     }
   }

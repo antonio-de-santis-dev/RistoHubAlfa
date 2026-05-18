@@ -204,9 +204,17 @@ export class MenuWizardComponent implements OnInit {
       await Promise.all([...richiesteDefault, ...richiesteCustom]);
 
       this.router.navigate(['/menu-view', menu.id]);
-    } catch (err) {
+    } catch (err: any) {
       console.error('Errore creazione menu:', err);
-      this.erroreCreazione = 'Errore durante la creazione del menu. Riprova.';
+      if (err?.status === 403) {
+        // Il backend restituisce il messaggio del piano nel body come stringa
+        this.erroreCreazione =
+          typeof err.error === 'string' && err.error.length > 0
+            ? err.error
+            : 'Hai raggiunto il limite di menu per il tuo piano. Elimina un menu esistente o aggiorna il piano.';
+      } else {
+        this.erroreCreazione = 'Errore durante la creazione del menu. Riprova.';
+      }
       this.isLoading = false;
     }
   }

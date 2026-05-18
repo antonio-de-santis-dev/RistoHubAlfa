@@ -222,12 +222,12 @@
           <span>Nessun prodotto in questa portata.</span>
         </div>
 
-        <!-- Aggiungi prodotto -->
+        <!-- ── Aggiungi prodotto (apre modal inline) ── -->
         <button
           class="cl-btn-add-prodotto"
           [style.color]="coloreSecondario"
           [style.borderColor]="coloreSecondario"
-          (click)="vaiAdAggiungiProdotto(portata.id)"
+          (click)="apriAggiuntaProdotto(portata)"
         >
           <svg width="22" height="22" viewBox="0 0 44 44" fill="none">
             <path
@@ -238,7 +238,7 @@
               stroke-linejoin="round"
             />
           </svg>
-          Aggiungi piatto
+          <span class="cl-add-label">Aggiungi piatto</span>
         </button>
       </div>
     </div>
@@ -267,61 +267,66 @@
 <!-- ══════════════════════════════════════════════════════════════ -->
 <!--  MODAL: Modifica prodotto                                     -->
 <!-- ══════════════════════════════════════════════════════════════ -->
-<div *ngIf="prodottoInModifica" class="mv-modal-overlay" (click)="chiudiModifica()">
-  <div class="mv-modal-box" (click)="$event.stopPropagation()">
-    <div class="mv-modal-header" [style.backgroundColor]="colorePrimario">
-      <h3>✏️ Modifica prodotto</h3>
-      <button class="mv-modal-close" type="button" (click)="chiudiModifica()">✕</button>
+<div *ngIf="prodottoInModifica" class="modal-overlay" (click)="chiudiModifica()">
+  <div class="modal-box" (click)="$event.stopPropagation()">
+    <div class="modal-header" [style.backgroundColor]="colorePrimario">
+      <h3 class="modal-titolo">✏️ Modifica prodotto</h3>
+      <button class="modal-close" type="button" (click)="chiudiModifica()">✕</button>
     </div>
-    <div class="mv-modal-body">
-      <div class="mv-field">
+    <div class="modal-body">
+      <div class="modal-field">
         <label>Nome *</label>
-        <input type="text" [(ngModel)]="editNome" placeholder="Nome del piatto" class="mv-input" />
+        <input type="text" [(ngModel)]="editNome" placeholder="Nome del piatto" class="modal-input" />
       </div>
-      <div class="mv-field">
+      <div class="modal-field">
         <label>Descrizione</label>
-        <textarea [(ngModel)]="editDescrizione" placeholder="Descrizione (opzionale)" class="mv-input mv-textarea" rows="2"></textarea>
+        <textarea
+          [(ngModel)]="editDescrizione"
+          placeholder="Descrizione (opzionale)"
+          class="modal-input modal-textarea"
+          rows="2"
+        ></textarea>
       </div>
-      <div class="mv-field mv-field-row">
-        <div class="mv-field-half">
+      <div class="modal-field-row">
+        <div class="modal-field modal-field-half">
           <label>Prezzo (€) *</label>
-          <input type="number" [(ngModel)]="editPrezzo" min="0.01" step="0.01" placeholder="0,00" class="mv-input" />
+          <input type="number" [(ngModel)]="editPrezzo" min="0.01" step="0.01" placeholder="0,00" class="modal-input" />
         </div>
-        <div class="mv-field-half">
+        <div class="modal-field modal-field-half">
           <label>Visibilità</label>
-          <div class="mv-toggle-wrap">
-            <label class="mv-toggle">
+          <div class="modal-toggle-wrap">
+            <label class="modal-toggle">
               <input type="checkbox" [(ngModel)]="editVisibile" />
-              <span class="mv-toggle-slider"></span>
+              <span class="modal-toggle-slider"></span>
             </label>
-            <span class="mv-toggle-label">{{ editVisibile ? 'Visibile' : 'Nascosto' }}</span>
+            <span class="modal-toggle-label">{{ editVisibile ? 'Visibile' : 'Nascosto' }}</span>
           </div>
         </div>
       </div>
-      <div class="mv-field">
+      <div class="modal-field">
         <label>Allergeni</label>
-        <div class="mv-allergeni-picker">
+        <div class="modal-allergeni-grid">
           <div
             *ngFor="let a of allergeniDisponibili"
-            class="mv-allergene-pick"
-            [class.mv-allergene-pick-sel]="editAllergeniSelezionati.has(a.id)"
+            class="modal-allergene-chip"
+            [class.selezionato]="editAllergeniSelezionati.has(a.id)"
             [style.borderColor]="editAllergeniSelezionati.has(a.id) ? colorePrimario : '#e5e7eb'"
             [style.backgroundColor]="editAllergeniSelezionati.has(a.id) ? colorePrimario + '18' : 'white'"
             (click)="toggleEditAllergene(a.id)"
           >
-            <img *ngIf="getAllergeneIconPath(a)" [src]="getAllergeneIconPath(a)!" class="mv-pick-icona" [title]="a.nome ?? ''" />
-            <span *ngIf="!getAllergeneIconPath(a)" class="mv-pick-dot" [style.background]="a.colore ?? '#888'"></span>
-            <span class="mv-pick-nome">{{ a.nome }}</span>
-            <span *ngIf="editAllergeniSelezionati.has(a.id)" class="mv-pick-check" [style.color]="colorePrimario">✓</span>
+            <img *ngIf="getAllergeneIconPath(a)" [src]="getAllergeneIconPath(a)!" class="modal-allergene-icona" />
+            <span *ngIf="!getAllergeneIconPath(a)" class="modal-allergene-dot" [style.backgroundColor]="a.colore || '#888'"></span>
+            <span class="modal-allergene-nome">{{ a.nome }}</span>
+            <span *ngIf="editAllergeniSelezionati.has(a.id)" class="modal-allergene-check" [style.color]="colorePrimario">✓</span>
           </div>
         </div>
       </div>
-      <p *ngIf="editErrore" class="mv-field-errore">{{ editErrore }}</p>
+      <p *ngIf="editErrore" class="modal-errore">{{ editErrore }}</p>
     </div>
-    <div class="mv-modal-footer">
-      <button class="mv-btn mv-btn-annulla" type="button" (click)="chiudiModifica()">Annulla</button>
+    <div class="modal-footer">
+      <button class="btn-modal-annulla" type="button" (click)="chiudiModifica()">Annulla</button>
       <button
-        class="mv-btn mv-btn-salva"
+        class="btn-modal-salva"
         type="button"
         (click)="salvaModifica()"
         [disabled]="isSavingEdit"
@@ -336,18 +341,92 @@
 <!-- ══════════════════════════════════════════════════════════════ -->
 <!--  MODAL: Conferma eliminazione                                 -->
 <!-- ══════════════════════════════════════════════════════════════ -->
-<div *ngIf="prodottoInEliminazione" class="mv-modal-overlay" (click)="chiudiConfermaEliminazione()">
-  <div class="mv-modal-box mv-modal-small" (click)="$event.stopPropagation()">
-    <div class="mv-modal-icon">🗑️</div>
-    <h3>Elimina prodotto</h3>
-    <p>
-      Sei sicuro di voler eliminare <strong>{{ prodottoInEliminazione.nome }}</strong
-      >? L'operazione non è reversibile.
-    </p>
-    <div class="mv-modal-footer">
-      <button class="mv-btn mv-btn-annulla" type="button" (click)="chiudiConfermaEliminazione()">Annulla</button>
-      <button class="mv-btn mv-btn-elimina" type="button" (click)="confermanEliminazione()" [disabled]="isDeleting">
-        {{ isDeleting ? 'Eliminazione...' : 'Elimina' }}
+<div *ngIf="prodottoInEliminazione" class="modal-overlay" (click)="chiudiConfermaEliminazione()">
+  <div class="modal-box modal-box-small" (click)="$event.stopPropagation()">
+    <div class="modal-header modal-header-danger">
+      <h3 class="modal-titolo">🗑️ Elimina prodotto</h3>
+      <button class="modal-close" type="button" (click)="chiudiConfermaEliminazione()">✕</button>
+    </div>
+    <div class="modal-body">
+      <p class="modal-conferma-testo">
+        Sei sicuro di voler eliminare <strong>{{ prodottoInEliminazione.nome }}</strong
+        >?<br />
+        <span class="modal-conferma-nota">Questa azione non può essere annullata.</span>
+      </p>
+    </div>
+    <div class="modal-footer">
+      <button class="btn-modal-annulla" type="button" (click)="chiudiConfermaEliminazione()">Annulla</button>
+      <button class="btn-modal-elimina" type="button" (click)="confermanEliminazione()" [disabled]="isDeleting">
+        {{ isDeleting ? 'Eliminazione...' : '🗑️ Elimina' }}
+      </button>
+    </div>
+  </div>
+</div>
+
+<!-- ══════════════════════════════════════════════════════════════ -->
+<!--  MODAL: Aggiungi prodotto (inline, senza navigazione)         -->
+<!-- ══════════════════════════════════════════════════════════════ -->
+<div *ngIf="portataPerAggiunta" class="modal-overlay" (click)="chiudiAggiuntaProdotto()">
+  <div class="modal-box" (click)="$event.stopPropagation()">
+    <div class="modal-header" [style.backgroundColor]="colorePrimario">
+      <h3 class="modal-titolo">➕ Nuovo piatto — {{ nomePortata(portataPerAggiunta) }}</h3>
+      <button class="modal-close" type="button" (click)="chiudiAggiuntaProdotto()">✕</button>
+    </div>
+    <div class="modal-body">
+      <div class="modal-field">
+        <label>Nome *</label>
+        <input type="text" [(ngModel)]="addNome" placeholder="Nome del piatto" class="modal-input" />
+      </div>
+      <div class="modal-field">
+        <label>Descrizione</label>
+        <textarea [(ngModel)]="addDescrizione" placeholder="Descrizione (opzionale)" class="modal-input modal-textarea" rows="2"></textarea>
+      </div>
+      <div class="modal-field-row">
+        <div class="modal-field modal-field-half">
+          <label>Prezzo (€) *</label>
+          <input type="number" [(ngModel)]="addPrezzo" min="0.01" step="0.01" placeholder="0,00" class="modal-input" />
+        </div>
+        <div class="modal-field modal-field-half">
+          <label>Visibilità</label>
+          <div class="modal-toggle-wrap">
+            <label class="modal-toggle">
+              <input type="checkbox" [(ngModel)]="addVisibile" />
+              <span class="modal-toggle-slider"></span>
+            </label>
+            <span class="modal-toggle-label">{{ addVisibile ? 'Visibile' : 'Nascosto' }}</span>
+          </div>
+        </div>
+      </div>
+      <div class="modal-field">
+        <label>Allergeni</label>
+        <div class="modal-allergeni-grid">
+          <div
+            *ngFor="let a of allergeniDisponibili"
+            class="modal-allergene-chip"
+            [class.selezionato]="addAllergeniSelezionati.has(a.id)"
+            [style.borderColor]="addAllergeniSelezionati.has(a.id) ? colorePrimario : '#e5e7eb'"
+            [style.backgroundColor]="addAllergeniSelezionati.has(a.id) ? colorePrimario + '18' : 'white'"
+            (click)="toggleAddAllergene(a.id)"
+          >
+            <img *ngIf="getAllergeneIconPath(a)" [src]="getAllergeneIconPath(a)!" class="modal-allergene-icona" />
+            <span *ngIf="!getAllergeneIconPath(a)" class="modal-allergene-dot" [style.backgroundColor]="a.colore || '#888'"></span>
+            <span class="modal-allergene-nome">{{ a.nome }}</span>
+            <span *ngIf="addAllergeniSelezionati.has(a.id)" class="modal-allergene-check" [style.color]="colorePrimario">✓</span>
+          </div>
+        </div>
+      </div>
+      <p *ngIf="addErrore" class="modal-errore">{{ addErrore }}</p>
+    </div>
+    <div class="modal-footer">
+      <button class="btn-modal-annulla" type="button" (click)="chiudiAggiuntaProdotto()">Annulla</button>
+      <button
+        class="btn-modal-salva"
+        type="button"
+        (click)="salvaNuovoProdotto()"
+        [disabled]="isSavingAdd"
+        [style.backgroundColor]="colorePrimario"
+      >
+        {{ isSavingAdd ? 'Salvataggio...' : '➕ Aggiungi' }}
       </button>
     </div>
   </div>
@@ -356,18 +435,22 @@
 <!-- ══════════════════════════════════════════════════════════════ -->
 <!--  MODAL: QR Code                                               -->
 <!-- ══════════════════════════════════════════════════════════════ -->
-<div *ngIf="qrVisible" class="mv-modal-overlay" (click)="chiudiQr()">
-  <div class="mv-modal-box mv-modal-qr" (click)="$event.stopPropagation()">
-    <div class="mv-modal-icon">📱</div>
-    <h3>QR Code del Menu</h3>
-    <p>I clienti scansionano questo codice per visualizzare il menu</p>
-    <div class="mv-qr-wrap">
-      <img [src]="qrImageUrl" alt="QR Code" class="mv-qr-img" />
+<div *ngIf="qrVisible" class="modal-overlay" (click)="chiudiQr()">
+  <div class="modal-box modal-box-small" (click)="$event.stopPropagation()">
+    <div class="modal-header" [style.backgroundColor]="colorePrimario">
+      <h3 class="modal-titolo">📱 QR Code del Menu</h3>
+      <button class="modal-close" type="button" (click)="chiudiQr()">✕</button>
     </div>
-    <p class="mv-qr-link">{{ qrUrl }}</p>
-    <div class="mv-modal-footer">
-      <a [href]="qrImageUrl" download="qr-menu.png" class="mv-btn mv-btn-download">⬇ Scarica</a>
-      <button class="mv-btn mv-btn-annulla" type="button" (click)="chiudiQr()">Chiudi</button>
+    <div class="modal-body modal-body-centered">
+      <p class="modal-conferma-testo" style="text-align: center">I clienti scansionano questo codice per visualizzare il menu</p>
+      <div class="modal-qr-wrap">
+        <img [src]="qrImageUrl" alt="QR Code" class="modal-qr-img" />
+      </div>
+      <p class="modal-qr-link">{{ qrUrl }}</p>
+    </div>
+    <div class="modal-footer">
+      <a [href]="qrImageUrl" download="qr-menu.png" class="btn-modal-salva" [style.backgroundColor]="colorePrimario">⬇ Scarica</a>
+      <button class="btn-modal-annulla" type="button" (click)="chiudiQr()">Chiudi</button>
     </div>
   </div>
 </div>
